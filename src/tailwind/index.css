@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  @apply text-gray-800;
+}
+
+.full {
+  @apply w-full;
+  @apply h-full;
+}
+
+.absolute-default {
+  @apply absolute;
+  @apply top-0;
+  @apply left-0;
+}
+
+.flex-center-center {
+  @apply flex;
+  @apply justify-center;
+  @apply items-center;
+}
