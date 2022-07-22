@@ -1,0 +1,50 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import { useCurrentTaskDuration } from "@/composables/currentTaskDuration";
+import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
+
+const { duration } = useCurrentTaskDuration();
+
+const formattedDuration = computed(() => {
+  return durationTimeFormatter(duration.value);
+});
+</script>
+
+<template>
+  <div class="punch-card-machine-clock flex-center-center">
+    <div class="num-group flex-center-center">
+      <div class="num">{{ Math.floor(formattedDuration.hours / 10) }}</div>
+      <div class="num">{{ formattedDuration.hours % 10 }}</div>
+    </div>
+    <div class="w-[10px] text-center font-bold">:</div>
+    <div class="num-group flex-center-center">
+      <div class="num">{{ Math.floor(formattedDuration.minutes / 10) }}</div>
+      <div class="num">{{ formattedDuration.minutes % 10 }}</div>
+    </div>
+    <div class="w-[10px] text-center font-bold">:</div>
+    <div class="num-group flex-center-center">
+      <div class="num">{{ Math.floor(formattedDuration.seconds / 10) }}</div>
+      <div class="num">
+        {{ formattedDuration.seconds % 10 }}
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.num-group {
+  @apply bg-white;
+  @apply rounded-md;
+  @apply px-1;
+  @apply shadow-inner;
+  @apply shadow-black/50;
+  @apply text-center;
+  @apply font-medium;
+  width: 52px;
+  font-size: 28px;
+  line-height: 48px;
+}
+.num {
+  width: 17px;
+}
+</style>

@@ -1,24 +1,21 @@
-enum DateFormatterOptionsEnum {
-  "numeric",
-  "2-digit",
-}
+type DateFormatterOptionsValue = "numeric" | "2-digit";
 
-export type DateFormatterOptions = {
+type DateFormatterOptions = {
   timeZone?: string;
-  year?: keyof typeof DateFormatterOptionsEnum;
-  month?: keyof typeof DateFormatterOptionsEnum;
-  day?: keyof typeof DateFormatterOptionsEnum;
+  year?: DateFormatterOptionsValue;
+  month?: DateFormatterOptionsValue;
+  day?: DateFormatterOptionsValue;
   hour12?: boolean;
-  hour?: keyof typeof DateFormatterOptionsEnum;
-  minute?: keyof typeof DateFormatterOptionsEnum;
-  second?: keyof typeof DateFormatterOptionsEnum;
+  hour?: DateFormatterOptionsValue;
+  minute?: DateFormatterOptionsValue;
+  second?: DateFormatterOptionsValue;
 };
 
 export const dateFormatter: (
   timeStamp: number,
   mixinOptions?: DateFormatterOptions
 ) => string = (timeStamp, mixinOptions = {}) => {
-  const defaultOptions = {
+  const defaultOptions: DateFormatterOptions = {
     timeZone: "Asia/Taipei",
     year: "numeric",
     month: "2-digit",
@@ -27,7 +24,7 @@ export const dateFormatter: (
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-  } as DateFormatterOptions;
+  };
 
   return new Date(timeStamp).toLocaleString("zh-hant", {
     ...defaultOptions,
