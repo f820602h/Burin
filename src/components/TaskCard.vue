@@ -1,29 +1,14 @@
 <script setup lang="ts">
 import type { Task } from "@/class/Task";
-import { dateFormatter } from "@/helper/dateFormatter";
-import { spendTimeFormatter } from "@/helper/spendTimeFormatter";
-import { computed } from "vue";
 
-const props = defineProps<{
+defineProps<{
   task: Task;
 }>();
-
-const lastUseDateText = computed(() => {
-  return dateFormatter(props.task.lastUseDate, {
-    year: undefined,
-    hour12: false,
-    second: undefined,
-  });
-});
-
-const lastUseSpendTimeText = computed(() => {
-  return spendTimeFormatter(props.task.lastUseSpendTime);
-});
 </script>
 
 <template>
   <div
-    class="task-card flex flex-col w-[200px] h-[200px] rounded-md px-3 pt-2 pb-3 shadow-md shadow-black/30"
+    class="task-card flex flex-col w-[200px] h-[200px] px-3 pt-2 pb-3 rounded-md shadow-md shadow-black/30"
     :style="{ background: task.category.color.styleText }"
   >
     <div class="task-card__header">
@@ -33,17 +18,18 @@ const lastUseSpendTimeText = computed(() => {
     </div>
     <div class="pt-2 pb-2">
       <div class="flex justify-between text-white/80 text-xs mb-1">
-        <span>上次開始時間：</span><span>{{ lastUseDateText }}</span>
+        <span>上次插卡時間：</span><span>{{ task.getLastUseDateText() }}</span>
       </div>
       <div class="flex justify-between text-white/80 text-xs">
-        <span>上次花費時間：</span><span>{{ lastUseSpendTimeText }}</span>
+        <span>上次花費時間：</span
+        ><span>{{ task.getLastDurationTimeText() }}</span>
       </div>
     </div>
     <div class="flex-1">
       <div
         class="flex flex-col justify-center items-center h-full bg-white rounded-md p-3"
       >
-        <div class="text-xl font-bold text-center">{{ task.task }}</div>
+        <div class="text-xl font-bold text-center">{{ task.title }}</div>
         <div class="text-xs text-center mt-2">{{ task.addition.content }}</div>
       </div>
     </div>
