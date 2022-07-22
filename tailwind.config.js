@@ -20,7 +20,13 @@ module.exports = {
       14: "56px",
       15: "60px",
     },
-    extend: {},
+    extend: {
+      boxShadow: {
+        "inner-sm": "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
+        "inner-md": "inset 0 3px 3px 2px rgb(0 0 0 / 0.05)",
+        "inner-lg": "inset 0 4px 4px 4px rgb(0 0 0 / 0.05)",
+      },
+    },
   },
   plugins: [],
 };

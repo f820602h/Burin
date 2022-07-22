@@ -6,6 +6,8 @@ html {
   @apply text-gray-800;
 }
 
+/* utility class */
+
 .full {
   @apply w-full;
   @apply h-full;
