@@ -1,15 +1,15 @@
 import type { BackgroundColor } from "@/class/BackgroundColor";
 
-export type TaskCategoryArgument = {
+export interface TaskCategoryObject {
   name: string;
   color: BackgroundColor;
-};
+}
 
-export class TaskCategory {
-  name: string;
-  color: BackgroundColor;
+export class TaskCategory implements TaskCategoryObject {
+  name: TaskCategoryObject["name"];
+  color: TaskCategoryObject["color"];
 
-  constructor(arg: TaskCategoryArgument) {
+  constructor(arg: TaskCategoryObject) {
     this.name = arg.name;
     this.color = arg.color;
   }

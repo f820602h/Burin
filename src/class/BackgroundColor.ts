@@ -1,9 +1,9 @@
 export class BackgroundColor {
-  colors: Array<string> = [];
+  colors: string[] = [];
   isGradient: boolean;
   styleText: string;
 
-  constructor(...args: Array<string>) {
+  constructor(...args: string[]) {
     args.forEach((color) => {
       const regex = new RegExp(/^#[0-9 a-f A-F]{6}?/);
       if (!regex.test(color)) throw Error("error color format");
