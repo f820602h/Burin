@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useTaskStore } from "@/stores/task";
 import TaskCard from "@/components/TaskCard.vue";
-import PunchCardMachine from "../components/PunchCardMachine.vue";
-import AlarmMachine from "../components/AlarmMachine.vue";
+import PunchCardMachine from "@/components/PunchCardMachine.vue";
+import AlarmMachine from "@/components/AlarmMachine.vue";
 
 const taskStore = useTaskStore();
 </script>
@@ -22,7 +22,19 @@ const taskStore = useTaskStore();
     <main class="flex-1 flex justify-center items-center">
       <div>
         <PunchCardMachine class="mx-auto" />
-        <AlarmMachine class="mt-8" />
+        <div class="relative z-10">
+          <div
+            class="w-10 h-12 -mt-4 mx-auto pb-3 rounded-b-lg bg-gray-300 shadow-md"
+          >
+            <div
+              class="full rounded-b-lg bg-gray-100 shadow-inner-sm shadow-black/30"
+            />
+          </div>
+          <div
+            class="w-3 h-15 -mt-2 mx-auto border border-gray-400/60 rounded-t-3xl bg-gray-100 shadow-inner-md shadow-gray-300"
+          />
+        </div>
+        <AlarmMachine />
       </div>
     </main>
   </div>
