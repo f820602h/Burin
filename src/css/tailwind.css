@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  @apply text-gray-800;
+}
+
+/* utility class */
+
+.full {
+  @apply w-full;
+  @apply h-full;
+}
+
+.absolute-default {
+  @apply absolute;
+  @apply top-0;
+  @apply left-0;
+}
+
+.flex-between-start {
+  @apply flex;
+  @apply justify-between;
+  @apply items-start;
+}
+
+.flex-between-center {
+  @apply flex;
+  @apply justify-between;
+  @apply items-center;
+}
+
+.flex-between-end {
+  @apply flex;
+  @apply justify-between;
+  @apply items-end;
+}
+
+.flex-center-start {
+  @apply flex;
+  @apply justify-center;
+  @apply items-start;
+}
+
+.flex-center-center {
+  @apply flex;
+  @apply justify-center;
+  @apply items-center;
+}
+
+.flex-center-end {
+  @apply flex;
+  @apply justify-center;
+  @apply items-end;
+}
