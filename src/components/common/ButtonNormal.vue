@@ -17,13 +17,21 @@ const btnTheme: BtnThemes = {
 
 const props = withDefaults(
   defineProps<{
-    text: string;
-    theme: BtnThemeName;
+    text?: string;
+    theme?: BtnThemeName;
     width?: number;
     height?: number;
-    disabled: boolean;
+    circle?: boolean;
+    disabled?: boolean;
   }>(),
-  { text: "", theme: "normal", width: 80, height: 30, disabled: false }
+  {
+    text: "",
+    theme: "normal",
+    width: 80,
+    height: 30,
+    circle: false,
+    disabled: false,
+  }
 );
 
 defineEmits<{ (e: "press"): void }>();
@@ -39,15 +47,21 @@ const calcTheme = computed(() => {
 <template>
   <button class="group pt-1" :disabled="disabled" @click="$emit('press')">
     <div
-      class="btn-back p-0 border-0 outline-none rounded-lg text-white shadow-md shadow-black/25 cursor-pointer"
-      :class="`${btnTheme[calcTheme].back}`"
+      class="btn-back p-0 border-0 outline-none text-white shadow-md shadow-black/25 cursor-pointer"
+      :class="[
+        `${btnTheme[calcTheme].back}`,
+        circle ? 'rounded-full' : 'rounded-lg',
+      ]"
       :style="btnSize"
     >
       <span
-        class="btn-front flex-center-center full rounded-lg transition duration-300"
-        :class="`${btnTheme[calcTheme].front}`"
+        class="btn-front relative flex-center-center full transition-all duration-200"
+        :class="[
+          `${btnTheme[calcTheme].front}`,
+          circle ? 'rounded-full' : 'rounded-lg',
+        ]"
       >
-        {{ text }}
+        <slot>{{ text }}</slot>
       </span>
     </div>
   </button>
@@ -62,11 +76,12 @@ const calcTheme = computed(() => {
 }
 
 .btn-front {
-  @apply group-enabled:-translate-y-1;
-  @apply group-enabled:group-hover:-translate-y-[6px];
-  @apply group-enabled:group-active:-translate-y-0;
-  @apply group-enabled:group-active:duration-[100ms];
-  @apply group-disabled:shadow-inner;
+  @apply group-enabled:-top-1;
+  // @apply group-enabled:group-hover:-top-[6px];
+  @apply group-enabled:group-active:-top-0;
+  @apply group-enabled:group-active:duration-[10ms];
+  @apply group-disabled:shadow-inner-sm;
+  @apply group-disabled:shadow-black/50;
   @apply group-enabled:group-active:shadow-inner;
   @apply group-enabled:group-active:shadow-black/50;
 }

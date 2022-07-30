@@ -4,7 +4,7 @@ import { type Ref, ref, watch } from "vue";
 import { useTaskStore } from "@/stores/task";
 import TaskCard from "@/components/TaskCard.vue";
 import PunchCardMachineClock from "@/components/PunchCardMachineClock.vue";
-import ButtonBase from "./common/ButtonBase.vue";
+import ButtonNormal from "@/components/common/ButtonNormal.vue";
 
 const taskStore = useTaskStore();
 const leaveTask: Ref<Task | null> = ref(null);
@@ -48,13 +48,16 @@ watch(
       <div class="flex-1 pt-8 pb-11 bg-gray-200">
         <PunchCardMachineClock />
         <div class="text-center mt-8">
-          <ButtonBase
+          <ButtonNormal
             theme="cancel"
-            text="退卡"
-            class="text-sm font-bold"
             :disabled="!taskStore.currentTask"
             @click="taskStore.removeCurrentTask"
-          />
+          >
+            <div class="flex-center-center">
+              <span class="icon-cancel mr-1"></span>
+              <span class="text-md">退卡</span>
+            </div>
+          </ButtonNormal>
         </div>
       </div>
 
