@@ -1,24 +1,15 @@
 <script setup lang="ts">
-import { computed } from "vue";
-
-type BtnThemeName = "normal" | "dark" | "confirm" | "cancel" | "disabled";
-
-type BtnThemes = {
-  [prop: string]: { front: string; back: string };
-};
-
-const btnTheme: BtnThemes = {
-  normal: { front: "bg-stone-200", back: "bg-stone-300" },
-  dark: { front: "bg-stone-400", back: "bg-stone-600" },
-  confirm: { front: "bg-green-600", back: "bg-green-900" },
-  cancel: { front: "bg-red-600", back: "bg-red-900" },
-  disabled: { front: "bg-gray-300", back: "bg-gray-400/75" },
-};
+import { computed, type StyleValue } from "vue";
+import {
+  buttonColorThemes,
+  type ColorThemeObject,
+  type ColorThemes,
+} from "@/utils/colorTheme";
 
 const props = withDefaults(
   defineProps<{
     text?: string;
-    theme?: BtnThemeName;
+    theme?: keyof ColorThemes;
     width?: number;
     height?: number;
     circle?: boolean;
@@ -36,11 +27,12 @@ const props = withDefaults(
 
 defineEmits<{ (e: "press"): void }>();
 
-const btnSize = computed(() => {
+const btnSize = computed<StyleValue>(() => {
   return { width: props.width + "px", height: props.height + "px" };
 });
-const calcTheme = computed(() => {
-  return props.disabled ? "disabled" : props.theme;
+const calcTheme = computed<ColorThemeObject>(() => {
+  const themeKey = props.disabled ? "disabled" : props.theme;
+  return buttonColorThemes[themeKey];
 });
 </script>
 

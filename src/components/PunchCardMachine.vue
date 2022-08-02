@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { Task } from "@/class/Task";
-import { type Ref, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { useTaskStore } from "@/stores/task";
 import TaskCard from "@/components/TaskCard.vue";
 import PunchCardMachineClock from "@/components/PunchCardMachineClock.vue";
 import ButtonNormal from "@/components/common/ButtonNormal.vue";
 
 const taskStore = useTaskStore();
-const leaveTask: Ref<Task | null> = ref(null);
+const leaveTask = ref<Task>();
 
 watch(
   () => taskStore.currentTask,

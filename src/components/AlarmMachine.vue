@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch, type Ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useTaskStore } from "@/stores/task";
-import { useCurrentTaskDuration } from "@/composables/currentTaskDuration";
+import { useCurrentTaskDuration } from "@/composables/useCurrentTaskDuration";
 import DigitalNumber from "@/components/common/DigitalNumber.vue";
-import ToggleNormal from "@/components/common/ToggleNormal.vue";
+import ToggleSwitch from "@/components/common/ToggleSwitch.vue";
 import ButtonNormal from "@/components/common/ButtonNormal.vue";
 
 const taskStore = useTaskStore();
@@ -11,15 +11,15 @@ const { duration } = useCurrentTaskDuration();
 
 const intervalList: number[] = [5, 10, 15, 20, 25, 30, 45, 60, 90];
 
-const isAutoRemind: Ref<boolean> = ref(true);
-const isAutoUnplug: Ref<boolean> = ref(false);
-const isRepeat: Ref<boolean> = ref(false);
-const intervalIndex: Ref<number> = ref(2);
+const isAutoRemind = ref<boolean>(true);
+const isAutoUnplug = ref<boolean>(false);
+const isRepeat = ref<boolean>(false);
+const intervalIndex = ref<number>(2);
 
-const intervalMinutes = computed(() => {
+const intervalMinutes = computed<number>(() => {
   return intervalList[intervalIndex.value];
 });
-const afterIntervalTimes = computed(() => {
+const afterIntervalTimes = computed<number>(() => {
   return Math.floor(duration.value / (intervalMinutes.value * 1000));
 });
 

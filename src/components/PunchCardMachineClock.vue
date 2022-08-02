@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useCurrentTaskDuration } from "@/composables/currentTaskDuration";
-import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
+import { useCurrentTaskDuration } from "@/composables/useCurrentTaskDuration";
+import {
+  durationTimeFormatter,
+  type durationTimeObject,
+} from "@/helper/durationTimeFormatter";
 import DigitalNumber from "../components/common/DigitalNumber.vue";
 
 const { duration } = useCurrentTaskDuration();
 
-const formattedDuration = computed(() => {
+const formattedDuration = computed<durationTimeObject>(() => {
   return durationTimeFormatter(duration.value);
 });
 </script>
