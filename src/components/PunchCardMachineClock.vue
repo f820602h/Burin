@@ -50,8 +50,7 @@ const formattedDuration = computed<durationTimeObject>(() => {
   @apply bg-white;
   @apply rounded-md;
   @apply px-1;
-  @apply shadow-inner;
-  @apply shadow-black/50;
+  @apply shadow-inner-sm;
   @apply text-center;
   @apply font-medium;
   width: 52px;

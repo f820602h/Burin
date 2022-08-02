@@ -19,9 +19,9 @@ watch(
 
 <template>
   <div
-    class="punch-card-machine relative w-[264px] pb-6 rounded-2xl shadow-md shadow-black/50"
+    class="punch-card-machine relative w-[264px] pb-6 rounded-2xl shadow-md-light"
   >
-    <Transition name="unplug" @after-enter="leaveTask = null">
+    <Transition name="unplug" @after-enter="leaveTask = undefined">
       <TaskCard
         v-if="leaveTask"
         :task="leaveTask"
@@ -61,10 +61,10 @@ watch(
         </div>
       </div>
 
-      <div class="absolute top-3 left-3 w-2 h-2 rounded-full bg-gray-300" />
-      <div class="absolute top-3 right-3 w-2 h-2 rounded-full bg-gray-300" />
-      <div class="absolute bottom-3 left-3 w-2 h-2 rounded-full bg-gray-300" />
-      <div class="absolute bottom-3 right-3 w-2 h-2 rounded-full bg-gray-300" />
+      <div class="screw top-3 left-3" />
+      <div class="screw top-3 right-3" />
+      <div class="screw bottom-3 left-3" />
+      <div class="screw bottom-3 right-3" />
     </div>
   </div>
 </template>
@@ -82,6 +82,15 @@ watch(
     width: 176px;
     height: 100px;
   }
+}
+
+.screw {
+  @apply absolute;
+  @apply w-2;
+  @apply h-2;
+  @apply rounded-full;
+  @apply bg-gray-300;
+  @apply shadow-inner-sm;
 }
 
 .unplug-enter-active {

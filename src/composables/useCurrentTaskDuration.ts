@@ -6,7 +6,7 @@ export function useCurrentTaskDuration() {
   const taskStore = useTaskStore();
   const timestamp = useTimestamp();
 
-  const duration = computed(() => {
+  const duration = computed<number>(() => {
     if (!taskStore.currentTask?.lastStartTimestamp) return 0;
     return timestamp.value - taskStore.currentTask.lastStartTimestamp;
   });

@@ -37,21 +37,19 @@ const calcTheme = computed<ColorThemeObject>(() => {
 </script>
 
 <template>
-  <button class="group pt-1" :disabled="disabled" @click="$emit('press')">
+  <button
+    class="group disabled:cursor-not-allowed"
+    :disabled="disabled"
+    @click="$emit('press')"
+  >
     <div
-      class="btn-back p-0 border-0 outline-none text-white shadow-md shadow-black/25 cursor-pointer"
-      :class="[
-        `${btnTheme[calcTheme].back}`,
-        circle ? 'rounded-full' : 'rounded-lg',
-      ]"
-      :style="btnSize"
+      class="btn-back p-0 border-0 outline-none text-white shadow-md"
+      :class="[`${calcTheme.back}`, circle ? 'rounded-full' : 'rounded-lg']"
     >
       <span
-        class="btn-front relative flex-center-center full transition-all duration-200"
-        :class="[
-          `${btnTheme[calcTheme].front}`,
-          circle ? 'rounded-full' : 'rounded-lg',
-        ]"
+        class="btn-front relative flex-center-center transition duration-200"
+        :class="[`${calcTheme.front}`, circle ? 'rounded-full' : 'rounded-lg']"
+        :style="btnSize"
       >
         <slot>{{ text }}</slot>
       </span>
@@ -62,19 +60,14 @@ const calcTheme = computed<ColorThemeObject>(() => {
 <style lang="scss" scoped>
 .btn-back {
   @apply group-disabled:text-gray-100;
-  @apply group-disabled:cursor-not-allowed;
   @apply group-active:shadow-none;
   @apply group-disabled:shadow-none;
 }
 
 .btn-front {
   @apply group-enabled:-top-1;
-  // @apply group-enabled:group-hover:-top-[6px];
   @apply group-enabled:group-active:-top-0;
-  @apply group-enabled:group-active:duration-[10ms];
-  @apply group-disabled:shadow-inner-sm;
-  @apply group-disabled:shadow-black/50;
   @apply group-enabled:group-active:shadow-inner;
-  @apply group-enabled:group-active:shadow-black/50;
+  @apply group-disabled:shadow-inner-sm;
 }
 </style>

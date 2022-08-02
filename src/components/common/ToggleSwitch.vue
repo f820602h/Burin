@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SliderKnob from "./SliderKnob.vue";
 withDefaults(defineProps<{ modelValue?: boolean; disabled?: boolean }>(), {
   modelValue: false,
   disabled: false,
@@ -9,22 +10,12 @@ defineEmits<{ (e: "update:modelValue", checked: boolean): void }>();
 
 <template>
   <button
-    class="w-13 rounded-lg bg-stone-300 shadow-inner-md shadow-black/30 transition-all duration-100"
+    class="w-13 rounded-lg bg-stone-300 shadow-inner-md-light transition-all duration-100"
     :class="modelValue ? 'pl-5' : ''"
     :disabled="disabled"
     @click="$emit('update:modelValue', !modelValue)"
   >
-    <div class="w-8 h-5 p-0 rounded-lg bg-stone-400 shadow-sm shadow-black/30">
-      <div class="full rounded-lg bg-stone-200 -translate-y-1">
-        <div class="flex justify-between full px-2 py-[5px]">
-          <div
-            v-for="i in 3"
-            :key="i"
-            class="w-[2px] h-full bg-black/20 rotate-[10deg]"
-          />
-        </div>
-      </div>
-    </div>
+    <SliderKnob />
   </button>
 </template>
 

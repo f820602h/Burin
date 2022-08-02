@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
   <div
-    class="task-card flex flex-col w-[200px] h-[200px] px-3 pt-2 pb-3 rounded-md shadow-md shadow-black/30"
+    class="task-card flex flex-col w-[200px] h-[200px] px-3 pt-2 pb-3 rounded-md shadow-md-light"
     :style="{ background: task.category.color.styleText }"
   >
     <div class="task-card__header">

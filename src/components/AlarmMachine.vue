@@ -61,9 +61,7 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
 </script>
 
 <template>
-  <div
-    class="alarm-machine relative pb-5 rounded-3xl bg-gray-300 shadow-md shadow-black/50"
-  >
+  <div class="alarm-machine w-[305px] pb-5 rounded-3xl bg-gray-300 shadow-md">
     <div class="p-5 rounded-2xl bg-white overflow-hidden">
       <div class="flex-center-center">
         <div class="self-end text-sm font-bold text-neutral-900 pb-1">
@@ -90,7 +88,7 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
           >
             <span class="icon-top"></span>
           </ButtonNormal>
-          <div class="mb-1"></div>
+          <div class="mb-2"></div>
           <ButtonNormal
             theme="dark"
             :circle="true"
@@ -108,7 +106,7 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
             <div class="flex-center-center text-neutral-600">
               <span class="icon-bell mr-1"></span>
               <span class="text-sm mr-2">提醒</span>
-              <ToggleNormal v-model="isAutoRemind" />
+              <ToggleSwitch v-model="isAutoRemind" />
             </div>
           </div>
 
@@ -116,7 +114,7 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
             <div class="flex-center-center text-neutral-600">
               <span class="icon-cancel mr-1"></span>
               <span class="text-sm mr-2">退卡</span>
-              <ToggleNormal v-model="isAutoUnplug" />
+              <ToggleSwitch v-model="isAutoUnplug" />
             </div>
           </div>
         </div>
@@ -133,12 +131,12 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
         <div class="flex-center-center text-neutral-600">
           <span class="icon-repeat mr-1"></span>
           <span class="text-sm mr-2">重複</span>
-          <ToggleNormal v-model="isRepeat" />
+          <ToggleSwitch v-model="isRepeat" />
         </div>
       </div>
 
       <div
-        class="alarm-machine__horn h-8 p-2 rounded-full shadow-inner shadow-black/10 overflow-hidden"
+        class="alarm-machine__horn h-8 p-2 rounded-full shadow-inner-sm-lighter overflow-hidden"
       >
         <div v-for="i in 3" :key="i" class="flex-center-center w-full mb-1">
           <div
@@ -158,8 +156,7 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
     @apply bg-white;
     @apply rounded-md;
     @apply px-1;
-    @apply shadow-inner;
-    @apply shadow-black/50;
+    @apply shadow-inner-sm;
     @apply text-center;
     @apply font-medium;
     width: 64px;
