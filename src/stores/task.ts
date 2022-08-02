@@ -35,21 +35,21 @@ const mockTask2 = new Task({
 
 export type TaskState = {
   tasks: Task[];
-  currentTask: Task | null;
+  currentTask?: Task;
 };
 
 export const useTaskStore = defineStore({
   id: "task",
   state: (): TaskState => ({
     tasks: [mockTask1, mockTask2],
-    currentTask: null,
+    currentTask: undefined,
   }),
   actions: {
     setCurrentTask(task: Task): void {
       this.currentTask = task;
     },
     removeCurrentTask(): void {
-      this.currentTask = null;
+      this.currentTask = undefined;
     },
     addTask(arg: Task): void {
       console.log(arg);

@@ -1,4 +1,4 @@
-type durationTimeObject = {
+export type durationTimeObject = {
   hours: number;
   minutes: number;
   seconds: number;
