@@ -85,12 +85,7 @@ watch(
 }
 
 .screw {
-  @apply absolute;
-  @apply w-2;
-  @apply h-2;
-  @apply rounded-full;
-  @apply bg-gray-300;
-  @apply shadow-inner-sm;
+  @apply absolute w-2 h-2 rounded-full bg-gray-300 shadow-inner-sm;
 }
 
 .unplug-enter-active {

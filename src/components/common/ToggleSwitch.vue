@@ -10,7 +10,7 @@ defineEmits<{ (e: "update:modelValue", checked: boolean): void }>();
 
 <template>
   <button
-    class="w-13 rounded-lg bg-stone-300 shadow-inner-md-light transition-all duration-100"
+    class="toggle-switch"
     :class="modelValue ? 'pl-5' : ''"
     :disabled="disabled"
     @click="$emit('update:modelValue', !modelValue)"
@@ -20,13 +20,13 @@ defineEmits<{ (e: "update:modelValue", checked: boolean): void }>();
 </template>
 
 <style lang="scss" scoped>
-button {
-  @apply disabled:cursor-not-allowed;
+.toggle-switch {
   background: linear-gradient(
-      to right,
-      theme("colors.green.400") 50%,
-      theme("colors.stone.300") 50%
-    ),
-    50%;
+    to right,
+    theme("colors.green.400") 50%,
+    theme("colors.stone.300") 50%
+  );
+
+  @apply w-13 rounded-lg bg-stone-300 shadow-inner-md-light transition-all duration-100 disabled:cursor-not-allowed;
 }
 </style>

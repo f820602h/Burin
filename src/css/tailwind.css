@@ -9,48 +9,33 @@ html {
 /* utility class */
 
 .full {
-  @apply w-full;
-  @apply h-full;
+  @apply w-full h-full;
 }
 
 .absolute-default {
-  @apply absolute;
-  @apply top-0;
-  @apply left-0;
+  @apply absolute top-0 left-0;
 }
 
 .flex-between-start {
-  @apply flex;
-  @apply justify-between;
-  @apply items-start;
+  @apply flex justify-between items-start;
 }
 
 .flex-between-center {
-  @apply flex;
-  @apply justify-between;
-  @apply items-center;
+  @apply flex justify-between items-center;
 }
 
 .flex-between-end {
-  @apply flex;
-  @apply justify-between;
-  @apply items-end;
+  @apply flex justify-between items-end;
 }
 
 .flex-center-start {
-  @apply flex;
-  @apply justify-center;
-  @apply items-start;
+  @apply flex justify-center items-start;
 }
 
 .flex-center-center {
-  @apply flex;
-  @apply justify-center;
-  @apply items-center;
+  @apply flex justify-center items-center;
 }
 
 .flex-center-end {
-  @apply flex;
-  @apply justify-center;
-  @apply items-end;
+  @apply flex justify-center items-end;
 }

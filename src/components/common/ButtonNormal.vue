@@ -47,7 +47,7 @@ const calcTheme = computed<ColorThemeObject>(() => {
       :class="[`${calcTheme.back}`, circle ? 'rounded-full' : 'rounded-lg']"
     >
       <span
-        class="btn-front relative flex-center-center transition duration-200"
+        class="btn-front relative flex-center-center transition-transform duration-200"
         :class="[`${calcTheme.front}`, circle ? 'rounded-full' : 'rounded-lg']"
         :style="btnSize"
       >
@@ -59,15 +59,10 @@ const calcTheme = computed<ColorThemeObject>(() => {
 
 <style lang="scss" scoped>
 .btn-back {
-  @apply group-disabled:text-gray-100;
-  @apply group-active:shadow-none;
-  @apply group-disabled:shadow-none;
+  @apply group-disabled:text-gray-100 group-active:shadow-none group-disabled:shadow-none;
 }
 
 .btn-front {
-  @apply group-enabled:-top-1;
-  @apply group-enabled:group-active:-top-0;
-  @apply group-enabled:group-active:shadow-inner;
-  @apply group-disabled:shadow-inner-sm;
+  @apply group-enabled:-top-1 group-enabled:group-active:-top-0 group-enabled:group-active:shadow-inner-sm group-disabled:shadow-inner-sm;
 }
 </style>

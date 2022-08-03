@@ -47,12 +47,7 @@ const formattedDuration = computed<durationTimeObject>(() => {
 
 <style lang="scss" scoped>
 .num-group {
-  @apply bg-white;
-  @apply rounded-md;
-  @apply px-1;
-  @apply shadow-inner-sm;
-  @apply text-center;
-  @apply font-medium;
+  @apply bg-white rounded-md px-1 shadow-inner-sm text-center font-medium;
   width: 52px;
   line-height: 48px;
 }
