@@ -24,7 +24,9 @@ withDefaults(
         <div v-if="i === 1" class="tick-number left-0">
           {{ tickFormatter(i - 1) }}
         </div>
-        <div class="tick-number left-full">{{ tickFormatter(i) }}</div>
+        <div class="tick-number left-full truncate">
+          {{ tickFormatter(i) }}
+        </div>
 
         <div
           v-for="j in minorTickAmount + 1"
@@ -45,20 +47,9 @@ withDefaults(
 
 <style scoped>
 .tick-number {
-  @apply absolute;
-  @apply top-0;
-  @apply text-xs;
-  @apply text-gray-500;
-  @apply -translate-x-1/2;
-  @apply -translate-y-full;
+  @apply absolute top-0 text-xs text-gray-500 -translate-x-1/2 -translate-y-full;
 }
 .shadow-mask {
-  @apply shadow-inner-sm-light;
-  @apply absolute;
-  @apply top-0;
-  @apply left-0;
-  @apply z-10;
-  @apply w-full;
-  @apply h-full;
+  @apply shadow-inner-sm-light absolute top-0 left-0 z-10 w-full h-full;
 }
 </style>

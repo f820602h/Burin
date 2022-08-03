@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
+import { useMobileDeviceDetect } from "@/composables/useMobileDeviceDetect";
 import SliderKnob from "./SliderKnob.vue";
 
 const props = withDefaults(
@@ -41,17 +42,24 @@ watch(currentLeftRatio, (ratio) => {
 });
 
 onMounted(() => {
-  document.body.addEventListener("mousemove", onBodyMousemove);
-  document.body.addEventListener("mouseup", onBodyMouseup);
-  document.body.addEventListener("mouseleave", onBodyMouseleave);
+  const { isMobile } = useMobileDeviceDetect();
+  if (isMobile.value) {
+    document.body.addEventListener("touchmove", onBodyTouchmove);
+    document.body.addEventListener("touchend", onBodyTouchend);
+  } else {
+    document.body.addEventListener("mousemove", onBodyMousemove);
+    document.body.addEventListener("mouseup", onBodyMouseup);
+    document.body.addEventListener("mouseleave", onBodyMouseleave);
+  }
 });
 
-const onRodMousedown: (e: MouseEvent) => void = (e) => {
-  isActive.value = true;
-  originX.value = e.clientX;
-};
 const onGrooveClick: (e: MouseEvent) => void = (e) => {
   lastLeftRatio.value = e.offsetX / props.width;
+};
+// mouse event
+const onKnobMousedown: (e: MouseEvent) => void = (e) => {
+  isActive.value = true;
+  originX.value = e.clientX;
 };
 const onBodyMousemove: (e: MouseEvent) => void = (e) => {
   if (!isActive.value) return;
@@ -68,6 +76,22 @@ const onBodyMouseleave: () => void = () => {
   if (!isActive.value) return;
   isActive.value = false;
 };
+// touch event
+const onKnobTouchstart: (e: TouchEvent) => void = (e) => {
+  e.preventDefault();
+  isActive.value = true;
+  originX.value = e.touches[0].clientX;
+};
+const onBodyTouchmove: (e: TouchEvent) => void = (e) => {
+  if (!isActive.value) return;
+  offsetX.value = e.touches[0].clientX - originX.value;
+};
+const onBodyTouchend: () => void = () => {
+  if (!isActive.value) return;
+  isActive.value = false;
+  lastLeftRatio.value = currentLeftRatio.value;
+  offsetX.value = 0;
+};
 </script>
 
 <template>
@@ -80,7 +104,8 @@ const onBodyMouseleave: () => void = () => {
       class="relative -translate-x-1/2 cursor-ew-resize"
       :style="{ left: currentLeftRatio * 100 + '%' }"
       theme="dark"
-      @mousedown="onRodMousedown"
+      @touchstart="onKnobTouchstart"
+      @mousedown="onKnobMousedown"
     />
   </div>
 </template>

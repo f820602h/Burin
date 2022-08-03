@@ -1,7 +1,7 @@
 import { computed } from "vue";
 
 export function useMobileDeviceDetect() {
-  const toMatch = [
+  const toMatch: RegExp[] = [
     /Android/i,
     /webOS/i,
     /iPhone/i,
