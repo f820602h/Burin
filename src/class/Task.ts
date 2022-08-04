@@ -47,10 +47,10 @@ export class Task implements TaskObject {
   }
 
   getLastDurationTimeText(): string {
-    return this.lastStartTimestamp && this.lastEndTimestamp
-      ? durationTimeFormatter(this.lastEndTimestamp - this.lastStartTimestamp)
-          .outputText
-      : "尚未使用過";
+    const duration = this.lastEndTimestamp - this.lastStartTimestamp;
+    if (duration === 0) return "尚未使用過";
+    else if (duration < 0) return "正在進行中";
+    else return durationTimeFormatter(duration).outputText;
   }
 
   setLastStartTimestampToNow(): void {
