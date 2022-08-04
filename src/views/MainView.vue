@@ -15,7 +15,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <aside class="fixed top-0 left-0 h-full px-4 py-5 bg-white/10 shadow-xl">
+  <aside class="fixed-default z-10 h-full px-4 py-5 bg-white/10 shadow-xl">
     <div
       v-for="(task, index) in taskStore.tasks"
       :key="index"
@@ -26,25 +26,46 @@ onBeforeMount(() => {
   </aside>
 
   <main
-    class="flex-center-center flex-col h-screen bg-gray-700"
-    :style="{ background: taskStore.currentTaskCategory.color.styleString }"
+    class="background-animate relative h-screen bg-gray-700"
+    :style="{
+      backgroundImage: taskStore.currentTaskCategory.color.styleString,
+    }"
   >
-    <PunchCardMachine />
+    <div class="absolute-default full bg-black/25 overflow-hidden" />
 
-    <div class="usb-cable relative z-10 flex-center-center flex-col -mt-4 sm">
-      <div class="usb-cable__head">
-        <div class="usb-cable__head-inner full" />
+    <div class="relative full flex-center-center flex-col">
+      <PunchCardMachine />
+      <div class="usb-cable relative flex-center-center flex-col -mt-4 sm">
+        <div class="usb-cable__head">
+          <div class="usb-cable__head-inner full" />
+        </div>
+        <div class="usb-cable__line" />
       </div>
-      <div class="usb-cable__line" />
+      <AlarmMachine />
     </div>
-
-    <AlarmMachine />
   </main>
 
-  <MonitorPanel />
+  <MonitorPanel class="relative z-20" />
 </template>
 
 <style lang="scss" scoped>
+.background-animate {
+  background-size: 300% 300%;
+  animation: flow 7s infinite;
+}
+
+@keyframes flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .usb-cable {
   &__head {
     @apply w-10 h-12 pb-3 rounded-b-lg bg-gray-300 shadow-xl;

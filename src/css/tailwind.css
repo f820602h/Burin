@@ -16,6 +16,10 @@ html {
   @apply absolute top-0 left-0;
 }
 
+.fixed-default {
+  @apply fixed top-0 left-0;
+}
+
 .flex-between-start {
   @apply flex justify-between items-start;
 }
