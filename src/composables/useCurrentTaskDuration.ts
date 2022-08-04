@@ -7,8 +7,9 @@ export function useCurrentTaskDuration() {
   const timestamp = useTimestamp();
 
   const duration = computed<number>(() => {
-    if (!taskStore.currentTask?.lastStartTimestamp) return 0;
-    return timestamp.value - taskStore.currentTask.lastStartTimestamp;
+    const now = new Date().getTime();
+    const taskStartTime = taskStore.currentTask?.lastStartTimestamp || now;
+    return Math.max(timestamp.value - taskStartTime, 0);
   });
 
   return { duration };

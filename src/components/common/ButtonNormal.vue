@@ -4,7 +4,7 @@ import {
   buttonColorThemes,
   type ColorThemeObject,
   type ColorThemes,
-} from "@/utils/colorTheme";
+} from "@/components/common/colorThemes";
 
 const props = withDefaults(
   defineProps<{
@@ -32,7 +32,7 @@ const btnSize = computed<StyleValue>(() => {
 });
 const calcTheme = computed<ColorThemeObject>(() => {
   const themeKey = props.disabled ? "disabled" : props.theme;
-  return buttonColorThemes[themeKey];
+  return buttonColorThemes[themeKey] || buttonColorThemes.normal;
 });
 </script>
 

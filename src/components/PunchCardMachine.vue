@@ -3,11 +3,11 @@ import type { Task } from "@/class/Task";
 import { ref, watch } from "vue";
 import { useTaskStore } from "@/stores/task";
 import TaskCard from "@/components/TaskCard.vue";
-import PunchCardMachineClock from "@/components/PunchCardMachineClock.vue";
+import TaskDurationClock from "@/components/TaskDurationClock.vue";
 import ButtonNormal from "@/components/common/ButtonNormal.vue";
 
 const taskStore = useTaskStore();
-const leaveTask = ref<Task>();
+const leaveTask = ref<Task | null>();
 
 watch(
   () => taskStore.currentTask,
@@ -46,12 +46,12 @@ watch(
       </div>
 
       <div class="flex-1 pt-8 pb-11 bg-gray-200">
-        <PunchCardMachineClock />
+        <TaskDurationClock />
         <div class="text-center mt-8">
           <ButtonNormal
             theme="cancel"
             :disabled="!taskStore.currentTask"
-            @click="taskStore.removeCurrentTask"
+            @click="taskStore._actUpdateCurrentTask(null)"
           >
             <div class="flex-center-center">
               <span class="icon-cancel mr-1"></span>

@@ -1,58 +1,55 @@
 import { defineStore } from "pinia";
-import { BackgroundColor } from "@/class/BackgroundColor";
 import { TaskCategory } from "@/class/TaskCategory";
 import { Task } from "@/class/Task";
 
-const mockTask1 = new Task({
-  id: "123",
-  category: new TaskCategory({
-    name: "工作",
-    color: new BackgroundColor("#355C7D", "#6C5B7B", "#C06C84"),
-  }),
-  title: "功能開發",
-  addition: {
-    content: "不具有初始化函式並且之前的列舉成員是常數",
-    isLink: false,
-  },
-  lastStartTimestamp: new Date().getTime(),
-  lastEndTimestamp: new Date().getTime() + 1000 * 60 * 60,
-});
+import { mockTaskCategoryApiData, mockTaskApiData } from "./mock/task";
 
-const mockTask2 = new Task({
-  id: "123",
-  category: new TaskCategory({
-    name: "工作2",
-    color: new BackgroundColor("#355C7D", "#6C5B7B", "#C06C84"),
-  }),
-  title: "功能開發2",
-  addition: {
-    content: "不具有初始化函式並且之前的列舉成員是常數",
-    isLink: false,
-  },
-  lastStartTimestamp: new Date().getTime(),
-  lastEndTimestamp: new Date().getTime() + 1000 * 60 * 60,
+const defaultCategory = new TaskCategory({
+  id: "default",
+  name: "未分類",
+  colorName: "default",
+  createTimestamp: 0,
+  updateTimestamp: 0,
 });
 
 export type TaskState = {
+  categories: TaskCategory[];
+  defaultCategory: TaskCategory;
   tasks: Task[];
-  currentTask?: Task;
+  currentTask: Task | null;
 };
 
 export const useTaskStore = defineStore({
   id: "task",
   state: (): TaskState => ({
-    tasks: [mockTask1, mockTask2],
-    currentTask: undefined,
+    categories: [],
+    defaultCategory,
+    tasks: [],
+    currentTask: null,
   }),
   actions: {
-    setCurrentTask(task: Task): void {
+    _actFetchTaskCategoryData(): void {
+      this.categories = mockTaskCategoryApiData.map(
+        (cate) => new TaskCategory(cate)
+      );
+    },
+    _actFetchTaskData(): void {
+      this.tasks = mockTaskApiData.map((task) => new Task(task));
+    },
+    _actUpdateCurrentTask(task: Task | null): void {
+      if (this.currentTask === task) return;
+      if (this.currentTask) this.currentTask.setLastEndTimestampToNow();
+      if (task) task.setLastStartTimestampToNow();
       this.currentTask = task;
     },
-    removeCurrentTask(): void {
-      this.currentTask = undefined;
-    },
-    addTask(arg: Task): void {
-      console.log(arg);
+  },
+  getters: {
+    currentTaskCategory(): TaskCategory {
+      return (
+        this.categories.find(
+          (cate) => cate.id === this.currentTask?.categoryId
+        ) || this.defaultCategory
+      );
     },
   },
 });

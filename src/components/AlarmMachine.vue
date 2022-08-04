@@ -11,9 +11,9 @@ const { duration } = useCurrentTaskDuration();
 
 const intervalList: number[] = [5, 10, 15, 20, 25, 30, 45, 60, 90];
 
+const isSwitchOn = ref<boolean>(true);
 const isAutoRemind = ref<boolean>(true);
 const isAutoUnplug = ref<boolean>(false);
-const isRepeat = ref<boolean>(false);
 const intervalIndex = ref<number>(2);
 
 const intervalMinutes = computed<number>(() => {
@@ -23,15 +23,9 @@ const afterIntervalTimes = computed<number>(() => {
   return Math.floor(duration.value / (intervalMinutes.value * 1000));
 });
 
-watch(isAutoUnplug, (status) => {
-  if (status) isRepeat.value = false;
-});
-watch(isRepeat, (status) => {
-  if (status) {
-    isAutoUnplug.value = false;
-    unWatchAfterIntervalTimes();
-    startWatchAfterIntervalTimes();
-  }
+watch(isSwitchOn, (status) => {
+  if (status) startWatchAfterIntervalTimes();
+  else unWatchAfterIntervalTimes();
 });
 watch(
   () => taskStore.currentTask,
@@ -45,12 +39,10 @@ let unWatchAfterIntervalTimes: () => void = () => {
   return;
 };
 const startWatchAfterIntervalTimes: () => void = () => {
-  if (!taskStore.currentTask) return;
-  unWatchAfterIntervalTimes = watch(afterIntervalTimes, (times) => {
-    if (!times) return;
+  if (!taskStore.currentTask || !isSwitchOn.value) return;
+  unWatchAfterIntervalTimes = watch(afterIntervalTimes, () => {
     if (isAutoRemind.value) console.log("time out!");
-    if (isAutoUnplug.value) taskStore.removeCurrentTask();
-    if (!isRepeat.value) unWatchAfterIntervalTimes();
+    if (isAutoUnplug.value) taskStore._actUpdateCurrentTask(null);
   });
 };
 const onIntervalBtnPress: (direction: number) => void = (direction) => {
@@ -129,9 +121,8 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
           TOMATO
         </div>
         <div class="flex-center-center text-neutral-600">
-          <span class="icon-repeat mr-1"></span>
-          <span class="text-sm mr-2">重複</span>
-          <ToggleSwitch v-model="isRepeat" />
+          <span class="text-sm mr-2">開／關</span>
+          <ToggleSwitch v-model="isSwitchOn" />
         </div>
       </div>
 

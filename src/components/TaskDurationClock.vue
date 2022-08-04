@@ -5,7 +5,7 @@ import {
   durationTimeFormatter,
   type durationTimeObject,
 } from "@/helper/durationTimeFormatter";
-import DigitalNumber from "../components/common/DigitalNumber.vue";
+import DigitalNumber from "./common/DigitalNumber.vue";
 
 const { duration } = useCurrentTaskDuration();
 

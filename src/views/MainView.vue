@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onBeforeMount } from "vue";
 import { useTaskStore } from "@/stores/task";
 import TaskCard from "@/components/TaskCard.vue";
 import PunchCardMachine from "@/components/PunchCardMachine.vue";
@@ -6,24 +7,28 @@ import AlarmMachine from "@/components/AlarmMachine.vue";
 import MonitorPanel from "@/components/MonitorPanel.vue";
 
 const taskStore = useTaskStore();
+
+onBeforeMount(() => {
+  taskStore._actFetchTaskCategoryData();
+  taskStore._actFetchTaskData();
+});
 </script>
 
 <template>
-  <!-- :style="{ background: taskStore.tasks[0].category.color.styleText }" -->
-
-  <aside
-    class="hidden fixed top-0 left-0 h-full px-4 py-5 bg-white/10 shadow-xl"
-  >
+  <aside class="fixed top-0 left-0 h-full px-4 py-5 bg-white/10 shadow-xl">
     <div
       v-for="(task, index) in taskStore.tasks"
       :key="index"
       class="mt-4 first:mt-0"
     >
-      <TaskCard :task="task" @click="taskStore.setCurrentTask(task)" />
+      <TaskCard :task="task" @click="taskStore._actUpdateCurrentTask(task)" />
     </div>
   </aside>
 
-  <main class="flex-center-center flex-col h-screen bg-gray-700">
+  <main
+    class="flex-center-center flex-col h-screen bg-gray-700"
+    :style="{ background: taskStore.currentTaskCategory.color.styleString }"
+  >
     <PunchCardMachine />
 
     <div class="usb-cable relative z-10 flex-center-center flex-col -mt-4 sm">
@@ -36,9 +41,7 @@ const taskStore = useTaskStore();
     <AlarmMachine />
   </main>
 
-  <div class="fixed bottom-0 left-0 w-full">
-    <MonitorPanel />
-  </div>
+  <MonitorPanel />
 </template>
 
 <style lang="scss" scoped>

@@ -1,4 +1,3 @@
-import type { TaskCategory } from "@/class/TaskCategory";
 import { dateFormatter } from "@/helper/dateFormatter";
 import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
 
@@ -10,28 +9,34 @@ export interface TaskAddition {
 
 export interface TaskObject {
   id: string;
-  category: TaskCategory;
+  categoryId: string;
   title: string;
   addition: TaskAddition;
-  lastStartTimestamp?: number;
-  lastEndTimestamp?: number;
+  lastStartTimestamp: number;
+  lastEndTimestamp: number;
+  createTimestamp: number;
+  updateTimestamp: number;
 }
 
 export class Task implements TaskObject {
   id: TaskObject["id"];
-  category: TaskObject["category"];
+  categoryId: TaskObject["categoryId"];
   title: TaskObject["title"];
   addition: TaskObject["addition"];
-  lastStartTimestamp?: TaskObject["lastStartTimestamp"];
-  lastEndTimestamp?: TaskObject["lastEndTimestamp"];
+  lastStartTimestamp: TaskObject["lastStartTimestamp"];
+  lastEndTimestamp: TaskObject["lastEndTimestamp"];
+  createTimestamp: TaskObject["createTimestamp"];
+  updateTimestamp: TaskObject["updateTimestamp"];
 
   constructor(arg: TaskObject) {
     this.id = arg.id;
-    this.category = arg.category;
+    this.categoryId = arg.categoryId;
     this.title = arg.title;
     this.addition = arg.addition;
     this.lastStartTimestamp = arg.lastStartTimestamp;
     this.lastEndTimestamp = arg.lastEndTimestamp;
+    this.createTimestamp = arg.createTimestamp;
+    this.updateTimestamp = arg.updateTimestamp;
   }
 
   getLastUseDateText(): string {
@@ -46,5 +51,13 @@ export class Task implements TaskObject {
       ? durationTimeFormatter(this.lastEndTimestamp - this.lastStartTimestamp)
           .outputText
       : "尚未使用過";
+  }
+
+  setLastStartTimestampToNow(): void {
+    this.lastStartTimestamp = new Date().getTime();
+  }
+
+  setLastEndTimestampToNow(): void {
+    this.lastEndTimestamp = new Date().getTime();
   }
 }

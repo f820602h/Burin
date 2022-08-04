@@ -4,14 +4,14 @@ import {
   knobColorThemes,
   type ColorThemeObject,
   type ColorThemes,
-} from "@/utils/colorTheme";
+} from "@/components/common/colorThemes";
 
 const props = withDefaults(defineProps<{ theme?: keyof ColorThemes }>(), {
   theme: "normal",
 });
 
 const calcTheme = computed<ColorThemeObject>(() => {
-  return knobColorThemes[props.theme];
+  return knobColorThemes[props.theme] || knobColorThemes.normal;
 });
 </script>
 

@@ -30,9 +30,12 @@ const numberPathIndexContrast: number[][] = [
 ];
 
 const showPathList = computed<string[]>(() => {
-  return pathList.filter(
-    (path, index) => numberPathIndexContrast[props.num].indexOf(index) > -1
-  );
+  const pathIndexList = numberPathIndexContrast[props.num];
+  if (!pathIndexList) {
+    console.log(props.num);
+    return [];
+  }
+  return pathList.filter((path, index) => pathIndexList.indexOf(index) > -1);
 });
 </script>
 

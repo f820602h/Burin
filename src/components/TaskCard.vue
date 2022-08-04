@@ -1,19 +1,30 @@
 <script setup lang="ts">
 import type { Task } from "@/class/Task";
+import type { TaskCategory } from "@/class/TaskCategory";
+import { useTaskStore } from "@/stores/task";
+import { computed } from "vue";
 
-defineProps<{
+const props = defineProps<{
   task: Task;
 }>();
+
+const taskStore = useTaskStore();
+const category = computed<TaskCategory>(() => {
+  return (
+    taskStore.categories.find((cate) => cate.id === props.task.categoryId) ||
+    taskStore.defaultCategory
+  );
+});
 </script>
 
 <template>
   <div
     class="task-card flex flex-col w-[200px] h-[200px] px-3 pt-2 pb-3 rounded-md shadow-md-light"
-    :style="{ background: task.category.color.styleText }"
+    :style="{ background: category.color.styleString }"
   >
     <div class="task-card__header">
       <p class="font-bold text-white pb-[3px] border-b border-white/50">
-        {{ task.category.name }}
+        {{ category.name }}
       </p>
     </div>
     <div class="pt-2 pb-2">
