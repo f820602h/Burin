@@ -18,9 +18,7 @@ watch(
 </script>
 
 <template>
-  <div
-    class="punch-card-machine relative w-[264px] pb-6 rounded-2xl shadow-md-light"
-  >
+  <div class="punch-card-machine">
     <Transition name="unplug" @after-enter="leaveTask = undefined">
       <TaskCard
         v-if="leaveTask"
@@ -37,7 +35,7 @@ watch(
       />
     </Transition>
 
-    <div class="relative z-10 flex flex-col full rounded-2xl overflow-hidden">
+    <div class="relative z-1 flex flex-col full rounded-2xl overflow-hidden">
       <div class="pt-11 bg-gray-200"></div>
       <div class="flex">
         <div class="flex-1 bg-gray-200"></div>
@@ -71,17 +69,19 @@ watch(
 
 <style lang="scss" scoped>
 .punch-card-machine {
+  @apply relative w-[264px] pb-6 rounded-2xl shadow-md shadow-light;
   background: linear-gradient(
     to top,
     theme("colors.gray.500") 50px,
     theme("colors.gray.300") 50px
   );
-  .window {
-    box-shadow: inset 0 2px 4px 0 rgba(black, 0.5),
-      0 0 0 4px theme("colors.gray.200");
-    width: 176px;
-    height: 100px;
-  }
+}
+
+.window {
+  box-shadow: inset 0 2px 4px 0 rgba(black, 0.5),
+    0 0 0 4px theme("colors.gray.200");
+  width: 176px;
+  height: 100px;
 }
 
 .screw {

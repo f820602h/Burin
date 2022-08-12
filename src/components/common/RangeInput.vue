@@ -110,4 +110,4 @@ const onBodyTouchend: () => void = () => {
   </div>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped></style>

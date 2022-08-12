@@ -2,14 +2,16 @@ export const mockTaskCategoryApiData = [
   {
     id: "tc1",
     name: "工作",
-    colorName: "green",
+    startColor: "#159957",
+    endColor: "#007991",
     createTimestamp: new Date().getTime(),
     updateTimestamp: new Date().getTime(),
   },
   {
     id: "tc2",
     name: "家事",
-    colorName: "blue",
+    startColor: "#4568DC",
+    endColor: "#182848",
     createTimestamp: new Date().getTime(),
     updateTimestamp: new Date().getTime(),
   },

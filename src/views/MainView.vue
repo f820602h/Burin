@@ -1,12 +1,34 @@
 <script setup lang="ts">
-import { onBeforeMount } from "vue";
+import { onBeforeMount, reactive, ref } from "vue";
 import { useTaskStore } from "@/stores/task";
-import TaskCard from "@/components/TaskCard.vue";
 import PunchCardMachine from "@/components/PunchCardMachine.vue";
 import AlarmMachine from "@/components/AlarmMachine.vue";
 import MonitorPanel from "@/components/MonitorPanel.vue";
+import TaskDrawer from "@/components/TaskDrawer.vue";
+import ToolBar from "@/components/ToolBar.vue";
+import type { Action } from "@/components/ToolBar.vue";
+import { computed } from "vue";
 
 const taskStore = useTaskStore();
+
+const isMonitorPanelShow = ref<boolean>(false);
+const isTaskDrawerShow = ref<boolean>(false);
+const toolBarActions: Action[] = reactive([
+  {
+    title: "任務",
+    icon: "icon-task",
+    callback: () => (isTaskDrawerShow.value = true),
+  },
+  {
+    title: "統計",
+    icon: "icon-chart",
+    callback: () => (isMonitorPanelShow.value = true),
+  },
+]);
+
+const mainViewBgColor = computed<string>(() => {
+  return taskStore.currentTaskCategory?.getColor().styleString || "";
+});
 
 onBeforeMount(() => {
   taskStore._actFetchTaskCategoryData();
@@ -15,25 +37,17 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <aside class="fixed-default z-10 h-full px-4 py-5 bg-white/10 shadow-xl">
-    <div
-      v-for="(task, index) in taskStore.tasks"
-      :key="index"
-      class="mt-4 first:mt-0"
-    >
-      <TaskCard :task="task" @click="taskStore._actUpdateCurrentTask(task)" />
-    </div>
-  </aside>
+  <TaskDrawer
+    :show="isTaskDrawerShow"
+    class="z-50"
+    @close="isTaskDrawerShow = false"
+  />
 
   <main
-    class="background-animate relative h-screen bg-gray-700"
-    :style="{
-      backgroundImage: taskStore.currentTaskCategory.color.styleString,
-    }"
+    class="background-animate h-full bg-gray-700"
+    :style="{ backgroundImage: mainViewBgColor }"
   >
-    <div class="absolute-default full bg-black/25 overflow-hidden" />
-
-    <div class="relative full flex-center-center flex-col">
+    <div class="flex-center-center flex-col h-full pt-[80px] pb-8 bg-black/25">
       <PunchCardMachine />
       <div class="usb-cable relative flex-center-center flex-col -mt-4 sm">
         <div class="usb-cable__head">
@@ -45,7 +59,13 @@ onBeforeMount(() => {
     </div>
   </main>
 
-  <MonitorPanel class="relative z-20" />
+  <ToolBar :actions="toolBarActions" />
+
+  <MonitorPanel
+    :show="isMonitorPanelShow"
+    class="z-50"
+    @close="isMonitorPanelShow = false"
+  />
 </template>
 
 <style lang="scss" scoped>
@@ -76,7 +96,7 @@ onBeforeMount(() => {
   }
 
   &__line {
-    @apply w-3 h-15 -mt-2 border border-gray-400/60 rounded-t-3xl bg-gray-100 shadow-inner-md-lighter;
+    @apply w-3 h-8 md:h-15 -mt-2 border border-gray-400/60 rounded-t-3xl bg-gray-100 shadow-inner-md shadow-lighter;
   }
 }
 </style>

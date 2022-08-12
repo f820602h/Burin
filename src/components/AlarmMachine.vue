@@ -53,7 +53,7 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
 </script>
 
 <template>
-  <div class="alarm-machine w-[305px] pb-5 rounded-3xl bg-gray-300 shadow-md">
+  <div class="alarm-machine">
     <div class="p-5 rounded-2xl bg-white overflow-hidden">
       <div class="flex-center-center">
         <div class="self-end text-sm font-bold text-neutral-900 pb-1">
@@ -61,7 +61,7 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
           <div>分鐘</div>
         </div>
 
-        <div class="num-group mt-1 mx-2">
+        <div class="num-group">
           <DigitalNumber
             :num="Math.floor(intervalMinutes / 10)"
             :size="36"
@@ -69,7 +69,7 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
           />
           <DigitalNumber :num="intervalMinutes % 10" :size="36" />
         </div>
-        <div>
+        <div class="self-center">
           <ButtonNormal
             theme="dark"
             :circle="true"
@@ -80,7 +80,7 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
           >
             <span class="icon-top"></span>
           </ButtonNormal>
-          <div class="mb-2"></div>
+          <div class="mb-[10px]"></div>
           <ButtonNormal
             theme="dark"
             :circle="true"
@@ -126,9 +126,7 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
         </div>
       </div>
 
-      <div
-        class="alarm-machine__horn h-8 p-2 rounded-full shadow-inner-sm-lighter overflow-hidden"
-      >
+      <div class="alarm-machine__horn">
         <div v-for="i in 3" :key="i" class="flex-center-center w-full mb-1">
           <div
             v-for="j in 1 - Math.abs(2 - i) + 19"
@@ -143,18 +141,13 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
 
 <style lang="scss" scoped>
 .alarm-machine {
+  @apply w-[305px] pb-5 rounded-3xl bg-gray-300 shadow-md;
   .num-group {
-    @apply bg-white rounded-md px-1 shadow-inner-sm text-center font-medium;
-    width: 64px;
-    line-height: 64px;
-  }
-
-  &__timing,
-  &__action {
-    box-shadow: inset 0 2px 2px 0 rgba(#ccc, 0.5), 0 1px 4px 0 rgba(#aaa, 0.5);
+    @apply text-center font-medium w-[64px] leading-[64px] mx-2 px-1 rounded-md bg-white shadow-inner-sm;
   }
 
   &__horn {
+    @apply h-8 p-2 rounded-full shadow-inner-sm shadow-lighter overflow-hidden;
     background: linear-gradient(
       to bottom,
       theme("colors.gray.200"),

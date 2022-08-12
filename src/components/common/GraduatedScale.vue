@@ -45,11 +45,11 @@ withDefaults(
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .tick-number {
   @apply absolute top-0 text-xs text-gray-500 -translate-x-1/2 -translate-y-full;
 }
 .shadow-mask {
-  @apply shadow-inner-sm-light absolute top-0 left-0 z-10 w-full h-full;
+  @apply shadow-inner-sm shadow-light absolute top-0 left-0 z-1 w-full h-full;
 }
 </style>

@@ -7,7 +7,8 @@ import { mockTaskCategoryApiData, mockTaskApiData } from "./mock/task";
 const defaultCategory = new TaskCategory({
   id: "default",
   name: "未分類",
-  colorName: "default",
+  startColor: "#DDDDDD",
+  endColor: "#DDDDDD",
   createTimestamp: 0,
   updateTimestamp: 0,
 });
@@ -44,11 +45,9 @@ export const useTaskStore = defineStore({
     },
   },
   getters: {
-    currentTaskCategory(): TaskCategory {
-      return (
-        this.categories.find(
-          (cate) => cate.id === this.currentTask?.categoryId
-        ) || this.defaultCategory
+    currentTaskCategory(): TaskCategory | undefined {
+      return this.categories.find(
+        (cate) => cate.id === this.currentTask?.categoryId
       );
     },
   },

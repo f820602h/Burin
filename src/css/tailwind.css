@@ -3,43 +3,54 @@
 @tailwind utilities;
 
 html {
-  @apply text-gray-800;
+  @apply min-w-[320px] text-gray-800;
 }
 
 /* utility class */
 
-.full {
-  @apply w-full h-full;
-}
+@layer utilities{
+  .full {
+    @apply w-full h-full;
+  }
 
-.absolute-default {
-  @apply absolute top-0 left-0;
-}
+  .absolute-default {
+    @apply absolute top-0 left-0;
+  }
 
-.fixed-default {
-  @apply fixed top-0 left-0;
-}
+  .fixed-default {
+    @apply fixed top-0 left-0;
+  }
 
-.flex-between-start {
-  @apply flex justify-between items-start;
-}
+  .flex-between-start {
+    @apply flex justify-between items-start;
+  }
 
-.flex-between-center {
-  @apply flex justify-between items-center;
-}
+  .flex-between-center {
+    @apply flex justify-between items-center;
+  }
 
-.flex-between-end {
-  @apply flex justify-between items-end;
-}
+  .flex-between-end {
+    @apply flex justify-between items-end;
+  }
 
-.flex-center-start {
-  @apply flex justify-center items-start;
-}
+  .flex-center-start {
+    @apply flex justify-center items-start;
+  }
 
-.flex-center-center {
-  @apply flex justify-center items-center;
-}
+  .flex-center-center {
+    @apply flex justify-center items-center;
+  }
 
-.flex-center-end {
-  @apply flex justify-center items-end;
+  .flex-center-end {
+    @apply flex justify-center items-end;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }

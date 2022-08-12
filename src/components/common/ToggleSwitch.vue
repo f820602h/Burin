@@ -27,6 +27,6 @@ defineEmits<{ (e: "update:modelValue", checked: boolean): void }>();
     theme("colors.stone.300") 50%
   );
 
-  @apply w-13 rounded-lg bg-stone-300 shadow-inner-md-light transition-all duration-100 disabled:cursor-not-allowed;
+  @apply w-13 rounded-lg bg-stone-300 shadow-inner-md shadow-light transition-all duration-100 disabled:cursor-not-allowed;
 }
 </style>

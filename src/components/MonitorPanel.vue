@@ -4,7 +4,12 @@ import GraduatedScale from "@/components/common/GraduatedScale.vue";
 import RangeInput from "@/components/common/RangeInput.vue";
 import ButtonNormal from "@/components/common/ButtonNormal.vue";
 
-const isPanelShow = ref<boolean>(false);
+withDefaults(defineProps<{ show?: boolean }>(), {
+  show: false,
+});
+
+defineEmits<{ (e: "close"): void }>();
+
 const historyScaleWidthPercent = ref<number>(200);
 const proportionScaleWidthPercent = ref<number>(200);
 
@@ -17,113 +22,99 @@ const percentTickFormatter: (index: number) => string = (index) => {
 </script>
 
 <template>
-  <div
-    class="fixed bottom-0 left-0 w-full transition-transform duration-500"
-    :class="{ 'translate-y-full': !isPanelShow }"
-  >
-    <div class="monitor-panel relative">
-      <div class="shadow-mask shadow-inner-md-light pointer-events-none" />
-      <div class="relative max-h-screen-75 px-3 py-6 overflow-auto">
-        <div class="max-w-[800px] mx-auto">
-          <!-- history -->
-          <div class="flex-between-end">
-            <div class="px-3 pt-2 rounded-t-md bg-gray-200 shadow-md-light">
-              <span class="font-bold text-gray-600">任務歷程記錄</span>
-            </div>
+  <Transition name="collapse">
+    <div v-if="show" class="fixed bottom-0 left-0">
+      <div class="mask">
+        <div class="monitor-panel">
+          <div class="shadow-mask shadow-light" />
+          <div class="max-h-3/4 px-3 py-6 overflow-auto scrollbar-hide">
+            <div class="max-w-[800px] mx-auto">
+              <!-- history -->
+              <div class="flex-between-end">
+                <div class="monitor-panel__scale-tag">
+                  <span class="font-bold text-gray-600">任務歷程記錄</span>
+                </div>
 
-            <div class="flex items-center text-gray-600 mb-1 ml-1">
-              <span class="icon-glass-minus"></span>
-              <RangeInput
-                v-model="historyScaleWidthPercent"
-                :min-value="100"
-                :max-value="500"
-                :width="100"
-                class="mt-1 mx-2"
-              />
-              <span class="icon-glass-add"></span>
+                <div class="flex items-center text-gray-600 mb-1 ml-1">
+                  <span class="icon-glass-minus"></span>
+                  <RangeInput
+                    v-model="historyScaleWidthPercent"
+                    :min-value="100"
+                    :max-value="500"
+                    :width="100"
+                    class="mt-1 mx-2"
+                  />
+                  <span class="icon-glass-add"></span>
+                </div>
+              </div>
+
+              <div class="monitor-panel__scale">
+                <div class="shadow-mask" />
+                <div class="px-5 py-3 bg-slate-100 overflow-auto">
+                  <GraduatedScale
+                    :tickAmount="25"
+                    :minorTickAmount="3"
+                    :tick-formatter="clockTickFormatter"
+                    class="min-w-[500px]"
+                    :style="{ width: historyScaleWidthPercent + '%' }"
+                  />
+                </div>
+              </div>
+
+              <!-- proportion -->
+              <div class="flex-between-end mt-8">
+                <div class="monitor-panel__scale-tag">
+                  <span class="font-bold text-gray-600">任務分類佔比</span>
+                </div>
+
+                <div class="flex items-center text-gray-600 mb-1 ml-1">
+                  <span class="icon-glass-minus"></span>
+                  <RangeInput
+                    v-model="proportionScaleWidthPercent"
+                    :min-value="100"
+                    :max-value="500"
+                    :width="100"
+                    class="mt-1 mx-2"
+                  />
+                  <span class="icon-glass-add"></span>
+                </div>
+              </div>
+
+              <div class="monitor-panel__scale">
+                <div class="shadow-mask" />
+                <div class="px-5 py-3 bg-slate-100 overflow-auto">
+                  <GraduatedScale
+                    :tickAmount="11"
+                    :minorTickAmount="4"
+                    :tick-formatter="percentTickFormatter"
+                    class="min-w-[500px]"
+                    :style="{ width: proportionScaleWidthPercent + '%' }"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div
-            class="relative border-8 rounded-md rounded-tl-none shadow-md-light"
-          >
-            <div class="shadow-mask shadow-inner-sm pointer-events-none" />
-            <div class="px-5 py-3 bg-slate-100 overflow-auto">
-              <GraduatedScale
-                :tickAmount="25"
-                :minorTickAmount="3"
-                :tick-formatter="clockTickFormatter"
-                class="min-w-[500px]"
-                :style="{ width: historyScaleWidthPercent + '%' }"
-              />
-            </div>
-          </div>
-
-          <!-- proportion -->
-          <div class="flex-between-end mt-8">
-            <div class="px-3 pt-2 rounded-t-md bg-gray-200 shadow-md-light">
-              <span class="font-bold text-gray-600">任務分類佔比</span>
-            </div>
-
-            <div class="flex items-center text-gray-600 mb-1 ml-1">
-              <span class="icon-glass-minus"></span>
-              <RangeInput
-                v-model="proportionScaleWidthPercent"
-                :min-value="100"
-                :max-value="500"
-                :width="100"
-                class="mt-1 mx-2"
-              />
-              <span class="icon-glass-add"></span>
-            </div>
-          </div>
-
-          <div
-            class="relative border-8 rounded-md rounded-tl-none shadow-md-light"
-          >
-            <div class="shadow-mask shadow-inner-sm pointer-events-none" />
-            <div class="px-5 py-3 bg-slate-100 overflow-auto">
-              <GraduatedScale
-                :tickAmount="11"
-                :minorTickAmount="4"
-                :tick-formatter="percentTickFormatter"
-                class="min-w-[500px]"
-                :style="{ width: proportionScaleWidthPercent + '%' }"
-              />
-            </div>
+          <div class="monitor-panel__controller">
+            <ButtonNormal
+              :width="50"
+              theme="cancel"
+              text="關閉"
+              @press="$emit('close')"
+            />
           </div>
         </div>
       </div>
-
-      <div
-        class="absolute -top-3 right-0 pt-[10px] pb-2 px-4 border-4 border-b-0 border-gray-100 rounded-t-md bg-gray-100 shadow-inner-sm-light -translate-y-full"
-      >
-        <span class="font-bold mr-2">監控面板</span>
-        <ButtonNormal
-          :width="35"
-          theme="confirm"
-          class="mx-1"
-          :disabled="isPanelShow"
-          @press="isPanelShow = true"
-        >
-          <span class="icon-top"></span>
-        </ButtonNormal>
-        <ButtonNormal
-          :width="35"
-          theme="confirm"
-          class="mx-1"
-          :disabled="!isPanelShow"
-          @press="isPanelShow = false"
-        >
-          <span class="icon-down"></span
-        ></ButtonNormal>
-      </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <style lang="scss" scoped>
+.mask {
+  @apply w-screen h-screen flex-center-end bg-black/30 backdrop-blur-[2px];
+}
 .monitor-panel {
+  @apply relative w-full sm:w-11/12 max-w-[855px] min-w-[320px] border-t-12 border-b-0 sm:border-x-12 border-x-0 bg-zinc-300 shadow-xl shadow-darker;
   border-image: repeating-linear-gradient(
       -45deg,
       theme("colors.yellow.600"),
@@ -133,10 +124,43 @@ const percentTickFormatter: (index: number) => string = (index) => {
     )
     13;
 
-  @apply w-full sm:w-11/12 max-w-[855px] min-w-[320px] mx-auto border-t-12 border-b-0 sm:border-x-12 border-x-0 bg-zinc-300;
+  &__scale-tag {
+    @apply px-3 pt-2 rounded-t-md bg-gray-200 shadow-md shadow-light;
+  }
+
+  &__scale {
+    @apply relative border-8 rounded-md rounded-tl-none shadow-md shadow-light;
+  }
+
+  &__controller {
+    @apply absolute -top-3 right-0 pt-[10px] pb-2 px-3 border-4 border-b-0 border-gray-200 rounded-t-md bg-gray-200 shadow-inner-sm shadow-light -translate-y-full;
+  }
 }
 
 .shadow-mask {
-  @apply absolute -top-[1px] left-0 z-10 w-full h-full;
+  @apply absolute -top-[1px] left-0 z-1 w-full h-full shadow-inner-md  pointer-events-none;
+}
+
+.collapse-enter-active,
+.collapse-leave-active {
+  @apply duration-300;
+  :deep(.mask) {
+    @apply transition-opacity duration-300;
+  }
+
+  :deep(.monitor-panel) {
+    @apply transition-transform duration-300;
+  }
+}
+
+.collapse-enter-from,
+.collapse-leave-to {
+  :deep(.mask) {
+    @apply opacity-0;
+  }
+
+  :deep(.monitor-panel) {
+    @apply translate-y-full;
+  }
 }
 </style>

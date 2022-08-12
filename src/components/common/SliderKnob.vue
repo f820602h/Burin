@@ -17,7 +17,7 @@ const calcTheme = computed<ColorThemeObject>(() => {
 
 <template>
   <div
-    class="w-8 h-5 p-0 rounded-lg shadow-sm-light"
+    class="w-8 h-5 p-0 rounded-lg shadow-sm shadow-light"
     :class="[`${calcTheme.back}`]"
   >
     <div
@@ -34,4 +34,4 @@ const calcTheme = computed<ColorThemeObject>(() => {
   </div>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped></style>

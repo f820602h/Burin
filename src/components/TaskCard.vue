@@ -19,8 +19,8 @@ const category = computed<TaskCategory>(() => {
 
 <template>
   <div
-    class="task-card flex flex-col w-[200px] h-[200px] px-3 pt-2 pb-3 rounded-md shadow-md-light"
-    :style="{ background: category.color.styleString }"
+    class="task-card"
+    :style="{ background: category.getColor().styleString }"
   >
     <div class="task-card__header">
       <p class="font-bold text-white pb-[3px] border-b border-white/50">
@@ -47,4 +47,8 @@ const category = computed<TaskCategory>(() => {
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.task-card {
+  @apply flex flex-col w-[200px] h-[200px] px-3 pt-2 pb-3 rounded-md shadow-md shadow-light cursor-pointer;
+}
+</style>
