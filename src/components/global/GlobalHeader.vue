@@ -2,7 +2,8 @@
 
 <template>
   <header
-    class="sticky top-0 z-global-1 h-[65px] pt-2 pb-1 bg-[#131417] shadow-md shadow-light"
+    ref="header"
+    class="h-[55px] pt-2 pb-1 bg-[#131417] shadow-lg shadow-darkest"
   >
     <div class="flex-between-center h-full px-4">
       <span></span>

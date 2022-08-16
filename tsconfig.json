@@ -1,18 +1,7 @@
 {
   "files": [],
   "references": [
-    {
-      "path": "./tsconfig.config.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    },
-  ],
-  "compilerOptions": {
-    "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+    { "path": "./tsconfig.config.json" },
+    { "path": "./tsconfig.app.json" },
+  ]
 }

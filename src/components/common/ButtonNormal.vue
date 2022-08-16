@@ -38,7 +38,7 @@ const calcTheme = computed<ColorThemeObject>(() => {
 
 <template>
   <button
-    class="group disabled:cursor-not-allowed pt-1 -mt-1"
+    class="group disabled:cursor-not-allowed pt-1"
     :disabled="disabled"
     @click="$emit('press')"
   >
@@ -59,12 +59,13 @@ const calcTheme = computed<ColorThemeObject>(() => {
 
 <style lang="scss" scoped>
 .btn-back {
-  @apply p-0 border-0 outline-none text-white shadow-md;
+  @apply p-0 border-0 outline-none text-white shadow-sm;
   @apply group-disabled:text-gray-100 group-active:shadow-none group-disabled:shadow-none;
 }
 
 .btn-front {
   @apply relative flex-center-center transition-transform duration-200;
-  @apply group-enabled:-top-1 group-enabled:group-active:-top-0 group-enabled:group-active:shadow-inner-sm group-disabled:shadow-inner-sm;
+  @apply group-enabled:-top-1 group-enabled:group-active:-top-0 group-enabled:group-active:shadow-inner-sm group-enabled:group-active:shadow-darker;
+  @apply group-disabled:shadow-inner-sm group-disabled:shadow-darker group-disabled:text-black/20;
 }
 </style>

@@ -16,7 +16,7 @@ defineProps<{ actions: Action[] }>();
     <div class="relative pb-4 rounded-md bg-gray-400 shadow-lg">
       <div class="px-2 py-2 rounded-md bg-white">
         <template v-for="action in actions" :key="action.title">
-          <div class="text-center text-sm font-bold mb-[6px]">
+          <div class="text-center text-sm font-bold mb-1">
             {{ action.title }}
           </div>
           <ButtonNormal

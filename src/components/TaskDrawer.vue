@@ -4,7 +4,7 @@ import { useTaskStore } from "@/stores/task";
 import type { Task } from "@/class/Task";
 import type { TaskCategory } from "@/class/TaskCategory";
 import TaskCategoryFolder from "@/components/TaskCategoryFolder.vue";
-import TaskCard from "./TaskCard.vue";
+import TaskCard from "@/components/TaskCard.vue";
 
 withDefaults(defineProps<{ show?: boolean }>(), {
   show: false,
@@ -29,55 +29,48 @@ const setCurrentTask: (task: Task) => void = (task) => {
 
 <template>
   <Transition name="collapse">
-    <aside v-if="show" class="fixed top-0 left-0">
-      <div class="mask">
-        <div class="task-drawer">
-          <div class="task-drawer__drawer">
-            <div class="folders">
-              <template v-for="i in 10" :key="i">
-                <TaskCategoryFolder
-                  v-for="(cate, index) in taskStore.categories"
-                  :key="index"
-                  :task-category="cate"
-                  class="-mt-[80px] first:mt-7"
-                  @click="selectedCategory = cate"
-                />
-              </template>
+    <div v-if="show" class="fixed-layer flex bg-black/30 backdrop-blur-[2px]">
+      <div class="task-drawer">
+        <div class="task-drawer__drawer">
+          <div class="folders">
+            <TaskCategoryFolder
+              v-for="(cate, index) in taskStore.categories"
+              :key="index"
+              :task-category="cate"
+              class="-mt-[80px] first:mt-7"
+              @click="selectedCategory = cate"
+            />
+          </div>
+          <div class="task-drawer__door">
+            <div class="tag">
+              <div class="full bg-white shadow-inner-sm shadow-darkest" />
             </div>
-            <div class="task-drawer__door">
-              <div class="tag">
-                <div class="full bg-white shadow-inner-sm shadow-darkest" />
-              </div>
-              <div class="handle">
-                <div class="w-full h-2 rounded-md bg-zinc-400 shadow-sm" />
-              </div>
+            <div class="handle">
+              <div class="w-full h-2 rounded-md bg-zinc-400 shadow-sm" />
             </div>
           </div>
-
-          <Transition name="collapse-tray">
-            <div v-if="selectedCategory" class="task-drawer__tray">
-              <div class="cards">
-                <TaskCard
-                  v-for="(task, index) in taskStore.tasks"
-                  :key="index"
-                  :task="task"
-                  class="mx-auto mb-3 last:mb-0"
-                  @click="setCurrentTask(task)"
-                />
-              </div>
-              <div class="handler" />
-            </div>
-          </Transition>
         </div>
+
+        <Transition name="collapse-tray">
+          <div v-if="selectedCategory" class="task-drawer__tray">
+            <div class="cards">
+              <TaskCard
+                v-for="(task, index) in taskStore.tasks"
+                :key="index"
+                :task="task"
+                class="mx-auto mb-3 last:mb-0"
+                @click="setCurrentTask(task)"
+              />
+            </div>
+            <div class="handler" />
+          </div>
+        </Transition>
       </div>
-    </aside>
+    </div>
   </Transition>
 </template>
 
 <style lang="scss" scoped>
-.mask {
-  @apply w-screen h-screen flex bg-black/30 backdrop-blur-[2px];
-}
 .task-drawer {
   @apply relative h-full;
 
@@ -120,17 +113,14 @@ const setCurrentTask: (task: Task) => void = (task) => {
     }
 
     .handler {
-      @apply h-12 border-t-24 border-x-4 border-gray-300 bg-gray-300 rounded-b-md shadow-inner-lg;
+      @apply h-12 border-t-24 border-gray-300 bg-gray-300 rounded-b-md shadow-inner-lg;
     }
   }
 }
 
 .collapse-enter-active,
 .collapse-leave-active {
-  @apply duration-500;
-  :deep(.mask) {
-    @apply transition-opacity duration-300;
-  }
+  @apply transition-opacity duration-500;
 
   :deep(.task-drawer) {
     @apply transition-transform duration-500;
@@ -139,9 +129,7 @@ const setCurrentTask: (task: Task) => void = (task) => {
 
 .collapse-enter-from,
 .collapse-leave-to {
-  :deep(.mask) {
-    @apply opacity-0;
-  }
+  @apply opacity-0;
 
   :deep(.task-drawer) {
     @apply -translate-y-full;

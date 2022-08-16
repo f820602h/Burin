@@ -16,7 +16,7 @@ export const buttonColorThemes: ColorThemes = {
   dark: { front: "bg-stone-400", back: "bg-stone-600" },
   confirm: { front: "bg-green-600", back: "bg-green-900" },
   cancel: { front: "bg-red-600", back: "bg-red-900" },
-  disabled: { front: "bg-gray-300", back: "bg-gray-400/75" },
+  disabled: { front: "bg-white/40", back: "bg-white/30" },
 };
 
 export const knobColorThemes: ColorThemes = {
