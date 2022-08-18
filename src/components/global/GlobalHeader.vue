@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineEmits<{ (e: "open-logger"): void }>();
+</script>
 
 <template>
   <header
@@ -8,7 +10,7 @@
     <div class="flex-between-center h-full px-4">
       <span></span>
       <div class="text-white/75 text-[32px] cursor-pointer hover:text-white">
-        <span class="icon-avatar" />
+        <span class="icon-avatar" @click="$emit('open-logger')" />
       </div>
     </div>
   </header>
