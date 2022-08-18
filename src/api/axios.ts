@@ -54,7 +54,7 @@ const errorHandlerResponseInterceptor: ResponseInterceptor = {
 };
 
 export const BaseAxiosRequestor: AxiosRequestor = new AxiosRequestor({
-  baseURL: `https://${import.meta.env.VITE_API_DOMAIN_URL}/`,
+  baseURL: `http://${import.meta.env.VITE_API_DOMAIN_URL}/`,
   headers: { "Content-Type": "application/json" },
   paramsSerializer: (params) => Qs.stringify(params, { arrayFormat: "repeat" }),
   timeout: 60000,
