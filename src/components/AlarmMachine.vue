@@ -2,9 +2,9 @@
 import { computed, ref, watch } from "vue";
 import { useTaskStore } from "@/stores/task";
 import { useCurrentTaskDuration } from "@/composables/useCurrentTaskDuration";
-import DigitalNumber from "@/components/common/DigitalNumber.vue";
-import ToggleSwitch from "@/components/common/ToggleSwitch.vue";
-import ButtonNormal from "@/components/common/ButtonNormal.vue";
+import DigitalNumber from "@/components/basic/DigitalNumber.vue";
+import ToggleSwitch from "@/components/basic/ToggleSwitch.vue";
+import ButtonNormal from "@/components/basic/ButtonNormal.vue";
 
 const taskStore = useTaskStore();
 const { duration } = useCurrentTaskDuration();

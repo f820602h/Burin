@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ButtonNormal from "./common/ButtonNormal.vue";
+import ButtonNormal from "@/components/basic/ButtonNormal.vue";
 
 export type Action = {
   title: string;

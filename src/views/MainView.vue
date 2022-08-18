@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, reactive, ref } from "vue";
+import { onBeforeMount, reactive, ref, computed } from "vue";
 import { useTaskStore } from "@/stores/task";
 import PunchCardMachine from "@/components/PunchCardMachine.vue";
 import AlarmMachine from "@/components/AlarmMachine.vue";
@@ -7,7 +7,6 @@ import MonitorPanel from "@/components/MonitorPanel.vue";
 import TaskDrawer from "@/components/TaskDrawer.vue";
 import ToolBar from "@/components/ToolBar.vue";
 import type { Action } from "@/components/ToolBar.vue";
-import { computed } from "vue";
 
 const taskStore = useTaskStore();
 
@@ -37,11 +36,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <TaskDrawer
-    :show="isTaskDrawerShow"
-    class="z-50"
-    @close="isTaskDrawerShow = false"
-  />
+  <TaskDrawer :show="isTaskDrawerShow" @close="isTaskDrawerShow = false" />
 
   <main
     class="background-animate h-full bg-gray-700"
@@ -63,7 +58,6 @@ onBeforeMount(() => {
 
   <MonitorPanel
     :show="isMonitorPanelShow"
-    class="z-50"
     @close="isMonitorPanelShow = false"
   />
 </template>

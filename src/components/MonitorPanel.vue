@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import GraduatedScale from "@/components/common/GraduatedScale.vue";
-import RangeInput from "@/components/common/RangeInput.vue";
-import ButtonNormal from "@/components/common/ButtonNormal.vue";
+import GraduatedScale from "@/components/basic/GraduatedScale.vue";
+import RangeInput from "@/components/basic/RangeInput.vue";
+import ButtonNormal from "@/components/basic/ButtonNormal.vue";
 
 withDefaults(defineProps<{ show?: boolean }>(), {
   show: false,
@@ -23,86 +23,87 @@ const percentTickFormatter: (index: number) => string = (index) => {
 
 <template>
   <Transition name="collapse">
-    <div v-if="show" class="fixed bottom-0 left-0">
-      <div class="mask">
-        <div class="monitor-panel">
-          <div class="shadow-mask shadow-light" />
-          <div class="max-h-3/4 px-3 py-6 overflow-auto scrollbar-hide">
-            <div class="max-w-[800px] mx-auto">
-              <!-- history -->
-              <div class="flex-between-end">
-                <div class="monitor-panel__scale-tag">
-                  <span class="font-bold text-gray-600">任務歷程記錄</span>
-                </div>
-
-                <div class="flex items-center text-gray-600 mb-1 ml-1">
-                  <span class="icon-glass-minus"></span>
-                  <RangeInput
-                    v-model="historyScaleWidthPercent"
-                    :min-value="100"
-                    :max-value="500"
-                    :width="100"
-                    class="mt-1 mx-2"
-                  />
-                  <span class="icon-glass-add"></span>
-                </div>
+    <div
+      v-if="show"
+      class="fixed-layer flex-center-end bg-black/30 backdrop-blur-[2px]"
+    >
+      <div class="monitor-panel">
+        <div class="shadow-mask shadow-light" />
+        <div class="max-h-3/4 px-3 py-6 overflow-auto scrollbar-hide">
+          <div class="max-w-[800px] mx-auto">
+            <!-- history -->
+            <div class="flex-between-end">
+              <div class="monitor-panel__scale-tag">
+                <span class="font-bold text-gray-600">任務歷程記錄</span>
               </div>
 
-              <div class="monitor-panel__scale">
-                <div class="shadow-mask" />
-                <div class="px-5 py-3 bg-slate-100 overflow-auto">
-                  <GraduatedScale
-                    :tickAmount="25"
-                    :minorTickAmount="3"
-                    :tick-formatter="clockTickFormatter"
-                    class="min-w-[500px]"
-                    :style="{ width: historyScaleWidthPercent + '%' }"
-                  />
-                </div>
+              <div class="flex items-center text-gray-600 mb-1 ml-1">
+                <span class="icon-glass-minus"></span>
+                <RangeInput
+                  v-model="historyScaleWidthPercent"
+                  :min-value="100"
+                  :max-value="500"
+                  :width="100"
+                  class="mt-1 mx-2"
+                />
+                <span class="icon-glass-add"></span>
+              </div>
+            </div>
+
+            <div class="monitor-panel__scale">
+              <div class="shadow-mask" />
+              <div class="px-5 py-3 bg-slate-100 overflow-auto">
+                <GraduatedScale
+                  :tickAmount="25"
+                  :minorTickAmount="3"
+                  :tick-formatter="clockTickFormatter"
+                  class="min-w-[500px]"
+                  :style="{ width: historyScaleWidthPercent + '%' }"
+                />
+              </div>
+            </div>
+
+            <!-- proportion -->
+            <div class="flex-between-end mt-8">
+              <div class="monitor-panel__scale-tag">
+                <span class="font-bold text-gray-600">任務分類佔比</span>
               </div>
 
-              <!-- proportion -->
-              <div class="flex-between-end mt-8">
-                <div class="monitor-panel__scale-tag">
-                  <span class="font-bold text-gray-600">任務分類佔比</span>
-                </div>
-
-                <div class="flex items-center text-gray-600 mb-1 ml-1">
-                  <span class="icon-glass-minus"></span>
-                  <RangeInput
-                    v-model="proportionScaleWidthPercent"
-                    :min-value="100"
-                    :max-value="500"
-                    :width="100"
-                    class="mt-1 mx-2"
-                  />
-                  <span class="icon-glass-add"></span>
-                </div>
+              <div class="flex items-center text-gray-600 mb-1 ml-1">
+                <span class="icon-glass-minus"></span>
+                <RangeInput
+                  v-model="proportionScaleWidthPercent"
+                  :min-value="100"
+                  :max-value="500"
+                  :width="100"
+                  class="mt-1 mx-2"
+                />
+                <span class="icon-glass-add"></span>
               </div>
+            </div>
 
-              <div class="monitor-panel__scale">
-                <div class="shadow-mask" />
-                <div class="px-5 py-3 bg-slate-100 overflow-auto">
-                  <GraduatedScale
-                    :tickAmount="11"
-                    :minorTickAmount="4"
-                    :tick-formatter="percentTickFormatter"
-                    class="min-w-[500px]"
-                    :style="{ width: proportionScaleWidthPercent + '%' }"
-                  />
-                </div>
+            <div class="monitor-panel__scale">
+              <div class="shadow-mask" />
+              <div class="px-5 py-3 bg-slate-100 overflow-auto">
+                <GraduatedScale
+                  :tickAmount="11"
+                  :minorTickAmount="4"
+                  :tick-formatter="percentTickFormatter"
+                  class="min-w-[500px]"
+                  :style="{ width: proportionScaleWidthPercent + '%' }"
+                />
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="monitor-panel__controller">
-            <ButtonNormal
-              :width="50"
-              theme="cancel"
-              text="關閉"
-              @press="$emit('close')"
-            />
-          </div>
+        <div class="monitor-panel__controller">
+          <ButtonNormal
+            :width="50"
+            theme="cancel"
+            text="關閉"
+            @press="$emit('close')"
+          />
         </div>
       </div>
     </div>
@@ -143,10 +144,7 @@ const percentTickFormatter: (index: number) => string = (index) => {
 
 .collapse-enter-active,
 .collapse-leave-active {
-  @apply duration-300;
-  :deep(.mask) {
-    @apply transition-opacity duration-300;
-  }
+  @apply transition-opacity duration-500;
 
   :deep(.monitor-panel) {
     @apply transition-transform duration-300;
@@ -155,9 +153,7 @@ const percentTickFormatter: (index: number) => string = (index) => {
 
 .collapse-enter-from,
 .collapse-leave-to {
-  :deep(.mask) {
-    @apply opacity-0;
-  }
+  @apply opacity-0;
 
   :deep(.monitor-panel) {
     @apply translate-y-full;

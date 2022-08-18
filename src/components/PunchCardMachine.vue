@@ -2,9 +2,9 @@
 import type { Task } from "@/class/Task";
 import { ref, watch } from "vue";
 import { useTaskStore } from "@/stores/task";
-import TaskCard from "@/components/TaskCard.vue";
-import TaskDurationClock from "@/components/TaskDurationClock.vue";
-import ButtonNormal from "@/components/common/ButtonNormal.vue";
+import ButtonNormal from "@/components/basic/ButtonNormal.vue";
+import TaskCard from "@/components/common/TaskCard.vue";
+import TaskDurationClock from "@/components/common/TaskDurationClock.vue";
 
 const taskStore = useTaskStore();
 const leaveTask = ref<Task | null>();

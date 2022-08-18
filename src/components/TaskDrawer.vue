@@ -3,8 +3,8 @@ import { onBeforeMount, ref } from "vue";
 import { useTaskStore } from "@/stores/task";
 import type { Task } from "@/class/Task";
 import type { TaskCategory } from "@/class/TaskCategory";
-import TaskCategoryFolder from "@/components/TaskCategoryFolder.vue";
-import TaskCard from "@/components/TaskCard.vue";
+import TaskCategoryFolder from "@/components/common/TaskCategoryFolder.vue";
+import TaskCard from "@/components/common/TaskCard.vue";
 
 withDefaults(defineProps<{ show?: boolean }>(), {
   show: false,

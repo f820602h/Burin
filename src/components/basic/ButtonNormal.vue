@@ -4,7 +4,7 @@ import {
   buttonColorThemes,
   type ColorThemeObject,
   type ColorThemes,
-} from "@/components/common/colorThemes";
+} from "@/components/basic/colorThemes";
 
 const props = withDefaults(
   defineProps<{
