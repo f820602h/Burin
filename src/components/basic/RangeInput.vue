@@ -10,12 +10,7 @@ const props = withDefaults(
     maxValue?: number;
     modelValue?: number;
   }>(),
-  {
-    width: 200,
-    minValue: 0,
-    maxValue: 100,
-    modelValue: 50,
-  }
+  { width: 200, minValue: 0, maxValue: 100, modelValue: 50 }
 );
 
 const emit = defineEmits<{ (e: "update:modelValue", value: number): void }>();

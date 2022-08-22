@@ -1,34 +1,38 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import type { ScreenConfig, ScreenConfigModesMap } from "./type";
-import LogInMode from "./LogInMode.vue";
-import SignUpModeVue from "./SignUpMode.vue";
+import type { ScreenConfig, ScreenConfigModesMap } from "./types";
+import ModeLogIn from "./ModeLogIn.vue";
+import ModeSignUp from "./ModeSignUp.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
 
-withDefaults(defineProps<{ show?: boolean }>(), {
-  show: false,
-});
-
+withDefaults(defineProps<{ show?: boolean }>(), { show: false });
 const emit = defineEmits<{ (e: "close"): void }>();
+
+type ModeInstance = InstanceType<typeof ModeLogIn | typeof ModeSignUp>;
+const currentMode = ref<keyof ScreenConfigModesMap>("LogIn");
+const currentModeInstance = ref<ModeInstance | null>(null);
 
 const screenConfigModesMap: ScreenConfigModesMap = {
   LogIn: {
-    component: LogInMode,
+    component: ModeLogIn,
     confirmButtonText: "登入",
-    confirmButtonCallback: () => console.log(1),
+    confirmButtonCallback: () => {
+      currentModeInstance.value?.confirmHandler();
+    },
     cancelButtonText: "取消",
     cancelButtonCallback: () => emit("close"),
   },
   SignUp: {
-    component: SignUpModeVue,
+    component: ModeSignUp,
     confirmButtonText: "註冊",
-    confirmButtonCallback: () => console.log(1),
+    confirmButtonCallback: () => {
+      currentModeInstance.value?.confirmHandler();
+    },
     cancelButtonText: "返回",
     cancelButtonCallback: () => changeMode("LogIn"),
   },
 };
 
-const currentMode = ref<keyof ScreenConfigModesMap>("LogIn");
 const currentScreenConfig = computed<ScreenConfig>(() => {
   return screenConfigModesMap[currentMode.value];
 });
@@ -55,6 +59,7 @@ const changeMode: (mode: keyof ScreenConfigModesMap) => void = (mode) => {
               <div class="monitor-screen">
                 <div class="stripe" />
                 <component
+                  ref="currentModeInstance"
                   :is="currentScreenConfig.component"
                   @change-mode="changeMode"
                 />
@@ -117,11 +122,8 @@ const changeMode: (mode: keyof ScreenConfigModesMap) => void = (mode) => {
       rgba(0, 0, 0, 0.08) 8px,
       rgba(0, 0, 0, 0.08) 11px
     );
-    @apply absolute-default full shadow-inner-sm pointer-events-none;
-  }
-
-  :deep(input) {
-    @apply w-full text-sm px-2 py-1 border-[1px] border-[#13fc5c] bg-transparent focus-visible:outline-none;
+    animation: a infinite 10s linear;
+    @apply absolute-default w-full h-[200%] shadow-inner-sm pointer-events-none;
   }
 }
 
@@ -135,6 +137,15 @@ const changeMode: (mode: keyof ScreenConfigModesMap) => void = (mode) => {
 
 .button-module {
   @apply relative w-[260px] mx-auto -mt-10 pb-2 rounded-t-2xl rounded-b-md bg-zinc-700 shadow-sm shadow-dark;
+}
+
+@keyframes a {
+  0% {
+    top: 0;
+  }
+  100% {
+    top: -100%;
+  }
 }
 
 .fade-enter-active,

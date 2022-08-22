@@ -6,10 +6,7 @@ import type { TaskCategory } from "@/class/TaskCategory";
 import TaskCategoryFolder from "@/components/common/TaskCategoryFolder.vue";
 import TaskCard from "@/components/common/TaskCard.vue";
 
-withDefaults(defineProps<{ show?: boolean }>(), {
-  show: false,
-});
-
+withDefaults(defineProps<{ show?: boolean }>(), { show: false });
 const emit = defineEmits<{ (e: "close"): void }>();
 
 const taskStore = useTaskStore();

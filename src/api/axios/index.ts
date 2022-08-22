@@ -3,8 +3,8 @@ import {
   AxiosRequestor,
   type RequestInterceptor,
   type ResponseInterceptor,
-} from "./AxiosRequestor";
-import { addPending, removePending } from "./axiosCancel";
+} from "./types";
+import { addPending, removePending } from "./cancel";
 
 const cancelDuplicateRequestInterceptor: RequestInterceptor = {
   onFulfilled: (config) => {
@@ -58,6 +58,7 @@ export const BaseAxiosRequestor: AxiosRequestor = new AxiosRequestor({
   headers: { "Content-Type": "application/json" },
   paramsSerializer: (params) => Qs.stringify(params, { arrayFormat: "repeat" }),
   timeout: 60000,
+  withCredentials: true,
   reqInterceptors: [cancelDuplicateRequestInterceptor],
   resInterceptors: [
     removeCancelResponseInterceptor,

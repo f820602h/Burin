@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-const props = defineProps<{
-  num: number;
-  size?: number;
-}>();
+const props = defineProps<{ num: number; size: number }>();
 
 const pathList: string[] = [
   "m957 1180-35 35-35 35H675l-36-35-35-36h71v1-1l141 1 71-1v1-1h70z",

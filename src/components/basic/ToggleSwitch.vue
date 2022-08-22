@@ -4,7 +4,6 @@ withDefaults(defineProps<{ modelValue?: boolean; disabled?: boolean }>(), {
   modelValue: false,
   disabled: false,
 });
-
 defineEmits<{ (e: "update:modelValue", checked: boolean): void }>();
 </script>
 

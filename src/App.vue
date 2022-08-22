@@ -26,7 +26,7 @@ const isUserLoggerShow = ref<boolean>(false);
       ref="head"
       class="header-container sticky top-0 z-global-5 flex-shrink-0"
     >
-      <GlobalHeader @open-logger="isUserLoggerShow = true" />
+      <GlobalHeader @toggle-logger="isUserLoggerShow = !isUserLoggerShow" />
     </div>
     <div class="view-container relative flex-1 flex">
       <div class="view-wrapper w-full">

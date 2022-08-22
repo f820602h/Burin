@@ -1,4 +1,35 @@
 /* eslint-env node */
+const spacingLevel = {
+  0: "0px",
+  1: "4px",
+  2: "8px",
+  3: "12px",
+  4: "16px",
+  5: "20px",
+  6: "24px",
+  7: "28px",
+  8: "32px",
+  9: "36px",
+  10: "40px",
+  11: "44px",
+  12: "48px",
+  13: "52px",
+  14: "56px",
+  15: "60px",
+};
+
+const screenWidthLevel = {
+  "screen-25": "25vw",
+  "screen-50": "50vw",
+  "screen-75": "75vw",
+};
+
+const screenHeightLevel = {
+  "screen-25": "25vh",
+  "screen-50": "50vh",
+  "screen-75": "75vh",
+};
+
 module.exports = {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
@@ -10,34 +41,31 @@ module.exports = {
       xl: "1280px",
       "2xl": "1536px",
     },
-    spacing: {
-      0: "0px",
-      1: "4px",
-      2: "8px",
-      3: "12px",
-      4: "16px",
-      5: "20px",
-      6: "24px",
-      7: "28px",
-      8: "32px",
-      9: "36px",
-      10: "40px",
-      11: "44px",
-      12: "48px",
-      13: "52px",
-      14: "56px",
-      15: "60px",
-    },
+    spacing: spacingLevel,
     extend: {
+      width: {
+        ...spacingLevel,
+        ...screenWidthLevel,
+      },
+      minWidth: {
+        ...spacingLevel,
+        ...screenWidthLevel,
+      },
+      maxWidth: {
+        ...spacingLevel,
+        ...screenWidthLevel,
+      },
       height: {
-        "screen-25": "25vh",
-        "screen-50": "50vh",
-        "screen-75": "75vh",
+        ...spacingLevel,
+        ...screenHeightLevel,
+      },
+      minHeight: {
+        ...spacingLevel,
+        ...screenHeightLevel,
       },
       maxHeight: {
-        "screen-25": "25vh",
-        "screen-50": "50vh",
-        "screen-75": "75vh",
+        ...spacingLevel,
+        ...screenHeightLevel,
       },
       zIndex: {
         1: "1",

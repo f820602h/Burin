@@ -4,9 +4,7 @@ import type { TaskCategory } from "@/class/TaskCategory";
 import { useTaskStore } from "@/stores/task";
 import { computed } from "vue";
 
-const props = defineProps<{
-  task: Task;
-}>();
+const props = defineProps<{ task: Task }>();
 
 const taskStore = useTaskStore();
 const category = computed<TaskCategory>(() => {

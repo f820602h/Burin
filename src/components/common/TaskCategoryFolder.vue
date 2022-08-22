@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import type { TaskCategory } from "@/class/TaskCategory";
 
-defineProps<{
-  taskCategory: TaskCategory;
-}>();
+defineProps<{ taskCategory: TaskCategory }>();
 </script>
 
 <template>

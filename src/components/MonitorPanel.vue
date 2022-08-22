@@ -4,10 +4,7 @@ import GraduatedScale from "@/components/basic/GraduatedScale.vue";
 import RangeInput from "@/components/basic/RangeInput.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
 
-withDefaults(defineProps<{ show?: boolean }>(), {
-  show: false,
-});
-
+withDefaults(defineProps<{ show?: boolean }>(), { show: false });
 defineEmits<{ (e: "close"): void }>();
 
 const historyScaleWidthPercent = ref<number>(200);
