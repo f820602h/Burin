@@ -26,7 +26,7 @@ const toolBarActions: Action[] = reactive([
 ]);
 
 const mainViewBgColor = computed<string>(() => {
-  return taskStore.currentTaskCategory?.getColor().styleString || "";
+  return taskStore._getCurrentTaskCategory?.getColor().styleString || "";
 });
 
 onBeforeMount(() => {

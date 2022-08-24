@@ -45,7 +45,7 @@ export const useTaskStore = defineStore({
     },
   },
   getters: {
-    currentTaskCategory(): TaskCategory | undefined {
+    _getCurrentTaskCategory(): TaskCategory | undefined {
       return this.categories.find(
         (cate) => cate.id === this.currentTask?.categoryId
       );

@@ -11,17 +11,17 @@ export const useAlarmStore = defineStore({
     intervalMinuteOptions: [5, 10, 15, 30, 60],
     currentIntervalMinute: 0,
   }),
-  getters: {
-    currentIntervalMillisecond(): number {
-      return this.currentIntervalMinute * 1000 * 60;
-    },
-  },
   actions: {
-    setCurrentTiming(minus: number): void {
+    _acSetCurrentTiming(minus: number): void {
       const isInvalid = this.intervalMinuteOptions.indexOf(minus) < 0;
       this.currentIntervalMinute = isInvalid
         ? this.intervalMinuteOptions[0]
         : minus;
+    },
+  },
+  getters: {
+    _getCurrentIntervalMillisecond(): number {
+      return this.currentIntervalMinute * 1000 * 60;
     },
   },
 });

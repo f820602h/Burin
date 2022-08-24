@@ -1,20 +1,28 @@
 import { BaseAxiosRequestor } from "../axios/index";
 import type { AxiosResponse } from "axios";
 
+export const axiosUserGetStatus: () => Promise<AxiosResponse> = () => {
+  return BaseAxiosRequestor.get({
+    url: "/user/status",
+  });
+};
+
+export const axiosUserGetInfo: () => Promise<AxiosResponse> = () => {
+  return BaseAxiosRequestor.get({
+    url: "/user/info",
+  });
+};
+
 type UserSignUpPayload = {
   name: string;
   email: string;
   password: string;
 };
 
-type UserSignUpResponse = {
-  id: number;
-};
-
 export const axiosUserSignUp: (
   payload: UserSignUpPayload
 ) => Promise<AxiosResponse> = ({ name, email, password }) => {
-  return BaseAxiosRequestor.post<UserSignUpResponse>({
+  return BaseAxiosRequestor.post({
     url: "/user/sign-up",
     data: { name, email, password },
   });
@@ -25,14 +33,10 @@ type UserLoginPayload = {
   password: string;
 };
 
-type UserLoginResponse = {
-  id: number;
-};
-
 export const axiosUserLogin: (
   payload: UserLoginPayload
 ) => Promise<AxiosResponse> = ({ email, password }) => {
-  return BaseAxiosRequestor.post<UserLoginResponse>({
+  return BaseAxiosRequestor.post({
     url: "/user/login",
     data: { email, password },
   });
