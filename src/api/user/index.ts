@@ -16,23 +16,20 @@ export const axiosUserGetInfo: () => Promise<
   });
 };
 
-export const axiosUserSignUp: (payload: {
-  name: User["name"];
-  email: User["email"];
-  password: NonNullable<User["password"]>;
-}) => Promise<AxiosResponse<number>> = ({ name, email, password }) => {
+export const axiosUserSignUp: (
+  payload: Required<Pick<User, "name" | "email" | "password">>
+) => Promise<AxiosResponse<number>> = (payload) => {
   return BaseAxiosRequestor.post({
     url: "/user/sign-up",
-    data: { name, email, password },
+    data: payload,
   });
 };
 
-export const axiosUserLogin: (payload: {
-  email: User["email"];
-  password: NonNullable<User["password"]>;
-}) => Promise<AxiosResponse> = ({ email, password }) => {
+export const axiosUserLogin: (
+  payload: Required<Pick<User, "email" | "password">>
+) => Promise<AxiosResponse> = (payload) => {
   return BaseAxiosRequestor.post({
     url: "/user/login",
-    data: { email, password },
+    data: payload,
   });
 };

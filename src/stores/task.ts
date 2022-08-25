@@ -39,10 +39,10 @@ export const useTaskStore = defineStore({
       const res = await axiosTaskGetList({ categoryId });
       this.tasks = res.data.map((task) => new Task(task));
     },
-    _actUpdateCurrentTask(task: Task | null): void {
+    async _actUpdateCurrentTask(task: Task | null): Promise<void> {
       if (this.currentTask === task) return;
-      if (this.currentTask) this.currentTask.setLastEndTimestampToNow();
-      if (task) task.setLastStartTimestampToNow();
+      if (this.currentTask) await this.currentTask.setLastEndTimestampToNow();
+      if (task) await task.setLastStartTimestampToNow();
       this.currentTask = task;
     },
   },

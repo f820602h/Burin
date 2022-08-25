@@ -1,5 +1,6 @@
 import { dateFormatter } from "@/helper/dateFormatter";
 import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
+import { axiosTaskUpdateStart, axiosTaskUpdateEnd } from "@/api/task/index";
 
 export interface TaskObject {
   id: number;
@@ -50,11 +51,15 @@ export class Task implements TaskObject {
     else return durationTimeFormatter(duration).outputText;
   }
 
-  setLastStartTimestampToNow(): void {
-    this.lastStartTimestamp = new Date().getTime();
+  async setLastStartTimestampToNow(): Promise<void> {
+    const now = new Date().getTime();
+    await axiosTaskUpdateStart({ id: this.id, lastStartTimestamp: now });
+    this.lastStartTimestamp = now;
   }
 
-  setLastEndTimestampToNow(): void {
-    this.lastEndTimestamp = new Date().getTime();
+  async setLastEndTimestampToNow(): Promise<void> {
+    const now = new Date().getTime();
+    await axiosTaskUpdateEnd({ id: this.id, lastEndTimestamp: now });
+    this.lastEndTimestamp = now;
   }
 }
