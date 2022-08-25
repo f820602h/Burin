@@ -31,7 +31,6 @@ const mainViewBgColor = computed<string>(() => {
 
 onBeforeMount(() => {
   taskStore._actFetchTaskCategoryData();
-  taskStore._actFetchTaskData();
 });
 </script>
 

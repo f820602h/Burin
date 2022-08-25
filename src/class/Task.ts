@@ -1,17 +1,12 @@
 import { dateFormatter } from "@/helper/dateFormatter";
 import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
 
-export interface TaskAddition {
-  content: string;
-  isLink: boolean;
-  url?: string;
-}
-
 export interface TaskObject {
-  id: string;
-  categoryId: string;
+  id: number;
+  categoryId: number;
   title: string;
-  addition: TaskAddition;
+  additionContent: string;
+  additionUrl: string;
   lastStartTimestamp: number;
   lastEndTimestamp: number;
   createTimestamp: number;
@@ -22,7 +17,8 @@ export class Task implements TaskObject {
   id: TaskObject["id"];
   categoryId: TaskObject["categoryId"];
   title: TaskObject["title"];
-  addition: TaskObject["addition"];
+  additionContent: TaskObject["additionContent"];
+  additionUrl: TaskObject["additionUrl"];
   lastStartTimestamp: TaskObject["lastStartTimestamp"];
   lastEndTimestamp: TaskObject["lastEndTimestamp"];
   createTimestamp: TaskObject["createTimestamp"];
@@ -32,7 +28,8 @@ export class Task implements TaskObject {
     this.id = arg.id;
     this.categoryId = arg.categoryId;
     this.title = arg.title;
-    this.addition = arg.addition;
+    this.additionContent = arg.additionContent;
+    this.additionUrl = arg.additionUrl;
     this.lastStartTimestamp = arg.lastStartTimestamp;
     this.lastEndTimestamp = arg.lastEndTimestamp;
     this.createTimestamp = arg.createTimestamp;

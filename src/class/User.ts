@@ -2,6 +2,7 @@ export type UserObject = {
   id: string;
   name: string;
   email: string;
+  password?: string;
   createTimestamp: number;
   updateTimestamp: number;
 };
@@ -10,6 +11,7 @@ export class User implements UserObject {
   id: UserObject["id"];
   name: UserObject["name"];
   email: UserObject["email"];
+  password?: UserObject["password"];
   createTimestamp: UserObject["createTimestamp"];
   updateTimestamp: UserObject["updateTimestamp"];
 

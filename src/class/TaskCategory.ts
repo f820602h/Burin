@@ -1,7 +1,7 @@
 import { Color } from "@/class/Color";
 
 export type TaskCategoryObject = {
-  id: string;
+  id: number;
   name: string;
   startColor: string;
   endColor: string;

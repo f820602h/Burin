@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import { TaskCategory } from "@/class/TaskCategory";
 import { Task } from "@/class/Task";
+import { axiosTaskGetList } from "@/api/task";
 
-import { mockTaskCategoryApiData, mockTaskApiData } from "./mock/task";
+import { mockTaskCategoryApiData } from "./mock/task";
 
 const defaultCategory = new TaskCategory({
-  id: "default",
+  id: 0,
   name: "未分類",
   startColor: "#DDDDDD",
   endColor: "#DDDDDD",
@@ -34,8 +35,9 @@ export const useTaskStore = defineStore({
         (cate) => new TaskCategory(cate)
       );
     },
-    _actFetchTaskData(): void {
-      this.tasks = mockTaskApiData.map((task) => new Task(task));
+    async _actFetchTaskData(categoryId: Task["categoryId"]): Promise<void> {
+      const res = await axiosTaskGetList({ categoryId });
+      this.tasks = res.data.map((task) => new Task(task));
     },
     _actUpdateCurrentTask(task: Task | null): void {
       if (this.currentTask === task) return;

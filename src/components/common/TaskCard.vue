@@ -39,7 +39,7 @@ const category = computed<TaskCategory>(() => {
         class="flex flex-col justify-center items-center h-full bg-white rounded-md p-3"
       >
         <div class="text-xl font-bold text-center">{{ task.title }}</div>
-        <div class="text-xs text-center mt-2">{{ task.addition.content }}</div>
+        <div class="text-xs text-center mt-2">{{ task.additionContent }}</div>
       </div>
     </div>
   </div>

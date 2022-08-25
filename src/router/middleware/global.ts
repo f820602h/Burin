@@ -11,6 +11,8 @@ export const checkUserStatusMiddleware: Middleware = async (
   if (from.name) return;
   const userStore = useUserStore();
   const res = await axiosUserGetStatus();
-  if (res.data) await userStore._actFetchUserInfo();
+  if (res.data) {
+    await userStore._actFetchUserInfo();
+  }
   done();
 };
