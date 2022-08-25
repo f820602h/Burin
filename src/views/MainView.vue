@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, reactive, ref, computed } from "vue";
+import { reactive, ref, computed } from "vue";
 import { useTaskStore } from "@/stores/task";
 import PunchCardMachine from "@/components/PunchCardMachine.vue";
 import AlarmMachine from "@/components/AlarmMachine.vue";
@@ -27,10 +27,6 @@ const toolBarActions: Action[] = reactive([
 
 const mainViewBgColor = computed<string>(() => {
   return taskStore._getCurrentTaskCategory?.getColor().styleString || "";
-});
-
-onBeforeMount(() => {
-  taskStore._actFetchTaskCategoryData();
 });
 </script>
 

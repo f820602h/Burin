@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from "vue";
+import { ref } from "vue";
 import { useTaskStore } from "@/stores/task";
 import type { Task } from "@/class/Task";
 import type { TaskCategory } from "@/class/TaskCategory";
@@ -12,10 +12,6 @@ const emit = defineEmits<{ (e: "close"): void }>();
 
 const taskStore = useTaskStore();
 const selectedCategory = ref<TaskCategory>();
-
-onBeforeMount(() => {
-  taskStore._actFetchTaskCategoryData();
-});
 
 const selectCategory: (category: TaskCategory) => void = (category) => {
   selectedCategory.value = category;
