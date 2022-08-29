@@ -93,7 +93,7 @@ const setCurrentTask: (task: Task) => void = (task) => {
                   v-for="(task, index) in taskStore.tasks"
                   :key="index"
                   :task="task"
-                  class="mx-auto mb-3 last:mb-0"
+                  class="mx-auto mb-3 cursor-pointer last:mb-0"
                   @click="setCurrentTask(task)"
                 />
               </template>

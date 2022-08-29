@@ -4,11 +4,12 @@ import type { TaskCategory } from "@/class/TaskCategory";
 import { useTaskStore } from "@/stores/task";
 import { computed } from "vue";
 
-const props = defineProps<{ task: Task }>();
+const props = defineProps<{ task: Task; category?: TaskCategory }>();
 
 const taskStore = useTaskStore();
 const category = computed<TaskCategory>(() => {
   return (
+    props.category ||
     taskStore.categories.find((cate) => cate.id === props.task.categoryId) ||
     taskStore.defaultCategory
   );
@@ -47,6 +48,6 @@ const category = computed<TaskCategory>(() => {
 
 <style lang="scss" scoped>
 .task-card {
-  @apply flex flex-col w-[200px] h-[200px] px-3 pt-2 pb-3 rounded-md shadow-md shadow-light cursor-pointer;
+  @apply flex flex-col w-[200px] h-[200px] px-3 pt-2 pb-3 rounded-md shadow-md shadow-light;
 }
 </style>

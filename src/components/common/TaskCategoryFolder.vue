@@ -8,7 +8,7 @@ defineProps<{ taskCategory: TaskCategory }>();
   <div class="task-category-folder relative group cursor-pointer">
     <div class="task-category-folder__tag">
       {{ taskCategory.name }}
-      <div class="absolute -bottom-[2px] left-0 w-full h-1 bg-inherit"></div>
+      <div class="absolute -bottom-[3px] left-0 w-full h-1 bg-inherit"></div>
     </div>
 
     <div class="task-category-folder__back">

@@ -50,6 +50,7 @@ const validationListeners = computed(() => {
     :class="{ invalid: !!errorMessage, success: meta.valid }"
   >
     <input
+      class="block w-full"
       :name="name"
       :type="type"
       :placeholder="placeholder"
