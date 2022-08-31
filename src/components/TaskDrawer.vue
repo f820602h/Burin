@@ -1,14 +1,21 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useTaskStore } from "@/stores/task";
+import { ref, toRef } from "vue";
 import type { Task } from "@/class/Task";
 import type { TaskCategory } from "@/class/TaskCategory";
+import { useTaskStore } from "@/stores/task";
+import { useBodyScrollFixed } from "@/composables/useBodyScrollFixed";
 import TaskCategoryFolder from "@/components/common/TaskCategoryFolder.vue";
 import TaskCard from "@/components/common/TaskCard.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
+import FolderCreator from "./FolderCreator.vue";
 
-withDefaults(defineProps<{ show?: boolean }>(), { show: false });
+const props = withDefaults(defineProps<{ show?: boolean }>(), { show: false });
 const emit = defineEmits<{ (e: "close"): void }>();
+
+const refShow = toRef(props, "show");
+useBodyScrollFixed(refShow);
+
+const isFolderCreatorShow = ref<boolean>(false);
 
 const taskStore = useTaskStore();
 const selectedCategory = ref<TaskCategory>();
@@ -62,7 +69,7 @@ const setCurrentTask: (task: Task) => void = (task) => {
             <div class="tag">
               <div class="full bg-white shadow-inner-sm shadow-darkest" />
             </div>
-            <div class="handle">
+            <div class="handle" @click="isFolderCreatorShow = true">
               <div class="w-full h-2 rounded-md bg-zinc-400 shadow-sm" />
             </div>
           </div>
@@ -104,11 +111,15 @@ const setCurrentTask: (task: Task) => void = (task) => {
       </div>
     </div>
   </Transition>
+  <FolderCreator
+    :show="isFolderCreatorShow"
+    @close="isFolderCreatorShow = false"
+  />
 </template>
 
 <style lang="scss" scoped>
 .task-drawer {
-  @apply relative h-full;
+  @apply relative min-w-[260px] h-full;
 
   &__drawer {
     @apply relative flex flex-col h-full bg-zinc-700;

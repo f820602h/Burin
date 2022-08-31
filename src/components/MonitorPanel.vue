@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, toRef } from "vue";
+import { useBodyScrollFixed } from "@/composables/useBodyScrollFixed";
 import GraduatedScale from "@/components/basic/GraduatedScale.vue";
 import RangeInput from "@/components/basic/RangeInput.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
 
-withDefaults(defineProps<{ show?: boolean }>(), { show: false });
+const props = withDefaults(defineProps<{ show?: boolean }>(), { show: false });
 defineEmits<{ (e: "close"): void }>();
+
+const refShow = toRef(props, "show");
+useBodyScrollFixed(refShow);
 
 const historyScaleWidthPercent = ref<number>(200);
 const proportionScaleWidthPercent = ref<number>(200);

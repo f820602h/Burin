@@ -53,7 +53,7 @@ watch(
           >
             <div class="flex-center-center">
               <span class="icon-cancel mr-1"></span>
-              <span class="text-md">退卡</span>
+              <span class="text-base">退卡</span>
             </div>
           </ButtonNormal>
         </div>

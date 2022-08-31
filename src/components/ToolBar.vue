@@ -37,11 +37,12 @@ defineProps<{ actions: Action[] }>();
 
 <style lang="scss" scoped>
 .stand {
-  @apply relative w-[10px] h-7 mx-auto bg-stone-500;
+  @apply relative w-[10px] h-7 mx-auto bg-stone-600;
 
   &:after {
     @apply content-[""] absolute left-0 -z-1 w-14 h-[10px] rounded-full bg-inherit shadow-md;
   }
+
   &.top {
     @apply -mb-3 rounded-t-full after:top-0;
   }
