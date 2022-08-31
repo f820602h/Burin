@@ -1,8 +1,11 @@
 import { defineStore } from "pinia";
-import { TaskCategory } from "@/class/TaskCategory";
+import { TaskCategory, type TaskCategoryInfo } from "@/class/TaskCategory";
 import { Task } from "@/class/Task";
 import { axiosTaskGetList } from "@/api/task";
-import { axiosTaskCategoryGetList } from "@/api/taskCategory";
+import {
+  axiosTaskCategoryGetList,
+  axiosTaskCategoryCreate,
+} from "@/api/taskCategory";
 
 const defaultCategory = new TaskCategory({
   id: 0,
@@ -32,6 +35,19 @@ export const useTaskStore = defineStore({
     async _actFetchTaskCategoryData(): Promise<void> {
       const res = await axiosTaskCategoryGetList();
       this.categories = res.data.map((cate) => new TaskCategory(cate));
+    },
+    async _actCreateTaskCategoryData(
+      payload: Omit<TaskCategoryInfo, "id">
+    ): Promise<void> {
+      const res = await axiosTaskCategoryCreate(payload);
+      this.categories.push(
+        new TaskCategory({
+          ...payload,
+          id: res.data.id,
+          createTimestamp: 0,
+          updateTimestamp: 0,
+        })
+      );
     },
     async _actFetchTaskData(categoryId: Task["categoryId"]): Promise<void> {
       const res = await axiosTaskGetList({ categoryId });

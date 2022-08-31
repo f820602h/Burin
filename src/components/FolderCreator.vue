@@ -1,31 +1,52 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, toRef } from "vue";
 import { object } from "yup";
-import { useField, useForm } from "vee-validate";
+import { useForm } from "vee-validate";
 import { taskCategoryColors } from "@/system/taskCategoryColors";
 import { taskCategoryFieldValidation } from "@/system/fieldValidation";
+import { Color } from "@/class/Color";
 import { Task } from "@/class/Task";
+import { TaskCategory } from "@/class/TaskCategory";
+import {
+  NColorPicker,
+  NConfigProvider,
+  type GlobalThemeOverrides,
+} from "naive-ui";
+import { useTaskStore } from "@/stores/task";
+import { useBodyScrollFixed } from "@/composables/useBodyScrollFixed";
 import VerifyInput from "@/components/basic/VerifyInput.vue";
 import TaskCard from "./common/TaskCard.vue";
-import { NColorPicker } from "naive-ui";
-import { TaskCategory } from "@/class/TaskCategory";
-import { Color } from "@/class/Color";
+import ButtonNormal from "./basic/ButtonNormal.vue";
 
-withDefaults(defineProps<{ show?: boolean }>(), { show: false });
-defineEmits<{ (e: "close"): void }>();
+const props = withDefaults(defineProps<{ show?: boolean }>(), { show: false });
+const emit = defineEmits<{ (e: "close"): void }>();
+
+const refShow = toRef(props, "show");
+useBodyScrollFixed(refShow);
+
+const taskStore = useTaskStore();
 
 const validationSchema = object({
   name: taskCategoryFieldValidation.name,
-  colorStart: taskCategoryFieldValidation.colorStart,
-  colorEnd: taskCategoryFieldValidation.colorEnd,
+  startColor: taskCategoryFieldValidation.startColor,
+  endColor: taskCategoryFieldValidation.endColor,
 });
-
-const { values: formValue } = useForm({ validationSchema });
-const { value: colorStart } = useField("colorStart", undefined, {
-  initialValue: taskCategoryColors.red.start,
+const {
+  values: formValue,
+  handleSubmit,
+  useFieldModel,
+} = useForm({
+  validationSchema,
+  initialValues: {
+    name: "",
+    startColor: taskCategoryColors.red.start,
+    endColor: taskCategoryColors.red.end,
+  },
 });
-const { value: colorEnd } = useField("colorEnd", undefined, {
-  initialValue: taskCategoryColors.red.end,
+const [startColor, endColor] = useFieldModel(["startColor", "endColor"]);
+const confirmHandler = handleSubmit(async (values) => {
+  await taskStore._actCreateTaskCategoryData(values);
+  emit("close");
 });
 
 const colors = computed(() => {
@@ -33,14 +54,24 @@ const colors = computed(() => {
     return new Color([colors.start, colors.end]);
   });
 });
+const selectSystemColor: (color: Color) => void = (color) => {
+  startColor.value = color.hexStringList[0];
+  endColor.value = color.hexStringList[1];
+};
+const isSystemColorSelected: (color: Color) => boolean = (color) => {
+  return (
+    startColor.value === color.hexStringList[0] &&
+    endColor.value === color.hexStringList[1]
+  );
+};
 
 const demoCategory = computed<TaskCategory>(
   () =>
     new TaskCategory({
       id: 0,
       name: formValue.name || "樣本",
-      startColor: colorStart.value,
-      endColor: colorEnd.value,
+      startColor: startColor.value,
+      endColor: endColor.value,
       createTimestamp: 0,
       updateTimestamp: 0,
     })
@@ -49,8 +80,8 @@ const demoCategory = computed<TaskCategory>(
 const demoTask = new Task({
   id: 0,
   categoryId: 0,
-  title: "樣本",
-  additionContent: "樣本",
+  title: "任務卡樣本",
+  additionContent: "未來在這個群組中的任務卡會長這樣",
   additionUrl: "",
   lastStartTimestamp: 0,
   lastEndTimestamp: 0,
@@ -58,15 +89,11 @@ const demoTask = new Task({
   updateTimestamp: 0,
 });
 
-const selectSystemColor: (color: Color) => void = (color) => {
-  colorStart.value = color.hexStringList[0];
-  colorEnd.value = color.hexStringList[1];
-};
-const isSystemColorSelected: (color: Color) => boolean = (color) => {
-  return (
-    colorStart.value === color.hexStringList[0] &&
-    colorEnd.value === color.hexStringList[1]
-  );
+const colorPickerOverrides: GlobalThemeOverrides = {
+  ColorPicker: {
+    color: "#48484E",
+    textColor: "#fff",
+  },
 };
 </script>
 
@@ -74,82 +101,127 @@ const isSystemColorSelected: (color: Color) => boolean = (color) => {
   <Transition name="fade">
     <div
       v-if="show"
-      class="fixed-layer flex-center-center bg-black/30 backdrop-blur-[2px]"
+      class="fixed-layer flex-center-start pt-[15vh] bg-black/30 backdrop-blur-[2px] overflow-y-auto"
     >
-      <div class="pb-1 rounded-md bg-stone-700 shadow-xl">
-        <div class="clipboard">
-          <div class="iron-sheet">
-            <div class="flex-between-center h-full px-5">
-              <div class="screw"></div>
-              <div class="screw"></div>
+      <div>
+        <div class="clipboard pb-1 rounded-md bg-stone-700 shadow-xl">
+          <div class="relative px-4 pb-5 rounded-md bg-stone-600">
+            <div class="iron-sheet">
+              <div class="flex-between-center h-full px-5">
+                <div class="screw"></div>
+                <div class="screw"></div>
+              </div>
+            </div>
+            <div class="clip" />
+
+            <div class="paper">
+              <div class="text-center text-xl font-bold mb-4">
+                任務群組創建申請
+              </div>
+
+              <div class="flex items-start mb-2">
+                <div
+                  v-for="(color, index) in colors"
+                  :key="index"
+                  :style="{ backgroundImage: color.styleString }"
+                  class="w-[22px] h-[22px] mr-2 border-2 rounded-full cursor-pointer last:hidden"
+                  :class="{ 'border-black': isSystemColorSelected(color) }"
+                  @click="selectSystemColor(color)"
+                />
+              </div>
+
+              <div class="flex items-center mb-1">
+                <label for="startColor">顏色(一)：</label>
+                <NConfigProvider
+                  :preflight-style-disabled="true"
+                  :abstract="true"
+                  :theme-overrides="colorPickerOverrides"
+                >
+                  <NColorPicker
+                    v-model:value="startColor"
+                    :size="'small'"
+                    :modes="['hex']"
+                    :show-alpha="false"
+                  />
+                </NConfigProvider>
+              </div>
+
+              <div class="flex items-center mb-2">
+                <label for="endColor">顏色(二)：</label>
+                <NConfigProvider
+                  :preflight-style-disabled="true"
+                  :abstract="true"
+                  :theme-overrides="colorPickerOverrides"
+                >
+                  <NColorPicker
+                    v-model:value="endColor"
+                    :size="'small'"
+                    :modes="['hex']"
+                    :show-alpha="false"
+                  />
+                </NConfigProvider>
+              </div>
+
+              <div class="flex items-start mb-1">
+                <label for="name">群組名稱：</label>
+                <VerifyInput
+                  name="name"
+                  type="text"
+                  placeholder="請填寫"
+                  class="w-full mx-1"
+                >
+                  <template #error="{ errorMessage, meta }">
+                    <div class="text-xs text-right text-red-600 min-h-4 mt-1">
+                      <template v-if="errorMessage && meta.touched">
+                        {{ errorMessage }}
+                      </template>
+                    </div>
+                  </template>
+                </VerifyInput>
+              </div>
+
+              <div class="relative my-4">
+                <div
+                  class="absolute -top-3 right-4 w-5 h-10 bg-white/50 -rotate-45"
+                />
+                <TaskCard
+                  class="mx-auto"
+                  :task="demoTask"
+                  :category="demoCategory"
+                />
+                <div
+                  class="absolute -bottom-3 left-4 w-5 h-10 bg-white/50 -rotate-45"
+                />
+              </div>
+
+              <div class="text-xs text-dark text-center">
+                ＊為確保文字清晰，請避免淺色卡片
+              </div>
             </div>
           </div>
+        </div>
 
-          <div class="paper px-10 py-4">
-            <div class="text-center text-xl font-bold mb-4">
-              任務群組創建申請
-            </div>
-
-            <div class="flex items-start mb-3">
-              <div
-                v-for="(color, index) in colors"
-                :key="index"
-                :style="{ backgroundImage: color.styleString }"
-                class="w-[22px] h-[22px] mr-2 border-2 rounded-full cursor-pointer last:hidden"
-                :class="{ 'border-black': isSystemColorSelected(color) }"
-                @click="selectSystemColor(color)"
+        <div class="relative flex-center-center mt-2">
+          <div class="mx-2 pb-2 rounded-md bg-zinc-400 shadow-md">
+            <div class="p-2 pt-1 rounded-md bg-zinc-200">
+              <ButtonNormal
+                theme="cancel"
+                text="取消"
+                :width="100"
+                :height="35"
+                class="font-bold"
+                @click="$emit('close')"
               />
-            </div>
-
-            <div class="flex items-center mb-1">
-              <label for="colorStart">顏色(一)：</label>
-              <NColorPicker
-                v-model:value="colorStart"
-                :size="'small'"
-                :modes="['hex']"
-                :show-alpha="false"
+              <ButtonNormal
+                theme="confirm"
+                text="新增"
+                :width="100"
+                :height="35"
+                class="font-bold ml-3"
+                @click="confirmHandler"
               />
-            </div>
-
-            <div class="flex items-center mb-2">
-              <label for="colorEnd">顏色(二)：</label>
-              <NColorPicker
-                v-model:value="colorEnd"
-                :size="'small'"
-                :modes="['hex']"
-                :show-alpha="false"
-              />
-            </div>
-
-            <div class="flex items-start mb-1">
-              <label for="name">群組名稱：</label>
-              <VerifyInput
-                name="name"
-                type="text"
-                placeholder="請填寫"
-                class="w-full mx-1"
-              >
-                <template #error="{ errorMessage, meta }">
-                  <div class="text-xs text-right text-red-600 min-h-4 mt-1">
-                    <template v-if="errorMessage && meta.touched">
-                      {{ errorMessage }}
-                    </template>
-                  </div>
-                </template>
-              </VerifyInput>
-            </div>
-
-            <TaskCard
-              class="mx-auto mt-3"
-              :task="demoTask"
-              :category="demoCategory"
-            />
-            <div class="text-xs text-light text-center mt-2">
-              ＊為確保文字清晰，請避免淺色卡片
             </div>
           </div>
-
-          <div class="clip" />
         </div>
       </div>
     </div>
@@ -157,36 +229,50 @@ const isSystemColorSelected: (color: Color) => boolean = (color) => {
 </template>
 
 <style lang="scss" scoped>
-.clipboard {
-  @apply relative w-[350px] h-[500px] rounded-md bg-stone-600;
-}
-
 .iron-sheet {
   @apply relative -top-1 w-[150px] h-10 mx-auto border-4 border-slate-500 rounded-t-xl rounded-b-md bg-slate-500 shadow-inner-sm;
-}
 
-.screw {
-  @apply w-4 h-4 rounded-full bg-slate-600;
+  .screw {
+    @apply w-4 h-4 rounded-full bg-slate-600;
+  }
 }
 
 .paper {
-  @apply relative w-[320px] h-[460px] mx-auto -mt-5 rounded-bl-[25px] bg-stone-200 shadow-sm overflow-hidden;
+  @apply relative mx-auto -mt-5 px-10 py-4 rounded-bl-[25px] bg-stone-200 shadow-sm overflow-hidden;
 
   &::after {
     content: "";
     @apply absolute bottom-0 left-0 z-10 w-6 h-6 bg-stone-200 shadow-t-sm shadow-darker;
   }
-}
 
-label {
-  @apply flex-shrink-0 text-sm font-bold w-[70px];
-}
+  label {
+    @apply flex-shrink-0 text-sm font-bold w-[70px];
+  }
 
-:deep(input) {
-  @apply text-sm px-1 border-b-[1px] border-black bg-transparent focus-visible:outline-none;
+  :deep(input) {
+    @apply text-sm px-1 border-b-[1px] border-black bg-transparent focus-visible:outline-none;
+  }
 }
 
 .clip {
-  @apply absolute top-1 left-1/2 w-[135px] h-8 border-4 border-t-0 rounded-b-lg border-slate-500 shadow-sm shadow-lighter -translate-x-1/2;
+  @apply absolute top-1 left-1/2 z-1 w-[135px] h-8 border-4 border-t-0 rounded-b-lg border-slate-500 shadow-sm shadow-lighter -translate-x-1/2;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  @apply transition-opacity duration-500;
+
+  :deep(.clipboard) {
+    @apply transition-transform duration-500;
+  }
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  @apply opacity-0;
+
+  :deep(.clipboard) {
+    @apply -translate-y-10;
+  }
 }
 </style>
