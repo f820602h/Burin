@@ -2,29 +2,23 @@
 import { ref } from "vue";
 import { RouterView } from "vue-router";
 import { templateRef, useElementSize } from "@vueuse/core";
+import { useUserStore } from "@/stores/user";
 import GlobalHeader from "@/components/global/GlobalHeader.vue";
 import UserLogger from "@/components/global/logger/UserLogger.vue";
+import LoadingLayer from "./components/global/LoadingLayer.vue";
 
 const head = templateRef<HTMLElement | null>("head", null);
 const { height: headerHeight } = useElementSize(head);
 
+const userStore = useUserStore();
 const isUserLoggerShow = ref<boolean>(false);
-
-// import { BaseAxiosRequestor } from "./api/axios";
-// onMounted(async () => {
-// const a = await BaseAxiosRequestor.get({
-//   url: "/user",
-//   params: { id: 1 },
-// });
-// console.log(a);
-// });
 </script>
 
 <template>
   <div class="root flex flex-col w-full min-h-screen">
     <div
       ref="head"
-      class="header-container sticky top-0 z-global-5 flex-shrink-0"
+      class="header-container sticky top-0 z-global-4 flex-shrink-0"
     >
       <GlobalHeader @toggle-logger="isUserLoggerShow = !isUserLoggerShow" />
     </div>
@@ -35,7 +29,11 @@ const isUserLoggerShow = ref<boolean>(false);
     </div>
     <div class="footer-container"></div>
 
-    <UserLogger :show="isUserLoggerShow" @close="isUserLoggerShow = false" />
+    <UserLogger
+      :show="isUserLoggerShow && !userStore.user"
+      @close="isUserLoggerShow = false"
+    />
+    <LoadingLayer class="z-global-5" />
   </div>
 </template>
 

@@ -8,6 +8,7 @@ export const axiosTaskGetList: (
   return BaseAxiosRequestor.get({
     url: "/task/list",
     params: payload,
+    showLoading: false,
   });
 };
 
@@ -17,6 +18,7 @@ export const axiosTaskUpdateStart: (
   return BaseAxiosRequestor.post({
     url: "/task/update/start",
     data: payload,
+    showLoading: false,
   });
 };
 
@@ -26,5 +28,6 @@ export const axiosTaskUpdateEnd: (
   return BaseAxiosRequestor.post({
     url: "/task/update/end",
     data: payload,
+    showLoading: false,
   });
 };

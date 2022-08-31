@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  @apply min-w-[320px] text-gray-800;
+html, body {
+  @apply w-full min-w-[320px] text-gray-800;
 }
 
 /* utility class */
