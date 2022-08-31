@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, toRef } from "vue";
 import type { ScreenConfig, ScreenConfigModesMap } from "./types";
+import { useBodyScrollFixed } from "@/composables/useBodyScrollFixed";
 import ModeLogIn from "./ModeLogIn.vue";
 import ModeSignUp from "./ModeSignUp.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
 
-withDefaults(defineProps<{ show?: boolean }>(), { show: false });
+const props = withDefaults(defineProps<{ show?: boolean }>(), { show: false });
 const emit = defineEmits<{ (e: "close"): void }>();
+
+const refShow = toRef(props, "show");
+useBodyScrollFixed(refShow);
 
 type ModeInstance = InstanceType<typeof ModeLogIn | typeof ModeSignUp>;
 const currentMode = ref<keyof ScreenConfigModesMap>("LogIn");
@@ -70,20 +74,20 @@ const changeMode: (mode: keyof ScreenConfigModesMap) => void = (mode) => {
               <div class="rounded-t-2xl rounded-b-md bg-zinc-600">
                 <div class="flex-between-center px-5 pt-3 pb-3">
                   <ButtonNormal
-                    theme="confirm"
-                    :text="currentScreenConfig.confirmButtonText"
-                    :width="100"
-                    :height="35"
-                    class="font-bold"
-                    @click="currentScreenConfig.confirmButtonCallback"
-                  />
-                  <ButtonNormal
                     theme="cancel"
                     :text="currentScreenConfig.cancelButtonText"
                     :width="100"
                     :height="35"
                     class="font-bold"
                     @click="currentScreenConfig.cancelButtonCallback"
+                  />
+                  <ButtonNormal
+                    theme="confirm"
+                    :text="currentScreenConfig.confirmButtonText"
+                    :width="100"
+                    :height="35"
+                    class="font-bold"
+                    @click="currentScreenConfig.confirmButtonCallback"
                   />
                 </div>
                 <div class="flex-center-center">
@@ -113,7 +117,7 @@ const changeMode: (mode: keyof ScreenConfigModesMap) => void = (mode) => {
 }
 
 .monitor-screen {
-  @apply relative w-[300px] h-[280px] p-3 rounded-xl bg-[#213821] text-[#13fc5c] overflow-hidden;
+  @apply relative w-[300px] h-[300px] p-3 rounded-xl bg-[#213821] text-[#13fc5c] overflow-hidden;
 
   .stripe {
     background-image: repeating-linear-gradient(

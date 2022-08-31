@@ -21,27 +21,32 @@ const removeCancelResponseInterceptor: ResponseInterceptor = {
   },
   onRejected: (error) => {
     removePending(error.config);
-    return error;
+    return Promise.reject(error);
   },
 };
 
 const errorHandlerResponseInterceptor: ResponseInterceptor = {
+  onFulfilled: (response) => {
+    return response;
+  },
   onRejected: (error) => {
     if (error.response) {
-      const { status, config } = error.response;
+      const { status, config, data } = error.response;
       switch (status) {
-        case 400:
-          break;
-
-        // 沒登入
+        // Unauthorized
         case 401:
+          if (data?.err) Promise.reject(error);
           break;
 
-        // 沒有權限
+        // Forbidden
         case 403:
           break;
 
-        // 500: 伺服器異常
+        // Not Found
+        case 404:
+          break;
+
+        // Server Error
         case 500:
           break;
 
@@ -49,7 +54,7 @@ const errorHandlerResponseInterceptor: ResponseInterceptor = {
           console.log(`response 沒有攔截到的錯誤：${config.url}`);
       }
     }
-    return error;
+    return Promise.reject(error);
   },
 };
 
@@ -59,6 +64,7 @@ export const BaseAxiosRequestor: AxiosRequestor = new AxiosRequestor({
   paramsSerializer: (params) => Qs.stringify(params, { arrayFormat: "repeat" }),
   timeout: 60000,
   withCredentials: true,
+  showLoading: true,
   reqInterceptors: [cancelDuplicateRequestInterceptor],
   resInterceptors: [
     removeCancelResponseInterceptor,

@@ -1,6 +1,6 @@
 import { BaseAxiosRequestor } from "../axios/index";
 import type { AxiosResponse } from "axios";
-import type { User, UserObject } from "@/class/User";
+import type { UserObject } from "@/class/User";
 
 export const axiosUserGetStatus: () => Promise<AxiosResponse<boolean>> = () => {
   return BaseAxiosRequestor.get({
@@ -17,8 +17,8 @@ export const axiosUserGetInfo: () => Promise<
 };
 
 export const axiosUserSignUp: (
-  payload: Required<Pick<User, "name" | "email" | "password">>
-) => Promise<AxiosResponse<number>> = (payload) => {
+  payload: Required<Pick<UserObject, "name" | "email" | "password">>
+) => Promise<AxiosResponse<Pick<UserObject, "id">>> = (payload) => {
   return BaseAxiosRequestor.post({
     url: "/user/sign-up",
     data: payload,
@@ -26,8 +26,8 @@ export const axiosUserSignUp: (
 };
 
 export const axiosUserLogin: (
-  payload: Required<Pick<User, "email" | "password">>
-) => Promise<AxiosResponse> = (payload) => {
+  payload: Required<Pick<UserObject, "email" | "password">>
+) => Promise<AxiosResponse<never>> = (payload) => {
   return BaseAxiosRequestor.post({
     url: "/user/login",
     data: payload,

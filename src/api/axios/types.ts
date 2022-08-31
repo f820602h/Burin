@@ -5,21 +5,22 @@ import type {
   AxiosResponse,
   AxiosError,
 } from "axios";
+import { useLoadingStore } from "@/stores/loading";
 
-interface RequestConfig extends AxiosRequestConfig {
+export interface RequestConfig extends AxiosRequestConfig {
   reqInterceptors?: RequestInterceptor[];
   resInterceptors?: ResponseInterceptor[];
   showLoading?: boolean;
 }
 
 export interface RequestInterceptor {
-  onFulfilled?: (config: AxiosRequestConfig) => AxiosRequestConfig;
-  onRejected?: (error: AxiosError) => AxiosError;
+  onFulfilled?: (config: RequestConfig) => RequestConfig;
+  onRejected?: (error: AxiosError<any>) => Promise<never>;
 }
 
 export interface ResponseInterceptor {
   onFulfilled?: (res: AxiosResponse) => AxiosResponse;
-  onRejected?: (error: AxiosError) => AxiosError;
+  onRejected?: (error: AxiosError<any>) => Promise<never>;
 }
 
 export class AxiosRequestor {
@@ -30,6 +31,7 @@ export class AxiosRequestor {
 
   constructor(config: RequestConfig) {
     this.instance = axios.create(config);
+    this.showLoading = config.showLoading;
     this.reqInterceptors = config.reqInterceptors;
     this.resInterceptors = config.resInterceptors;
 
@@ -39,7 +41,7 @@ export class AxiosRequestor {
       }
     );
 
-    this.reqInterceptors?.forEach(
+    this.resInterceptors?.forEach(
       ({ onFulfilled = (res) => res, onRejected = (err) => err }) => {
         this.instance.interceptors.response.use(onFulfilled, onRejected);
       }
@@ -48,16 +50,19 @@ export class AxiosRequestor {
 
   request<T>(config: RequestConfig): Promise<AxiosResponse<T>> {
     return new Promise((resolve, reject) => {
+      const loadingStore = useLoadingStore();
       this.showLoading = config.showLoading ?? this.showLoading ?? false;
+
+      if (this.showLoading) loadingStore._actAddQueue(config);
 
       this.instance
         .request(config)
         .then((res) => {
-          this.showLoading = false;
+          loadingStore._actRemoveQueue(config);
           resolve(res.data);
         })
         .catch((err) => {
-          this.showLoading = false;
+          loadingStore._actRemoveQueue(config);
           reject(err);
         });
     });
