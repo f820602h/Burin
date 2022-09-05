@@ -34,7 +34,7 @@ const mainViewBgColor = computed<string>(() => {
   <TaskDrawer :show="isTaskDrawerShow" @close="isTaskDrawerShow = false" />
 
   <main
-    class="background-animate h-full bg-gray-700"
+    class="background-animate h-full"
     :style="{ backgroundImage: mainViewBgColor }"
   >
     <div class="flex-center-center flex-col h-full pt-[80px] pb-8 bg-black/25">

@@ -19,10 +19,22 @@ const isFolderCreatorShow = ref<boolean>(false);
 
 const taskStore = useTaskStore();
 const selectedCategory = ref<TaskCategory>();
+const editingCategory = ref<TaskCategory>();
 
 const selectCategory: (category: TaskCategory) => void = (category) => {
   selectedCategory.value = category;
-  taskStore._actFetchTaskData(category.id);
+  taskStore._actFetchTaskList(category.id);
+};
+
+const editCategory: () => void = () => {
+  if (!selectedCategory.value) return;
+  editingCategory.value = selectedCategory.value;
+  isFolderCreatorShow.value = true;
+};
+
+const deleteCategory: () => void = () => {
+  if (!selectedCategory.value) return;
+  taskStore._actDeleteTaskCategory(selectedCategory.value.id);
 };
 
 const setCurrentTask: (task: Task) => void = (task) => {
@@ -65,11 +77,12 @@ const setCurrentTask: (task: Task) => void = (task) => {
               />
             </template>
           </div>
+
           <div class="task-drawer__door">
             <div class="tag">
               <div class="full bg-white shadow-inner-sm shadow-darkest" />
             </div>
-            <div class="handle" @click="isFolderCreatorShow = true">
+            <div class="handle">
               <div class="w-full h-2 rounded-md bg-zinc-400 shadow-sm" />
             </div>
           </div>
@@ -95,6 +108,23 @@ const setCurrentTask: (task: Task) => void = (task) => {
             </div>
 
             <div class="cards">
+              <div class="flex justify-evenly py-5">
+                <ButtonNormal
+                  :width="90"
+                  theme="cancel"
+                  text="刪除群組"
+                  class="font-bold text-sm"
+                  @press="deleteCategory"
+                />
+                <ButtonNormal
+                  :width="90"
+                  theme="confirm"
+                  text="編輯群組"
+                  class="font-bold text-sm"
+                  @press="editCategory"
+                />
+              </div>
+
               <template v-if="taskStore.tasks.length">
                 <TaskCard
                   v-for="(task, index) in taskStore.tasks"
@@ -105,15 +135,17 @@ const setCurrentTask: (task: Task) => void = (task) => {
                 />
               </template>
             </div>
-            <div class="handler" />
+            <div class="handle" />
           </div>
         </Transition>
       </div>
     </div>
   </Transition>
+
   <FolderCreator
     :show="isFolderCreatorShow"
-    @close="isFolderCreatorShow = false"
+    :editing-category="editingCategory"
+    @close="[(isFolderCreatorShow = false), (editingCategory = undefined)]"
   />
 </template>
 
@@ -156,10 +188,10 @@ const setCurrentTask: (task: Task) => void = (task) => {
     }
 
     .cards {
-      @apply flex-1 py-4 border-x-8 border-gray-300 bg-gray-400 shadow-inner-md shadow-dark overflow-auto scrollbar-hide;
+      @apply flex-1 pb-4 border-x-8 border-gray-300 bg-gray-400 shadow-inner-md shadow-dark overflow-auto scrollbar-hide;
     }
 
-    .handler {
+    .handle {
       @apply h-12 border-t-24 border-gray-300 bg-gray-300 rounded-b-md shadow-inner-lg;
     }
   }

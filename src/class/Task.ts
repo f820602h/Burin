@@ -1,31 +1,36 @@
 import { dateFormatter } from "@/helper/dateFormatter";
 import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
-import { axiosTaskUpdateStart, axiosTaskUpdateEnd } from "@/api/task/index";
 
-export interface TaskObject {
+export interface TaskId {
   id: number;
+}
+
+export interface TaskInfo extends TaskId {
   categoryId: number;
   title: string;
   additionContent: string;
   additionUrl: string;
   lastStartTimestamp: number;
   lastEndTimestamp: number;
+}
+
+export interface TaskCompleteInfo extends TaskInfo {
   createTimestamp: number;
   updateTimestamp: number;
 }
 
-export class Task implements TaskObject {
-  id: TaskObject["id"];
-  categoryId: TaskObject["categoryId"];
-  title: TaskObject["title"];
-  additionContent: TaskObject["additionContent"];
-  additionUrl: TaskObject["additionUrl"];
-  lastStartTimestamp: TaskObject["lastStartTimestamp"];
-  lastEndTimestamp: TaskObject["lastEndTimestamp"];
-  createTimestamp: TaskObject["createTimestamp"];
-  updateTimestamp: TaskObject["updateTimestamp"];
+export class Task implements TaskCompleteInfo {
+  id: TaskCompleteInfo["id"];
+  categoryId: TaskCompleteInfo["categoryId"];
+  title: TaskCompleteInfo["title"];
+  additionContent: TaskCompleteInfo["additionContent"];
+  additionUrl: TaskCompleteInfo["additionUrl"];
+  lastStartTimestamp: TaskCompleteInfo["lastStartTimestamp"];
+  lastEndTimestamp: TaskCompleteInfo["lastEndTimestamp"];
+  createTimestamp: TaskCompleteInfo["createTimestamp"];
+  updateTimestamp: TaskCompleteInfo["updateTimestamp"];
 
-  constructor(arg: TaskObject) {
+  constructor(arg: TaskCompleteInfo) {
     this.id = arg.id;
     this.categoryId = arg.categoryId;
     this.title = arg.title;
@@ -49,17 +54,5 @@ export class Task implements TaskObject {
     if (duration === 0) return "尚未使用過";
     else if (duration < 0) return "正在進行中";
     else return durationTimeFormatter(duration).outputText;
-  }
-
-  async setLastStartTimestampToNow(): Promise<void> {
-    const now = new Date().getTime();
-    await axiosTaskUpdateStart({ id: this.id, lastStartTimestamp: now });
-    this.lastStartTimestamp = now;
-  }
-
-  async setLastEndTimestampToNow(): Promise<void> {
-    const now = new Date().getTime();
-    await axiosTaskUpdateEnd({ id: this.id, lastEndTimestamp: now });
-    this.lastEndTimestamp = now;
   }
 }

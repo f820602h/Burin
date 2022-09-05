@@ -44,11 +44,11 @@ const calcTheme = computed<ColorThemeObject>(() => {
   >
     <div
       class="btn-back"
-      :class="[`${calcTheme.back}`, circle ? 'rounded-full' : 'rounded-lg']"
+      :class="[`${calcTheme.back}`, circle ? 'rounded-full' : 'rounded-md']"
     >
       <span
         class="btn-front"
-        :class="[`${calcTheme.front}`, circle ? 'rounded-full' : 'rounded-lg']"
+        :class="[`${calcTheme.front}`, circle ? 'rounded-full' : 'rounded-md']"
         :style="btnSize"
       >
         <slot>{{ text }}</slot>

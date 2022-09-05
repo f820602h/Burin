@@ -25,7 +25,7 @@ const confirmHandler = handleSubmit(async (values) => {
   await axiosUserLogin({ email, password })
     .then(async () => {
       await userStore._actFetchUserInfo();
-      await taskStore._actFetchTaskCategoryData();
+      await taskStore._actFetchTaskCategoryList();
     })
     .catch(() => {
       isAccountWrong.value = true;

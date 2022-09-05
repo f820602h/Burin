@@ -18,34 +18,46 @@ import VerifyInput from "@/components/basic/VerifyInput.vue";
 import TaskCard from "./common/TaskCard.vue";
 import ButtonNormal from "./basic/ButtonNormal.vue";
 
-const props = withDefaults(defineProps<{ show?: boolean }>(), { show: false });
+const props = withDefaults(
+  defineProps<{ show?: boolean; editingCategory?: TaskCategory }>(),
+  { show: false, editingCategory: undefined }
+);
 const emit = defineEmits<{ (e: "close"): void }>();
 
 const refShow = toRef(props, "show");
 useBodyScrollFixed(refShow);
 
-const taskStore = useTaskStore();
-
-const validationSchema = object({
-  name: taskCategoryFieldValidation.name,
-  startColor: taskCategoryFieldValidation.startColor,
-  endColor: taskCategoryFieldValidation.endColor,
-});
+const refEditingCategory = toRef(props, "editingCategory");
 const {
   values: formValue,
   handleSubmit,
   useFieldModel,
 } = useForm({
-  validationSchema,
+  validationSchema: object({
+    name: taskCategoryFieldValidation.name,
+    startColor: taskCategoryFieldValidation.startColor,
+    endColor: taskCategoryFieldValidation.endColor,
+  }),
   initialValues: {
-    name: "",
-    startColor: taskCategoryColors.red.start,
-    endColor: taskCategoryColors.red.end,
+    name: refEditingCategory.value ? refEditingCategory.value.name : "",
+    startColor: refEditingCategory.value
+      ? refEditingCategory.value.startColor
+      : taskCategoryColors.red.start,
+    endColor: refEditingCategory.value
+      ? refEditingCategory.value.endColor
+      : taskCategoryColors.red.end,
   },
 });
 const [startColor, endColor] = useFieldModel(["startColor", "endColor"]);
+
+const taskStore = useTaskStore();
 const confirmHandler = handleSubmit(async (values) => {
-  await taskStore._actCreateTaskCategoryData(values);
+  if (props.editingCategory) {
+    const id = props.editingCategory.id;
+    await taskStore._actUpdateTaskCategory({ id, ...values });
+  } else {
+    await taskStore._actCreateTaskCategory(values);
+  }
   emit("close");
 });
 
@@ -116,7 +128,7 @@ const colorPickerOverrides: GlobalThemeOverrides = {
 
             <div class="paper">
               <div class="text-center text-xl font-bold mb-4">
-                任務群組創建申請
+                任務群組{{ editingCategory ? "修改" : "創建" }}申請
               </div>
 
               <div class="flex items-start mb-2">
@@ -214,7 +226,7 @@ const colorPickerOverrides: GlobalThemeOverrides = {
               />
               <ButtonNormal
                 theme="confirm"
-                text="新增"
+                :text="editingCategory ? '更新' : '新增'"
                 :width="100"
                 :height="35"
                 class="font-bold ml-3"

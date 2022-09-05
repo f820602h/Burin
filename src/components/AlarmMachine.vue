@@ -23,18 +23,6 @@ const afterIntervalTimes = computed<number>(() => {
   return Math.floor(duration.value / (intervalMinutes.value * 1000));
 });
 
-watch(isSwitchOn, (status) => {
-  if (status) startWatchAfterIntervalTimes();
-  else unWatchAfterIntervalTimes();
-});
-watch(
-  () => taskStore.currentTask,
-  () => {
-    unWatchAfterIntervalTimes();
-    startWatchAfterIntervalTimes();
-  }
-);
-
 let unWatchAfterIntervalTimes: () => void = () => {
   return;
 };
@@ -50,6 +38,19 @@ const onIntervalBtnPress: (direction: number) => void = (direction) => {
   intervalIndex.value += direction;
   startWatchAfterIntervalTimes();
 };
+
+watch(isSwitchOn, (status) => {
+  if (status) startWatchAfterIntervalTimes();
+  else unWatchAfterIntervalTimes();
+});
+watch(
+  () => taskStore.currentTask,
+  () => {
+    unWatchAfterIntervalTimes();
+    startWatchAfterIntervalTimes();
+  },
+  { immediate: true }
+);
 </script>
 
 <template>

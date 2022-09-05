@@ -1,21 +1,26 @@
-export type UserObject = {
-  id: string;
+export interface UserId {
+  id: number;
+}
+
+export interface UserInfo extends UserId {
   name: string;
   email: string;
-  password?: string;
+  password: string;
+}
+
+export interface UserCompleteInfo extends Omit<UserInfo, "password"> {
   createTimestamp: number;
   updateTimestamp: number;
-};
+}
 
-export class User implements UserObject {
-  id: UserObject["id"];
-  name: UserObject["name"];
-  email: UserObject["email"];
-  password?: UserObject["password"];
-  createTimestamp: UserObject["createTimestamp"];
-  updateTimestamp: UserObject["updateTimestamp"];
+export class User implements UserCompleteInfo {
+  id: UserCompleteInfo["id"];
+  name: UserCompleteInfo["name"];
+  email: UserCompleteInfo["email"];
+  createTimestamp: UserCompleteInfo["createTimestamp"];
+  updateTimestamp: UserCompleteInfo["updateTimestamp"];
 
-  constructor(arg: UserObject) {
+  constructor(arg: UserCompleteInfo) {
     this.id = arg.id;
     this.name = arg.name;
     this.email = arg.email;

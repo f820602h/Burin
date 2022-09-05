@@ -22,7 +22,7 @@ const isUserLoggerShow = ref<boolean>(false);
     >
       <GlobalHeader @toggle-logger="isUserLoggerShow = !isUserLoggerShow" />
     </div>
-    <div class="view-container relative flex-1 flex">
+    <div class="view-container relative flex-1 flex bg-gray-700">
       <div class="view-wrapper w-full">
         <router-view />
       </div>
