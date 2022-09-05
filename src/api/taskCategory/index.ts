@@ -10,7 +10,7 @@ export const axiosTaskCategoryGetList: () => Promise<
   AxiosResponse<TaskCategoryCompleteInfo[]>
 > = () => {
   return BaseAxiosRequestor.get({
-    url: "/TaskCategory/list",
+    url: "/taskCategory/list",
   });
 };
 
@@ -18,7 +18,7 @@ export const axiosTaskCategoryCreate: (
   payload: Omit<TaskCategoryInfo, "id">
 ) => Promise<AxiosResponse<TaskCategoryId>> = (payload) => {
   return BaseAxiosRequestor.post({
-    url: "/TaskCategory/create",
+    url: "/taskCategory/create",
     data: payload,
   });
 };
@@ -27,7 +27,16 @@ export const axiosTaskCategoryUpdate: (
   payload: TaskCategoryInfo
 ) => Promise<AxiosResponse<never>> = (payload) => {
   return BaseAxiosRequestor.post({
-    url: "/TaskCategory/update",
+    url: "/taskCategory/update",
+    data: payload,
+  });
+};
+
+export const axiosTaskCategoryDelete: (
+  payload: TaskCategoryId
+) => Promise<AxiosResponse<never>> = (payload) => {
+  return BaseAxiosRequestor.delete({
+    url: "/taskCategory/delete",
     data: payload,
   });
 };
