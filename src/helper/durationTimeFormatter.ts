@@ -21,7 +21,7 @@ export const durationTimeFormatter: (
 
   const hoursText = hours ? hours + "小時" : "";
   const minutesText = minutes ? minutes + "分鐘" : "";
-  const secondsText = hours || minutes ? "" : seconds + "秒";
+  const secondsText = hours ? "" : seconds + "秒";
   const outputText = hoursText + minutesText + secondsText;
 
   return {

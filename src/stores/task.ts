@@ -1,11 +1,7 @@
 import { defineStore } from "pinia";
 import { TaskCategory, type TaskCategoryInfo } from "@/class/TaskCategory";
 import { Task } from "@/class/Task";
-import {
-  axiosCurrentTaskGet,
-  axiosPunchIn,
-  axiosPunchOut,
-} from "@/api/currentTask";
+import { axiosCurrentTaskGet, axiosPunch } from "@/api/currentTask";
 import {
   axiosTaskCategoryGetList,
   axiosTaskCategoryCreate,
@@ -77,18 +73,10 @@ export const useTaskStore = defineStore({
       this.currentTask = res.data ? new Task(res.data) : null;
     },
     async _actUpdateCurrentTask(task: Task | null): Promise<void> {
-      const now = new Date().getTime();
       if (this.currentTask?.id === task?.id) return;
-      if (this.currentTask) {
-        const id = this.currentTask.id;
-        await axiosPunchOut({ id, lastEndTimestamp: now });
-        this.currentTask.lastEndTimestamp = now;
-      }
-      if (task) {
-        const id = task.id;
-        await axiosPunchIn({ id, lastStartTimestamp: now });
-        task.lastStartTimestamp = now;
-      }
+      const res = await axiosPunch({ id: task ? task.id : null });
+      if (task) task.lastStartTimestamp = res.data;
+      if (this.currentTask) this.currentTask.lastEndTimestamp = res.data;
       this.currentTask = task;
     },
   },
