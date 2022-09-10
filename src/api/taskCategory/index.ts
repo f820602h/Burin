@@ -7,7 +7,7 @@ import type {
 } from "@/class/TaskCategory";
 
 export const axiosTaskCategoryGetList: () => Promise<
-  AxiosResponse<TaskCategoryCompleteInfo[]>
+  TaskCategoryCompleteInfo[]
 > = () => {
   return BaseAxiosRequestor.get({
     url: "/taskCategory/list",
@@ -16,7 +16,7 @@ export const axiosTaskCategoryGetList: () => Promise<
 
 export const axiosTaskCategoryCreate: (
   payload: Omit<TaskCategoryInfo, "id">
-) => Promise<AxiosResponse<TaskCategoryId>> = (payload) => {
+) => Promise<TaskCategoryId["id"]> = (payload) => {
   return BaseAxiosRequestor.post({
     url: "/taskCategory/create",
     data: payload,

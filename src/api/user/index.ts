@@ -1,24 +1,21 @@
 import { BaseAxiosRequestor } from "../axios/index";
-import type { AxiosResponse } from "axios";
 import type { UserId, UserInfo, UserCompleteInfo } from "@/class/User";
 
-export const axiosUserGetStatus: () => Promise<AxiosResponse<boolean>> = () => {
+export const axiosUserGetStatus: () => Promise<boolean> = () => {
   return BaseAxiosRequestor.get({
     url: "/user/status",
   });
 };
 
-export const axiosUserGetInfo: () => Promise<
-  AxiosResponse<UserCompleteInfo>
-> = () => {
+export const axiosUserGetInfo: () => Promise<UserCompleteInfo> = () => {
   return BaseAxiosRequestor.get({
     url: "/user/info",
   });
 };
 
 export const axiosUserSignUp: (
-  payload: UserInfo
-) => Promise<AxiosResponse<UserId>> = (payload) => {
+  payload: Omit<UserInfo, "id">
+) => Promise<UserId> = (payload) => {
   return BaseAxiosRequestor.post({
     url: "/user/sign-up",
     data: payload,
@@ -27,7 +24,7 @@ export const axiosUserSignUp: (
 
 export const axiosUserLogin: (
   payload: Omit<UserInfo, "id" | "name">
-) => Promise<AxiosResponse<never>> = (payload) => {
+) => Promise<never> = (payload) => {
   return BaseAxiosRequestor.post({
     url: "/user/login",
     data: payload,

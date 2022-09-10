@@ -12,8 +12,7 @@ export const checkUserStatusMiddleware: Middleware = async (
   if (from.name) return;
   const userStore = useUserStore();
   const taskStore = useTaskStore();
-  const res = await axiosUserGetStatus();
-  if (res.data) {
+  if (await axiosUserGetStatus()) {
     await userStore._actFetchUserInfo();
     await taskStore._actFetchTaskCategoryList();
     await taskStore._actFetchCurrentTask();

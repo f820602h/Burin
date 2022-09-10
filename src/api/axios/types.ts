@@ -48,7 +48,7 @@ export class AxiosRequestor {
     );
   }
 
-  request<T>(config: RequestConfig): Promise<AxiosResponse<T>> {
+  request<T>(config: RequestConfig): Promise<T> {
     return new Promise((resolve, reject) => {
       const loadingStore = useLoadingStore();
       this.showLoading = config.showLoading ?? this.showLoading ?? false;
@@ -68,19 +68,19 @@ export class AxiosRequestor {
     });
   }
 
-  get<T>(config: RequestConfig): Promise<AxiosResponse<T>> {
+  get<T>(config: RequestConfig): Promise<T> {
     return this.request<T>({ ...config, method: "GET" });
   }
 
-  post<T>(config: RequestConfig): Promise<AxiosResponse<T>> {
+  post<T>(config: RequestConfig): Promise<T> {
     return this.request<T>({ ...config, method: "POST" });
   }
 
-  delete<T>(config: RequestConfig): Promise<AxiosResponse<T>> {
+  delete<T>(config: RequestConfig): Promise<T> {
     return this.request<T>({ ...config, method: "DELETE" });
   }
 
-  patch<T>(config: RequestConfig): Promise<AxiosResponse<T>> {
+  patch<T>(config: RequestConfig): Promise<T> {
     return this.request<T>({ ...config, method: "PATCH" });
   }
 }

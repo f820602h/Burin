@@ -13,8 +13,8 @@ export const useUserStore = defineStore({
   }),
   actions: {
     async _actFetchUserInfo(): Promise<void> {
-      const res = await axiosUserGetInfo();
-      this.user = new User(res.data);
+      const userData = await axiosUserGetInfo();
+      this.user = new User(userData);
     },
   },
 });

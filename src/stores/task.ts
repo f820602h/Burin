@@ -36,16 +36,16 @@ export const useTaskStore = defineStore({
   }),
   actions: {
     async _actFetchTaskCategoryList(): Promise<void> {
-      const res = await axiosTaskCategoryGetList();
-      this.categories = res.data.map((cate) => new TaskCategory(cate));
+      const list = await axiosTaskCategoryGetList();
+      this.categories = list.map((cate) => new TaskCategory(cate));
     },
     async _actCreateTaskCategory(
       payload: Omit<TaskCategoryInfo, "id">
     ): Promise<void> {
-      const res = await axiosTaskCategoryCreate(payload);
+      const id = await axiosTaskCategoryCreate(payload);
       const newCategory = new TaskCategory({
         ...payload,
-        id: res.data.id,
+        id,
         createTimestamp: 0,
         updateTimestamp: 0,
       });
@@ -65,18 +65,18 @@ export const useTaskStore = defineStore({
       this.categories = this.categories.filter((c) => c.id !== id);
     },
     async _actFetchTaskList(categoryId: Task["categoryId"]): Promise<void> {
-      const res = await axiosTaskGetList({ categoryId });
-      this.tasks = res.data.map((task) => new Task(task));
+      const list = await axiosTaskGetList({ categoryId });
+      this.tasks = list.map((task) => new Task(task));
     },
     async _actFetchCurrentTask(): Promise<void> {
-      const res = await axiosCurrentTaskGet();
-      this.currentTask = res.data ? new Task(res.data) : null;
+      const currentTask = await axiosCurrentTaskGet();
+      this.currentTask = currentTask ? new Task(currentTask) : null;
     },
     async _actUpdateCurrentTask(task: Task | null): Promise<void> {
       if (this.currentTask?.id === task?.id) return;
-      const res = await axiosPunch({ id: task ? task.id : null });
-      if (task) task.lastStartTimestamp = res.data;
-      if (this.currentTask) this.currentTask.lastEndTimestamp = res.data;
+      const updateTime = await axiosPunch(task ? task.id : null);
+      if (task) task.lastStartTimestamp = updateTime;
+      if (this.currentTask) this.currentTask.lastEndTimestamp = updateTime;
       this.currentTask = task;
     },
   },
