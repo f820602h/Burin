@@ -26,6 +26,7 @@ const confirmHandler = handleSubmit(async (values) => {
     .then(async () => {
       await userStore._actFetchUserInfo();
       await taskStore._actFetchTaskCategoryList();
+      await taskStore._actFetchCurrentTask();
     })
     .catch(() => {
       isAccountWrong.value = true;

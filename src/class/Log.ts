@@ -3,11 +3,11 @@ import type { TaskCategory } from "./TaskCategory";
 import { Color } from "@/class/Color";
 import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
 
-export interface RecordId {
+export interface LogId {
   id: number;
 }
 
-export interface RecordInfo extends RecordId {
+export interface LogInfo extends LogId {
   categoryName: TaskCategory["name"];
   startColor: TaskCategory["startColor"];
   endColor: TaskCategory["endColor"];
@@ -17,22 +17,22 @@ export interface RecordInfo extends RecordId {
   endTimestamp: Task["lastEndTimestamp"];
 }
 
-export interface RecordCompleteInfo extends RecordInfo {
+export interface LogCompleteInfo extends LogInfo {
   createTimestamp: number;
 }
 
-export class Record implements RecordCompleteInfo {
-  id: RecordCompleteInfo["id"];
-  categoryName: RecordCompleteInfo["categoryName"];
-  startColor: RecordCompleteInfo["startColor"];
-  endColor: RecordCompleteInfo["endColor"];
-  taskTitle: RecordCompleteInfo["taskTitle"];
-  taskAdditionContent: RecordCompleteInfo["taskAdditionContent"];
-  startTimestamp: RecordCompleteInfo["startTimestamp"];
-  endTimestamp: RecordCompleteInfo["endTimestamp"];
-  createTimestamp: RecordCompleteInfo["createTimestamp"];
+export class Log implements LogCompleteInfo {
+  id: LogCompleteInfo["id"];
+  categoryName: LogCompleteInfo["categoryName"];
+  startColor: LogCompleteInfo["startColor"];
+  endColor: LogCompleteInfo["endColor"];
+  taskTitle: LogCompleteInfo["taskTitle"];
+  taskAdditionContent: LogCompleteInfo["taskAdditionContent"];
+  startTimestamp: LogCompleteInfo["startTimestamp"];
+  endTimestamp: LogCompleteInfo["endTimestamp"];
+  createTimestamp: LogCompleteInfo["createTimestamp"];
 
-  constructor(arg: RecordCompleteInfo) {
+  constructor(arg: LogCompleteInfo) {
     this.id = arg.id;
     this.categoryName = arg.categoryName;
     this.startColor = arg.startColor;
@@ -55,7 +55,7 @@ export class Record implements RecordCompleteInfo {
     else return durationTimeFormatter(duration).outputText;
   }
 
-  static parse(task: Task, taskCategory: TaskCategory): Omit<RecordInfo, "id"> {
+  static parse(task: Task, taskCategory: TaskCategory): Omit<LogInfo, "id"> {
     if (task.categoryId !== taskCategory.id) {
       throw Error("task and task category cannot be associated");
     }

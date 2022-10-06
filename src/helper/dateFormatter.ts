@@ -1,19 +1,19 @@
 type DateFormatterOptionsValue = "numeric" | "2-digit";
 
 type DateFormatterOptions = {
-  timeZone?: string;
-  year?: DateFormatterOptionsValue;
-  month?: DateFormatterOptionsValue;
-  day?: DateFormatterOptionsValue;
-  hour12?: boolean;
-  hour?: DateFormatterOptionsValue;
-  minute?: DateFormatterOptionsValue;
-  second?: DateFormatterOptionsValue;
+  timeZone: string;
+  year: DateFormatterOptionsValue;
+  month: DateFormatterOptionsValue;
+  day: DateFormatterOptionsValue;
+  hour12: boolean;
+  hour: DateFormatterOptionsValue;
+  minute: DateFormatterOptionsValue;
+  second: DateFormatterOptionsValue;
 };
 
 export const dateFormatter: (
   timeStamp: number,
-  mixinOptions?: DateFormatterOptions
+  mixinOptions?: Partial<DateFormatterOptions>
 ) => string = (timeStamp, mixinOptions = {}) => {
   const defaultOptions: DateFormatterOptions = {
     timeZone: "Asia/Taipei",

@@ -13,7 +13,13 @@ const props = withDefaults(
   { width: 200, minValue: 0, maxValue: 100, modelValue: 50 }
 );
 
-const emit = defineEmits<{ (e: "update:modelValue", value: number): void }>();
+const emit = defineEmits<{
+  (e: "update:modelValue", value: number): void;
+  (e: "start"): void;
+  (e: "move"): void;
+  (e: "end"): void;
+  (e: "jump"): void;
+}>();
 
 const smooth = 1.15;
 
@@ -50,42 +56,50 @@ onMounted(() => {
 
 const onGrooveClick: (e: MouseEvent) => void = (e) => {
   lastLeftRatio.value = e.offsetX / props.width;
+  emit("jump");
 };
 // mouse event
 const onKnobMousedown: (e: MouseEvent) => void = (e) => {
   isActive.value = true;
   originX.value = e.clientX;
+  emit("start");
 };
 const onBodyMousemove: (e: MouseEvent) => void = (e) => {
   if (!isActive.value) return;
   e.preventDefault();
   offsetX.value = e.clientX - originX.value;
+  emit("move");
 };
 const onBodyMouseup: () => void = () => {
   if (!isActive.value) return;
   isActive.value = false;
   lastLeftRatio.value = currentLeftRatio.value;
   offsetX.value = 0;
+  emit("end");
 };
 const onBodyMouseleave: () => void = () => {
   if (!isActive.value) return;
   isActive.value = false;
+  emit("end");
 };
 // touch event
 const onKnobTouchstart: (e: TouchEvent) => void = (e) => {
   e.preventDefault();
   isActive.value = true;
   originX.value = e.touches[0].clientX;
+  emit("start");
 };
 const onBodyTouchmove: (e: TouchEvent) => void = (e) => {
   if (!isActive.value) return;
   offsetX.value = e.touches[0].clientX - originX.value;
+  emit("move");
 };
 const onBodyTouchend: () => void = () => {
   if (!isActive.value) return;
   isActive.value = false;
   lastLeftRatio.value = currentLeftRatio.value;
   offsetX.value = 0;
+  emit("end");
 };
 </script>
 
