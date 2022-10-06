@@ -31,6 +31,7 @@ const editCategory: () => void = () => {
 const deleteCategory: () => void = () => {
   if (!selectedCategory.value) return;
   taskStore._actDeleteTaskCategory(selectedCategory.value.id);
+  emit("close");
 };
 
 const setCurrentTask: (task: Task) => void = (task) => {

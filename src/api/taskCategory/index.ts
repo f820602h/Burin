@@ -37,6 +37,6 @@ export const axiosTaskCategoryDelete: (
 ) => Promise<AxiosResponse<never>> = (payload) => {
   return BaseAxiosRequestor.delete({
     url: "/taskCategory/delete",
-    data: payload,
+    params: payload,
   });
 };
