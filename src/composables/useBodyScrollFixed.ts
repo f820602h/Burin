@@ -1,35 +1,34 @@
-import { watch, type Ref } from "vue";
+export function useBodyScrollFixed() {
+  const fixedBody: () => void = () => {
+    const top = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${top}px`;
+  };
 
-const fixedBody: () => void = () => {
-  const top = window.scrollY;
-  document.body.style.position = "fixed";
-  document.body.style.top = `-${top}px`;
-};
+  const resetBody: () => void = () => {
+    const scrollY = document.body.style.top;
+    document.body.style.position = "";
+    document.body.style.top = "";
+    window.scrollTo(0, parseInt(scrollY || "0") * -1);
+  };
 
-const resetBody: () => void = () => {
-  const scrollY = document.body.style.top;
-  document.body.style.position = "";
-  document.body.style.top = "";
-  window.scrollTo(0, parseInt(scrollY || "0") * -1);
-};
+  const resizeHandler: () => void = () => {
+    resetBody();
+    fixedBody();
+  };
 
-const resizeHandler: () => void = () => {
-  resetBody();
-  fixedBody();
-};
+  const fixed: () => void = () => {
+    window.addEventListener("resize", resizeHandler);
+    fixedBody();
+  };
 
-export function useBodyScrollFixed(flag: Ref<boolean>): void {
-  watch(
-    flag,
-    (value) => {
-      if (value) {
-        window.addEventListener("resize", resizeHandler);
-        fixedBody();
-      } else {
-        window.removeEventListener("resize", resizeHandler);
-        resetBody();
-      }
-    },
-    { immediate: true }
-  );
+  const reset: () => void = () => {
+    window.removeEventListener("resize", resizeHandler);
+    resetBody();
+  };
+
+  return {
+    fixed,
+    reset,
+  };
 }

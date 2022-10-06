@@ -1,114 +1,179 @@
 <script setup lang="ts">
-import { ref, toRef } from "vue";
-import { useBodyScrollFixed } from "@/composables/useBodyScrollFixed";
+import { computed, nextTick, onMounted, ref, type Ref } from "vue";
+import { useLogStore } from "@/stores/log";
+import { useResizeObserver } from "@vueuse/core";
+import type { Range } from "@/components/basic/GraduatedScale.vue";
 import GraduatedScale from "@/components/basic/GraduatedScale.vue";
 import RangeInput from "@/components/basic/RangeInput.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
+import { timestampCalculator } from "@/helper/timestampCalculator";
 
-const props = withDefaults(defineProps<{ show?: boolean }>(), { show: false });
 defineEmits<{ (e: "close"): void }>();
 
-const refShow = toRef(props, "show");
-useBodyScrollFixed(refShow);
+const historyScroll = ref<HTMLElement | null>(null);
+const historyScale = ref<InstanceType<typeof GraduatedScale> | null>(null);
 
+const percentageScroll = ref<HTMLElement | null>(null);
+const percentageScale = ref<InstanceType<typeof GraduatedScale> | null>(null);
+
+const setResizeObserver: (
+  scroll: Ref<HTMLElement | null>,
+  scale: Ref<InstanceType<typeof GraduatedScale> | null>
+) => void = (scroll, scale) => {
+  let lastClientWidth = 0;
+  let lastScrollWidth = 0;
+
+  useResizeObserver(scale.value, () => {
+    const clientWidth = scroll.value?.clientWidth || 0;
+    const scrollWidth = scroll.value?.scrollWidth || 0;
+    const scrollLeft = scroll.value?.scrollLeft || 0;
+
+    if (lastClientWidth && lastScrollWidth) {
+      const increasedWidth = scrollWidth - lastScrollWidth;
+      const moveRatio = (lastClientWidth / 2 + scrollLeft) / lastScrollWidth;
+      const offset = increasedWidth * moveRatio;
+      scroll.value?.scrollTo(scrollLeft + offset, 0);
+    }
+
+    lastClientWidth = clientWidth;
+    lastScrollWidth = scrollWidth;
+  });
+};
+
+onMounted(async () => {
+  await logState._actFetchTodayLog();
+  nextTick(() => {
+    setResizeObserver(historyScroll, historyScale);
+    setResizeObserver(percentageScroll, percentageScale);
+  });
+});
+
+const oneHour = 1000 * 60 * 60;
 const historyScaleWidthPercent = ref<number>(200);
-const proportionScaleWidthPercent = ref<number>(200);
+const percentageScaleWidthPercent = ref<number>(100);
 
-const clockTickFormatter: (index: number) => string = (index) => {
-  return !(index % 3) ? `${index}:00` : "";
+const clockTickFormatter: (v: number, i: number) => string = (v, i) => {
+  const hour = new Date(v).getHours();
+  return !(i % 3) ? `${hour}:00` : "";
 };
-const percentTickFormatter: (index: number) => string = (index) => {
-  return `${index * 10}%`;
+const percentTickFormatter: (v: number) => string = (v) => {
+  return v + "%";
 };
+
+const logState = useLogStore();
+const historyScaleData = computed<Range[]>(() => {
+  return logState.today.map((log) => ({
+    x1: log.startTimestamp,
+    x2: log.endTimestamp,
+    name: `${log.categoryName}/${log.taskTitle}`,
+    color: log.getColor().styleString,
+  }));
+});
+const percentageScaleData = computed<Range[]>(() => {
+  let lastPercent = 0;
+  return Object.entries(logState._getCategorizeTodayLog).map(([cate, logs]) => {
+    const totalTime = logs.reduce<number>((sum, log) => {
+      return sum + log.endTimestamp - log.startTimestamp;
+    }, 0);
+    const x1 = lastPercent;
+    const x2 = Math.round(totalTime / logState._getTotalTodayLogTime) * 100;
+    lastPercent = x2;
+    return { x1, x2, name: cate, color: logs[0].getColor().styleString };
+  });
+});
 </script>
 
 <template>
-  <Transition name="collapse">
-    <div
-      v-if="show"
-      class="fixed-layer flex-center-end bg-black/30 backdrop-blur-[2px]"
-    >
-      <div class="monitor-panel">
-        <div class="shadow-mask shadow-light" />
-        <div class="max-h-3/4 px-3 py-6 overflow-auto scrollbar-hide">
-          <div class="max-w-[800px] mx-auto">
-            <!-- history -->
-            <div class="flex-between-end">
-              <div class="monitor-panel__scale-tag">
-                <span class="font-bold text-gray-600">任務歷程記錄</span>
-              </div>
+  <div class="monitor-panel">
+    <div class="shadow-mask shadow-light" />
+    <div class="max-h-3/4 px-3 py-6 overflow-auto scrollbar-hide">
+      <div class="max-w-[800px] mx-auto">
+        <!-- history -->
+        <div class="flex-between-end">
+          <div class="monitor-panel__scale-tag">
+            <span class="font-bold text-gray-600">任務歷程記錄</span>
+          </div>
 
-              <div class="flex items-center text-gray-600 mb-1 ml-1">
-                <span class="icon-glass-minus"></span>
-                <RangeInput
-                  v-model="historyScaleWidthPercent"
-                  :min-value="100"
-                  :max-value="500"
-                  :width="100"
-                  class="mt-1 mx-2"
-                />
-                <span class="icon-glass-add"></span>
-              </div>
-            </div>
-
-            <div class="monitor-panel__scale">
-              <div class="shadow-mask" />
-              <div class="px-5 py-3 bg-slate-100 overflow-auto">
-                <GraduatedScale
-                  :tickAmount="25"
-                  :minorTickAmount="3"
-                  :tick-formatter="clockTickFormatter"
-                  class="min-w-[500px]"
-                  :style="{ width: historyScaleWidthPercent + '%' }"
-                />
-              </div>
-            </div>
-
-            <!-- proportion -->
-            <div class="flex-between-end mt-8">
-              <div class="monitor-panel__scale-tag">
-                <span class="font-bold text-gray-600">任務分類佔比</span>
-              </div>
-
-              <div class="flex items-center text-gray-600 mb-1 ml-1">
-                <span class="icon-glass-minus"></span>
-                <RangeInput
-                  v-model="proportionScaleWidthPercent"
-                  :min-value="100"
-                  :max-value="500"
-                  :width="100"
-                  class="mt-1 mx-2"
-                />
-                <span class="icon-glass-add"></span>
-              </div>
-            </div>
-
-            <div class="monitor-panel__scale">
-              <div class="shadow-mask" />
-              <div class="px-5 py-3 bg-slate-100 overflow-auto">
-                <GraduatedScale
-                  :tickAmount="11"
-                  :minorTickAmount="4"
-                  :tick-formatter="percentTickFormatter"
-                  class="min-w-[500px]"
-                  :style="{ width: proportionScaleWidthPercent + '%' }"
-                />
-              </div>
-            </div>
+          <div class="flex items-center text-gray-600 mb-1 ml-1">
+            <span class="icon-glass-minus"></span>
+            <RangeInput
+              v-model="historyScaleWidthPercent"
+              :min-value="100"
+              :max-value="500"
+              :width="100"
+              class="mt-1 mx-2"
+            />
+            <span class="icon-glass-add"></span>
           </div>
         </div>
 
-        <div class="monitor-panel__controller">
-          <ButtonNormal
-            :width="50"
-            theme="cancel"
-            text="關閉"
-            @press="$emit('close')"
-          />
+        <div class="monitor-panel__scale">
+          <div class="shadow-mask" />
+          <div ref="historyScroll" class="px-5 py-3 bg-slate-100 overflow-auto">
+            <GraduatedScale
+              ref="historyScale"
+              :data="historyScaleData"
+              :startValue="timestampCalculator('today')"
+              :tickInterval="oneHour"
+              :tickAmount="24"
+              :minorTickAmount="3"
+              :tick-formatter="clockTickFormatter"
+              class="min-w-[500px]"
+              :style="{ width: historyScaleWidthPercent + '%' }"
+            />
+          </div>
+        </div>
+
+        <!-- percentage -->
+        <div class="flex-between-end mt-8">
+          <div class="monitor-panel__scale-tag">
+            <span class="font-bold text-gray-600">任務分類佔比</span>
+          </div>
+
+          <div class="flex items-center text-gray-600 mb-1 ml-1">
+            <span class="icon-glass-minus"></span>
+            <RangeInput
+              v-model="percentageScaleWidthPercent"
+              :min-value="100"
+              :max-value="500"
+              :width="100"
+              class="mt-1 mx-2"
+            />
+            <span class="icon-glass-add"></span>
+          </div>
+        </div>
+
+        <div class="monitor-panel__scale">
+          <div class="shadow-mask" />
+          <div
+            ref="percentageScroll"
+            class="px-5 py-3 bg-slate-100 overflow-auto"
+          >
+            <GraduatedScale
+              ref="percentageScale"
+              :data="percentageScaleData"
+              :startValue="0"
+              :tickInterval="10"
+              :tickAmount="10"
+              :minorTickAmount="4"
+              :tick-formatter="percentTickFormatter"
+              class="min-w-[500px]"
+              :style="{ width: percentageScaleWidthPercent + '%' }"
+            />
+          </div>
         </div>
       </div>
     </div>
-  </Transition>
+
+    <div class="monitor-panel__controller">
+      <ButtonNormal
+        :width="50"
+        theme="cancel"
+        text="關閉"
+        @press="$emit('close')"
+      />
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -141,23 +206,5 @@ const percentTickFormatter: (index: number) => string = (index) => {
 
 .shadow-mask {
   @apply absolute -top-[1px] left-0 z-1 w-full h-full shadow-inner-md  pointer-events-none;
-}
-
-.collapse-enter-active,
-.collapse-leave-active {
-  @apply transition-opacity duration-500;
-
-  :deep(.monitor-panel) {
-    @apply transition-transform duration-300;
-  }
-}
-
-.collapse-enter-from,
-.collapse-leave-to {
-  @apply opacity-0;
-
-  :deep(.monitor-panel) {
-    @apply translate-y-full;
-  }
 }
 </style>

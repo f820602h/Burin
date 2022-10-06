@@ -1,19 +1,15 @@
 <script setup lang="ts">
-import { ref, toRef } from "vue";
+import { ref } from "vue";
 import type { Task } from "@/class/Task";
 import type { TaskCategory } from "@/class/TaskCategory";
 import { useTaskStore } from "@/stores/task";
-import { useBodyScrollFixed } from "@/composables/useBodyScrollFixed";
 import TaskCategoryFolder from "@/components/common/TaskCategoryFolder.vue";
 import TaskCard from "@/components/common/TaskCard.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
 import FolderCreator from "./FolderCreator.vue";
+import BlurMask from "@/components/common/BlurMask.vue";
 
-const props = withDefaults(defineProps<{ show?: boolean }>(), { show: false });
 const emit = defineEmits<{ (e: "close"): void }>();
-
-const refShow = toRef(props, "show");
-useBodyScrollFixed(refShow);
 
 const isFolderCreatorShow = ref<boolean>(false);
 
@@ -45,108 +41,114 @@ const setCurrentTask: (task: Task) => void = (task) => {
 </script>
 
 <template>
-  <Transition name="collapse">
-    <div v-if="show" class="fixed-layer flex bg-black/30 backdrop-blur-[2px]">
-      <div class="task-drawer">
+  <div class="task-drawer">
+    <div
+      class="absolute top-5 right-0 pb-2 rounded-r-md bg-[#323238] shadow-md shadow-light translate-x-full"
+    >
+      <div
+        class="px-2 py-[6px] border-4 border-l-0 border-zinc-700 rounded-r-md bg-zinc-700 shadow-inner-sm"
+      >
+        <ButtonNormal
+          :width="32"
+          theme="cancel"
+          :circle="true"
+          @press="[(selectedCategory = undefined), $emit('close')]"
+        >
+          <span class="icon-cancel text-white/75"></span>
+        </ButtonNormal>
+      </div>
+    </div>
+
+    <div class="task-drawer__drawer">
+      <div class="folders">
+        <template v-if="taskStore.categories.length">
+          <TaskCategoryFolder
+            v-for="(cate, index) in taskStore.categories"
+            :key="index"
+            :task-category="cate"
+            class="-mt-[80px] first:mt-7"
+            @click="selectCategory(cate)"
+          />
+        </template>
+      </div>
+
+      <div class="task-drawer__door">
+        <div class="tag">
+          <div class="full bg-white shadow-inner-sm shadow-darkest" />
+        </div>
+        <div class="handle">
+          <div class="w-full h-2 rounded-md bg-zinc-400 shadow-sm" />
+        </div>
+      </div>
+    </div>
+
+    <Transition name="tray-collapse">
+      <div v-if="selectedCategory" class="task-drawer__tray">
         <div
-          class="absolute top-5 right-0 pb-2 rounded-r-md bg-[#323238] shadow-md shadow-light translate-x-full"
+          class="absolute top-[90px] right-0 pb-2 rounded-r-md bg-gray-400 shadow-md shadow-light translate-x-full"
         >
           <div
-            class="px-2 py-[6px] border-4 border-l-0 border-zinc-700 rounded-r-md bg-zinc-700 shadow-inner-sm"
+            class="px-2 py-[6px] border-4 border-l-0 border-gray-300 rounded-r-md bg-gray-300 shadow-inner-sm"
           >
             <ButtonNormal
               :width="32"
               theme="cancel"
               :circle="true"
-              @press="[(selectedCategory = undefined), $emit('close')]"
+              @press="selectedCategory = undefined"
             >
               <span class="icon-cancel text-white/75"></span>
             </ButtonNormal>
           </div>
         </div>
 
-        <div class="task-drawer__drawer">
-          <div class="folders">
-            <template v-if="taskStore.categories.length">
-              <TaskCategoryFolder
-                v-for="(cate, index) in taskStore.categories"
-                :key="index"
-                :task-category="cate"
-                class="-mt-[80px] first:mt-7"
-                @click="selectCategory(cate)"
-              />
-            </template>
+        <div class="cards">
+          <div class="flex justify-evenly py-5">
+            <ButtonNormal
+              :width="90"
+              theme="cancel"
+              text="刪除群組"
+              class="font-bold text-sm"
+              @press="deleteCategory"
+            />
+            <ButtonNormal
+              :width="90"
+              theme="confirm"
+              text="編輯群組"
+              class="font-bold text-sm"
+              @press="editCategory"
+            />
           </div>
 
-          <div class="task-drawer__door">
-            <div class="tag">
-              <div class="full bg-white shadow-inner-sm shadow-darkest" />
-            </div>
-            <div class="handle">
-              <div class="w-full h-2 rounded-md bg-zinc-400 shadow-sm" />
-            </div>
-          </div>
+          <template v-if="taskStore.tasks.length">
+            <TaskCard
+              v-for="(task, index) in taskStore.tasks"
+              :key="index"
+              :task="task"
+              class="mx-auto mb-3 cursor-pointer last:mb-0"
+              @click="setCurrentTask(task)"
+            />
+          </template>
         </div>
-
-        <Transition name="collapse-tray">
-          <div v-if="selectedCategory" class="task-drawer__tray">
-            <div
-              class="absolute top-[90px] right-0 pb-2 rounded-r-md bg-gray-400 shadow-md shadow-light translate-x-full"
-            >
-              <div
-                class="px-2 py-[6px] border-4 border-l-0 border-gray-300 rounded-r-md bg-gray-300 shadow-inner-sm"
-              >
-                <ButtonNormal
-                  :width="32"
-                  theme="cancel"
-                  :circle="true"
-                  @press="selectedCategory = undefined"
-                >
-                  <span class="icon-cancel text-white/75"></span>
-                </ButtonNormal>
-              </div>
-            </div>
-
-            <div class="cards">
-              <div class="flex justify-evenly py-5">
-                <ButtonNormal
-                  :width="90"
-                  theme="cancel"
-                  text="刪除群組"
-                  class="font-bold text-sm"
-                  @press="deleteCategory"
-                />
-                <ButtonNormal
-                  :width="90"
-                  theme="confirm"
-                  text="編輯群組"
-                  class="font-bold text-sm"
-                  @press="editCategory"
-                />
-              </div>
-
-              <template v-if="taskStore.tasks.length">
-                <TaskCard
-                  v-for="(task, index) in taskStore.tasks"
-                  :key="index"
-                  :task="task"
-                  class="mx-auto mb-3 cursor-pointer last:mb-0"
-                  @click="setCurrentTask(task)"
-                />
-              </template>
-            </div>
-            <div class="handle" />
-          </div>
-        </Transition>
+        <div class="handle" />
       </div>
-    </div>
-  </Transition>
+    </Transition>
 
-  <FolderCreator
-    :show="isFolderCreatorShow"
-    :editing-category="editingCategory"
-    @close="[(isFolderCreatorShow = false), (editingCategory = undefined)]"
-  />
+    <teleport to="#app > .root">
+      <Transition name="creator-fade">
+        <BlurMask
+          v-if="isFolderCreatorShow"
+          class="justify-center items-center"
+        >
+          <FolderCreator
+            :editing-category="editingCategory"
+            @close="
+              [(isFolderCreatorShow = false), (editingCategory = undefined)]
+            "
+          />
+        </BlurMask>
+      </Transition>
+    </teleport>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -197,31 +199,31 @@ const setCurrentTask: (task: Task) => void = (task) => {
   }
 }
 
-.collapse-enter-active,
-.collapse-leave-active {
+.creator-fade-enter-active,
+.creator-fade-leave-active {
   @apply transition-opacity duration-500;
 
-  :deep(.task-drawer) {
+  > * {
     @apply transition-transform duration-500;
   }
 }
 
-.collapse-enter-from,
-.collapse-leave-to {
+.creator-fade-enter-from,
+.creator-fade-leave-to {
   @apply opacity-0;
 
-  :deep(.task-drawer) {
-    @apply -translate-y-full;
+  > * {
+    @apply -translate-y-10;
   }
 }
 
-.collapse-tray-enter-active,
-.collapse-tray-leave-active {
+.tray-collapse-enter-active,
+.tray-collapse-leave-active {
   @apply transition-transform duration-500;
 }
 
-.collapse-tray-enter-from,
-.collapse-tray-leave-to {
+.tray-collapse-enter-from,
+.tray-collapse-leave-to {
   @apply -translate-y-full;
 }
 </style>

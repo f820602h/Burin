@@ -6,6 +6,7 @@ import AlarmMachine from "@/components/AlarmMachine.vue";
 import MonitorPanel from "@/components/MonitorPanel.vue";
 import TaskDrawer from "@/components/TaskDrawer.vue";
 import ToolBar from "@/components/ToolBar.vue";
+import BlurMask from "@/components/common/BlurMask.vue";
 import type { Action } from "@/components/ToolBar.vue";
 
 const taskStore = useTaskStore();
@@ -31,7 +32,11 @@ const mainViewBgColor = computed<string>(() => {
 </script>
 
 <template>
-  <TaskDrawer :show="isTaskDrawerShow" @close="isTaskDrawerShow = false" />
+  <Transition name="drawer-collapse">
+    <BlurMask v-if="isTaskDrawerShow" class="justify-start">
+      <TaskDrawer @close="isTaskDrawerShow = false" />
+    </BlurMask>
+  </Transition>
 
   <main
     class="background-animate h-full"
@@ -51,10 +56,11 @@ const mainViewBgColor = computed<string>(() => {
 
   <ToolBar :actions="toolBarActions" />
 
-  <MonitorPanel
-    :show="isMonitorPanelShow"
-    @close="isMonitorPanelShow = false"
-  />
+  <Transition name="panel-collapse">
+    <BlurMask v-if="isMonitorPanelShow" class="justify-center items-end">
+      <MonitorPanel @close="isMonitorPanelShow = false" />
+    </BlurMask>
+  </Transition>
 </template>
 
 <style lang="scss" scoped>
@@ -86,6 +92,42 @@ const mainViewBgColor = computed<string>(() => {
 
   &__line {
     @apply w-3 h-8 md:h-15 -mt-2 border border-gray-400/60 rounded-t-3xl bg-gray-100 shadow-inner-md shadow-lighter;
+  }
+}
+
+.drawer-collapse-enter-active,
+.drawer-collapse-leave-active {
+  @apply transition-opacity duration-500;
+
+  > * {
+    @apply transition-transform duration-500;
+  }
+}
+
+.drawer-collapse-enter-from,
+.drawer-collapse-leave-to {
+  @apply opacity-0;
+
+  > * {
+    @apply -translate-y-full;
+  }
+}
+
+.panel-collapse-enter-active,
+.panel-collapse-leave-active {
+  @apply transition-opacity duration-500;
+
+  > * {
+    @apply transition-transform duration-300;
+  }
+}
+
+.panel-collapse-enter-from,
+.panel-collapse-leave-to {
+  @apply opacity-0;
+
+  > * {
+    @apply translate-y-full;
   }
 }
 </style>

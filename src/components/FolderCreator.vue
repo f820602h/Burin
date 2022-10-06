@@ -13,19 +13,14 @@ import {
   type GlobalThemeOverrides,
 } from "naive-ui";
 import { useTaskStore } from "@/stores/task";
-import { useBodyScrollFixed } from "@/composables/useBodyScrollFixed";
 import VerifyInput from "@/components/basic/VerifyInput.vue";
 import TaskCard from "./common/TaskCard.vue";
 import ButtonNormal from "./basic/ButtonNormal.vue";
 
-const props = withDefaults(
-  defineProps<{ show?: boolean; editingCategory?: TaskCategory }>(),
-  { show: false, editingCategory: undefined }
-);
+const props = withDefaults(defineProps<{ editingCategory?: TaskCategory }>(), {
+  editingCategory: undefined,
+});
 const emit = defineEmits<{ (e: "close"): void }>();
-
-const refShow = toRef(props, "show");
-useBodyScrollFixed(refShow);
 
 const refEditingCategory = toRef(props, "editingCategory");
 const {
@@ -110,134 +105,127 @@ const colorPickerOverrides: GlobalThemeOverrides = {
 </script>
 
 <template>
-  <Transition name="fade">
-    <div
-      v-if="show"
-      class="fixed-layer flex-center-start pt-[15vh] bg-black/30 backdrop-blur-[2px] overflow-y-auto"
-    >
-      <div>
-        <div class="clipboard pb-1 rounded-md bg-stone-700 shadow-xl">
-          <div class="relative px-4 pb-5 rounded-md bg-stone-600">
-            <div class="iron-sheet">
-              <div class="flex-between-center h-full px-5">
-                <div class="screw"></div>
-                <div class="screw"></div>
-              </div>
-            </div>
-            <div class="clip" />
-
-            <div class="paper">
-              <div class="text-center text-xl font-bold mb-4">
-                任務群組{{ editingCategory ? "修改" : "創建" }}申請
-              </div>
-
-              <div class="flex items-start mb-2">
-                <div
-                  v-for="(color, index) in colors"
-                  :key="index"
-                  :style="{ backgroundImage: color.styleString }"
-                  class="w-[22px] h-[22px] mr-2 border-2 rounded-full cursor-pointer last:hidden"
-                  :class="{ 'border-black': isSystemColorSelected(color) }"
-                  @click="selectSystemColor(color)"
-                />
-              </div>
-
-              <div class="flex items-center mb-1">
-                <label for="startColor">顏色(一)：</label>
-                <NConfigProvider
-                  :preflight-style-disabled="true"
-                  :abstract="true"
-                  :theme-overrides="colorPickerOverrides"
-                >
-                  <NColorPicker
-                    v-model:value="startColor"
-                    :size="'small'"
-                    :modes="['hex']"
-                    :show-alpha="false"
-                  />
-                </NConfigProvider>
-              </div>
-
-              <div class="flex items-center mb-2">
-                <label for="endColor">顏色(二)：</label>
-                <NConfigProvider
-                  :preflight-style-disabled="true"
-                  :abstract="true"
-                  :theme-overrides="colorPickerOverrides"
-                >
-                  <NColorPicker
-                    v-model:value="endColor"
-                    :size="'small'"
-                    :modes="['hex']"
-                    :show-alpha="false"
-                  />
-                </NConfigProvider>
-              </div>
-
-              <div class="flex items-start mb-1">
-                <label for="name">群組名稱：</label>
-                <VerifyInput
-                  name="name"
-                  type="text"
-                  placeholder="請填寫"
-                  class="w-full mx-1"
-                >
-                  <template #error="{ errorMessage, meta }">
-                    <div class="text-xs text-right text-red-600 min-h-4 mt-1">
-                      <template v-if="errorMessage && meta.touched">
-                        {{ errorMessage }}
-                      </template>
-                    </div>
-                  </template>
-                </VerifyInput>
-              </div>
-
-              <div class="relative my-4">
-                <div
-                  class="absolute -top-3 right-4 w-5 h-10 bg-white/50 -rotate-45"
-                />
-                <TaskCard
-                  class="mx-auto"
-                  :task="demoTask"
-                  :category="demoCategory"
-                />
-                <div
-                  class="absolute -bottom-3 left-4 w-5 h-10 bg-white/50 -rotate-45"
-                />
-              </div>
-
-              <div class="text-xs text-dark text-center">
-                ＊為確保文字清晰，請避免淺色卡片
-              </div>
-            </div>
+  <div>
+    <div class="clipboard pb-1 rounded-md bg-stone-700 shadow-xl">
+      <div class="relative px-4 pb-5 rounded-md bg-stone-600">
+        <div class="iron-sheet">
+          <div class="flex-between-center h-full px-5">
+            <div class="screw"></div>
+            <div class="screw"></div>
           </div>
         </div>
+        <div class="clip" />
 
-        <div class="relative flex-center-center mt-2">
-          <div class="mx-2 pb-2 rounded-md bg-zinc-400 shadow-md">
-            <div class="p-2 pt-1 rounded-md bg-zinc-200">
-              <ButtonNormal
-                theme="cancel"
-                text="取消"
-                :width="100"
-                :height="35"
-                class="font-bold"
-                @click="$emit('close')"
+        <div class="paper">
+          <div class="text-center text-xl font-bold mb-4">
+            任務群組{{ editingCategory ? "修改" : "創建" }}申請
+          </div>
+
+          <div class="flex items-start mb-2">
+            <div
+              v-for="(color, index) in colors"
+              :key="index"
+              :style="{ backgroundImage: color.styleString }"
+              class="w-[22px] h-[22px] mr-2 border-2 rounded-full cursor-pointer last:hidden"
+              :class="{ 'border-black': isSystemColorSelected(color) }"
+              @click="selectSystemColor(color)"
+            />
+          </div>
+
+          <div class="flex items-center mb-1">
+            <label for="startColor">顏色(一)：</label>
+            <NConfigProvider
+              :preflight-style-disabled="true"
+              :abstract="true"
+              :theme-overrides="colorPickerOverrides"
+            >
+              <NColorPicker
+                v-model:value="startColor"
+                :size="'small'"
+                :modes="['hex']"
+                :show-alpha="false"
               />
-              <ButtonNormal
-                theme="confirm"
-                :text="editingCategory ? '更新' : '新增'"
-                :width="100"
-                :height="35"
-                class="font-bold ml-3"
-                @click="confirmHandler"
+            </NConfigProvider>
+          </div>
+
+          <div class="flex items-center mb-2">
+            <label for="endColor">顏色(二)：</label>
+            <NConfigProvider
+              :preflight-style-disabled="true"
+              :abstract="true"
+              :theme-overrides="colorPickerOverrides"
+            >
+              <NColorPicker
+                v-model:value="endColor"
+                :size="'small'"
+                :modes="['hex']"
+                :show-alpha="false"
               />
-            </div>
+            </NConfigProvider>
+          </div>
+
+          <div class="flex items-start mb-1">
+            <label for="name">群組名稱：</label>
+            <VerifyInput
+              name="name"
+              type="text"
+              placeholder="請填寫"
+              class="w-full mx-1"
+            >
+              <template #error="{ errorMessage, meta }">
+                <div class="text-xs text-right text-red-600 min-h-4 mt-1">
+                  <template v-if="errorMessage && meta.touched">
+                    {{ errorMessage }}
+                  </template>
+                </div>
+              </template>
+            </VerifyInput>
+          </div>
+
+          <div class="relative my-4">
+            <div
+              class="absolute -top-3 right-4 w-5 h-10 bg-white/50 -rotate-45"
+            />
+            <TaskCard
+              class="mx-auto"
+              :task="demoTask"
+              :category="demoCategory"
+            />
+            <div
+              class="absolute -bottom-3 left-4 w-5 h-10 bg-white/50 -rotate-45"
+            />
+          </div>
+
+          <div class="text-xs text-dark text-center">
+            ＊為確保文字清晰，請避免淺色卡片
           </div>
         </div>
       </div>
     </div>
-  </Transition>
+
+    <div class="relative flex-center-center mt-2">
+      <div class="mx-2 pb-2 rounded-md bg-zinc-400 shadow-md">
+        <div class="p-2 pt-1 rounded-md bg-zinc-200">
+          <ButtonNormal
+            theme="cancel"
+            text="取消"
+            :width="100"
+            :height="35"
+            class="font-bold"
+            @click="$emit('close')"
+          />
+          <ButtonNormal
+            theme="confirm"
+            :text="editingCategory ? '更新' : '新增'"
+            :width="100"
+            :height="35"
+            class="font-bold ml-3"
+            @click="confirmHandler"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -268,23 +256,5 @@ const colorPickerOverrides: GlobalThemeOverrides = {
 
 .clip {
   @apply absolute top-1 left-1/2 z-1 w-[135px] h-8 border-4 border-t-0 rounded-b-lg border-slate-500 shadow-sm shadow-lighter -translate-x-1/2;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  @apply transition-opacity duration-500;
-
-  :deep(.clipboard) {
-    @apply transition-transform duration-500;
-  }
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  @apply opacity-0;
-
-  :deep(.clipboard) {
-    @apply -translate-y-10;
-  }
 }
 </style>

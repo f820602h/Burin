@@ -6,11 +6,13 @@ import { useUserStore } from "@/stores/user";
 import GlobalHeader from "@/components/global/GlobalHeader.vue";
 import UserLogger from "@/components/global/logger/UserLogger.vue";
 import LoadingLayer from "./components/global/LoadingLayer.vue";
+import BlurMask from "./components/common/BlurMask.vue";
 
 const head = templateRef<HTMLElement | null>("head", null);
 const { height: headerHeight } = useElementSize(head);
 
 const userStore = useUserStore();
+
 const isUserLoggerShow = ref<boolean>(false);
 </script>
 
@@ -29,10 +31,15 @@ const isUserLoggerShow = ref<boolean>(false);
     </div>
     <div class="footer-container"></div>
 
-    <UserLogger
-      :show="isUserLoggerShow && !userStore.user"
-      @close="isUserLoggerShow = false"
-    />
+    <Transition name="fade">
+      <BlurMask
+        v-if="isUserLoggerShow && !userStore.user"
+        class="justify-center items-center"
+      >
+        <UserLogger @close="isUserLoggerShow = false" />
+      </BlurMask>
+    </Transition>
+
     <LoadingLayer class="z-global-5" />
   </div>
 </template>
@@ -45,6 +52,24 @@ const isUserLoggerShow = ref<boolean>(false);
     @apply fixed left-0 w-full z-global-1;
     top: var(--headerHeight);
     height: calc(100vh - var(--headerHeight));
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  @apply transition-opacity duration-500;
+
+  > * {
+    @apply transition-transform duration-500;
+  }
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  @apply opacity-0;
+
+  > * {
+    @apply -translate-y-10;
   }
 }
 </style>

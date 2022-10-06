@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, toRef } from "vue";
+import { computed, ref } from "vue";
 import type { ScreenConfig, ScreenConfigModesMap } from "./types";
-import { useBodyScrollFixed } from "@/composables/useBodyScrollFixed";
 import ModeLogIn from "./ModeLogIn.vue";
 import ModeSignUp from "./ModeSignUp.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
 
-const props = withDefaults(defineProps<{ show?: boolean }>(), { show: false });
 const emit = defineEmits<{ (e: "close"): void }>();
-
-const refShow = toRef(props, "show");
-useBodyScrollFixed(refShow);
 
 type ModeInstance = InstanceType<typeof ModeLogIn | typeof ModeSignUp>;
 const currentMode = ref<keyof ScreenConfigModesMap>("LogIn");
@@ -47,67 +42,60 @@ const changeMode: (mode: keyof ScreenConfigModesMap) => void = (mode) => {
 </script>
 
 <template>
-  <Transition name="fade">
-    <div
-      v-if="show"
-      class="fixed-layer flex-center-center bg-black/30 backdrop-blur-[2px]"
-    >
-      <div class="logger pb-8 rounded-2xl bg-zinc-700">
-        <div class="flex-center-center pb-5 rounded-2xl bg-zinc-600">
-          <div class="monitor-fixture">
-            <div v-for="i in 5" :key="i" class="groove" />
+  <div class="logger pb-8 rounded-2xl bg-zinc-700">
+    <div class="flex-center-center pb-5 rounded-2xl bg-zinc-600">
+      <div class="monitor-fixture">
+        <div v-for="i in 5" :key="i" class="groove" />
+      </div>
+
+      <div class="relative">
+        <div class="monitor-frame">
+          <div class="monitor-screen">
+            <div class="stripe" />
+            <component
+              ref="currentModeInstance"
+              :is="currentScreenConfig.component"
+              @change-mode="changeMode"
+            />
           </div>
+        </div>
 
-          <div class="relative">
-            <div class="monitor-frame">
-              <div class="monitor-screen">
-                <div class="stripe" />
-                <component
-                  ref="currentModeInstance"
-                  :is="currentScreenConfig.component"
-                  @change-mode="changeMode"
-                />
-              </div>
+        <div class="button-module">
+          <div class="rounded-t-2xl rounded-b-md bg-zinc-600">
+            <div class="flex-between-center px-5 pt-3 pb-3">
+              <ButtonNormal
+                theme="cancel"
+                :text="currentScreenConfig.cancelButtonText"
+                :width="100"
+                :height="35"
+                class="font-bold"
+                @click="currentScreenConfig.cancelButtonCallback"
+              />
+              <ButtonNormal
+                theme="confirm"
+                :text="currentScreenConfig.confirmButtonText"
+                :width="100"
+                :height="35"
+                class="font-bold"
+                @click="currentScreenConfig.confirmButtonCallback"
+              />
             </div>
-
-            <div class="button-module">
-              <div class="rounded-t-2xl rounded-b-md bg-zinc-600">
-                <div class="flex-between-center px-5 pt-3 pb-3">
-                  <ButtonNormal
-                    theme="cancel"
-                    :text="currentScreenConfig.cancelButtonText"
-                    :width="100"
-                    :height="35"
-                    class="font-bold"
-                    @click="currentScreenConfig.cancelButtonCallback"
-                  />
-                  <ButtonNormal
-                    theme="confirm"
-                    :text="currentScreenConfig.confirmButtonText"
-                    :width="100"
-                    :height="35"
-                    class="font-bold"
-                    @click="currentScreenConfig.confirmButtonCallback"
-                  />
-                </div>
-                <div class="flex-center-center">
-                  <div
-                    v-for="i in 7"
-                    :key="i"
-                    class="w-[10px] h-5 mx-2 -mb-2 rounded-t-full bg-black/20 shadow-inner-md"
-                  />
-                </div>
-              </div>
+            <div class="flex-center-center">
+              <div
+                v-for="i in 7"
+                :key="i"
+                class="w-[10px] h-5 mx-2 -mb-2 rounded-t-full bg-black/20 shadow-inner-md"
+              />
             </div>
-          </div>
-
-          <div class="monitor-fixture">
-            <div v-for="i in 5" :key="i" class="groove" />
           </div>
         </div>
       </div>
+
+      <div class="monitor-fixture">
+        <div v-for="i in 5" :key="i" class="groove" />
+      </div>
     </div>
-  </Transition>
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -149,24 +137,6 @@ const changeMode: (mode: keyof ScreenConfigModesMap) => void = (mode) => {
   }
   100% {
     top: -100%;
-  }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  @apply transition-opacity duration-500;
-
-  :deep(.logger) {
-    @apply transition-transform duration-500;
-  }
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  @apply opacity-0;
-
-  :deep(.logger) {
-    @apply -translate-y-10;
   }
 }
 </style>
