@@ -2,10 +2,6 @@
 import { onMounted, onUnmounted } from "vue";
 import { useBodyScrollFixed } from "@/composables/useBodyScrollFixed";
 
-withDefaults(defineProps<{ justifyContent?: string; alignItems?: string }>(), {
-  justifyContent: "center",
-  alignItems: "center",
-});
 const { fixed, reset } = useBodyScrollFixed();
 
 onMounted(() => {

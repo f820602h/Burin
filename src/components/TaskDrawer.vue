@@ -4,14 +4,14 @@ import type { Task } from "@/class/Task";
 import type { TaskCategory } from "@/class/TaskCategory";
 import { useTaskStore } from "@/stores/task";
 import TaskCategoryFolder from "@/components/common/TaskCategoryFolder.vue";
+import TaskCategoryFolderNew from "@/components/common/TaskCategoryFolderNew.vue";
 import TaskCard from "@/components/common/TaskCard.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
 import FolderCreator from "./FolderCreator.vue";
 import BlurMask from "@/components/common/BlurMask.vue";
+import DialogModal from "./basic/DialogModal.vue";
 
 const emit = defineEmits<{ (e: "close"): void }>();
-
-const isFolderCreatorShow = ref<boolean>(false);
 
 const taskStore = useTaskStore();
 const selectedCategory = ref<TaskCategory>();
@@ -22,16 +22,23 @@ const selectCategory: (category: TaskCategory) => void = (category) => {
   taskStore._actFetchTaskList(category.id);
 };
 
+const isFolderCreatorShow = ref<boolean>(false);
+const addNewCategory: () => void = () => {
+  editingCategory.value = undefined;
+  isFolderCreatorShow.value = true;
+};
 const editCategory: () => void = () => {
   if (!selectedCategory.value) return;
   editingCategory.value = selectedCategory.value;
   isFolderCreatorShow.value = true;
 };
 
-const deleteCategory: () => void = () => {
+const isDeleteCheckDialogShow = ref<boolean>(false);
+const deleteCategory: () => void = async () => {
   if (!selectedCategory.value) return;
-  taskStore._actDeleteTaskCategory(selectedCategory.value.id);
-  emit("close");
+  await taskStore._actDeleteTaskCategory(selectedCategory.value.id);
+  isDeleteCheckDialogShow.value = false;
+  selectedCategory.value = undefined;
 };
 
 const setCurrentTask: (task: Task) => void = (task) => {
@@ -62,12 +69,13 @@ const setCurrentTask: (task: Task) => void = (task) => {
 
     <div class="task-drawer__drawer">
       <div class="folders">
+        <TaskCategoryFolderNew class="first:mt-7" @click="addNewCategory" />
         <template v-if="taskStore.categories.length">
           <TaskCategoryFolder
             v-for="(cate, index) in taskStore.categories"
             :key="index"
             :task-category="cate"
-            class="-mt-[80px] first:mt-7"
+            class="-mt-[80px]"
             @click="selectCategory(cate)"
           />
         </template>
@@ -83,7 +91,7 @@ const setCurrentTask: (task: Task) => void = (task) => {
       </div>
     </div>
 
-    <Transition name="tray-collapse">
+    <Transition name="collapse-down">
       <div v-if="selectedCategory" class="task-drawer__tray">
         <div
           class="absolute top-[90px] right-0 pb-2 rounded-r-md bg-gray-400 shadow-md shadow-light translate-x-full"
@@ -109,7 +117,7 @@ const setCurrentTask: (task: Task) => void = (task) => {
               theme="cancel"
               text="刪除群組"
               class="font-bold text-sm"
-              @press="deleteCategory"
+              @press="isDeleteCheckDialogShow = true"
             />
             <ButtonNormal
               :width="90"
@@ -135,7 +143,7 @@ const setCurrentTask: (task: Task) => void = (task) => {
     </Transition>
 
     <teleport to="#app > .root">
-      <Transition name="creator-fade">
+      <Transition name="fade">
         <BlurMask
           v-if="isFolderCreatorShow"
           class="justify-center items-center"
@@ -149,10 +157,23 @@ const setCurrentTask: (task: Task) => void = (task) => {
         </BlurMask>
       </Transition>
     </teleport>
+
+    <DialogModal
+      :show="isDeleteCheckDialogShow"
+      title="確定刪除任務群組？"
+      content="注意：任務群組中的任務卡片均會一併刪除。"
+      rightBtnType="negative"
+      rightBtnText="刪除"
+      leftBtnType="normal"
+      leftBtnText="取消"
+      @right="deleteCategory"
+      @left="isDeleteCheckDialogShow = false"
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
+@import "@/scss/animation.scss";
 .task-drawer {
   @apply relative min-w-[260px] h-full;
 
@@ -198,33 +219,5 @@ const setCurrentTask: (task: Task) => void = (task) => {
       @apply h-12 border-t-24 border-gray-300 bg-gray-300 rounded-b-md shadow-inner-lg;
     }
   }
-}
-
-.creator-fade-enter-active,
-.creator-fade-leave-active {
-  @apply transition-opacity duration-500;
-
-  > * {
-    @apply transition-transform duration-500;
-  }
-}
-
-.creator-fade-enter-from,
-.creator-fade-leave-to {
-  @apply opacity-0;
-
-  > * {
-    @apply -translate-y-10;
-  }
-}
-
-.tray-collapse-enter-active,
-.tray-collapse-leave-active {
-  @apply transition-transform duration-500;
-}
-
-.tray-collapse-enter-from,
-.tray-collapse-leave-to {
-  @apply -translate-y-full;
 }
 </style>

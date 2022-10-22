@@ -32,7 +32,7 @@ const mainViewBgColor = computed<string>(() => {
 </script>
 
 <template>
-  <Transition name="drawer-collapse">
+  <Transition name="mask-collapse-down">
     <BlurMask v-if="isTaskDrawerShow" class="justify-start">
       <TaskDrawer @close="isTaskDrawerShow = false" />
     </BlurMask>
@@ -56,7 +56,7 @@ const mainViewBgColor = computed<string>(() => {
 
   <ToolBar :actions="toolBarActions" />
 
-  <Transition name="panel-collapse">
+  <Transition name="mask-collapse-up">
     <BlurMask v-if="isMonitorPanelShow" class="justify-center items-end">
       <MonitorPanel @close="isMonitorPanelShow = false" />
     </BlurMask>
@@ -64,6 +64,7 @@ const mainViewBgColor = computed<string>(() => {
 </template>
 
 <style lang="scss" scoped>
+@import "@/scss/animation.scss";
 .background-animate {
   background-size: 300% 300%;
   animation: flow 7s infinite;
@@ -92,42 +93,6 @@ const mainViewBgColor = computed<string>(() => {
 
   &__line {
     @apply w-3 h-8 md:h-15 -mt-2 border border-gray-400/60 rounded-t-3xl bg-gray-100 shadow-inner-md shadow-lighter;
-  }
-}
-
-.drawer-collapse-enter-active,
-.drawer-collapse-leave-active {
-  @apply transition-opacity duration-500;
-
-  > * {
-    @apply transition-transform duration-500;
-  }
-}
-
-.drawer-collapse-enter-from,
-.drawer-collapse-leave-to {
-  @apply opacity-0;
-
-  > * {
-    @apply -translate-y-full;
-  }
-}
-
-.panel-collapse-enter-active,
-.panel-collapse-leave-active {
-  @apply transition-opacity duration-500;
-
-  > * {
-    @apply transition-transform duration-300;
-  }
-}
-
-.panel-collapse-enter-from,
-.panel-collapse-leave-to {
-  @apply opacity-0;
-
-  > * {
-    @apply translate-y-full;
   }
 }
 </style>

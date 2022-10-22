@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { useLoadingStore } from "@/stores/loading";
 import { useInterval } from "@vueuse/core";
-import { computed, watch } from "vue";
 
-const loadingStore = useLoadingStore();
-const { counter, pause, resume } = useInterval(500, { controls: true });
+const { counter } = useInterval(400, { controls: true });
 
 const frame: number[][][] = [
   [
@@ -59,31 +56,17 @@ const frame: number[][][] = [
     [],
   ],
 ];
-
-const show = computed<boolean>(() => {
-  return !!loadingStore.show || !!loadingStore.queue.size;
-});
-
-watch(show, (value) => {
-  if (value) resume();
-  else pause();
-});
 </script>
 
 <template>
-  <div
-    v-if="show"
-    class="fixed-default full flex-center-center bg-black/30 backdrop-blur-[1px]"
-  >
-    <div class="bg-black border-8 border-zinc-700 rounded-md shadow-md p-[1px]">
-      <div v-for="i in 15" :key="i" class="flex mb-[1px] last:mb-0">
-        <div
-          v-for="j in 15"
-          :key="j"
-          class="w-[3px] h-[3px] bg-[#213821] mr-[1px] last:mr-0"
-          :class="{ 'bg-[#13fc5c]': frame[counter % 3][i - 1].indexOf(j) > -1 }"
-        ></div>
-      </div>
+  <div class="rounded-md p-1 bg-[#213821]">
+    <div v-for="i in 15" :key="i" class="flex">
+      <div
+        v-for="j in 15"
+        :key="j"
+        class="w-[3px] h-[3px]"
+        :class="{ 'bg-[#13fc5c]': frame[counter % 3][i - 1].indexOf(j) > -1 }"
+      ></div>
     </div>
   </div>
 </template>

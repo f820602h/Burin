@@ -7,8 +7,7 @@ html, body {
 }
 
 /* utility class */
-
-@layer utilities{
+@layer utilities {
   .full {
     @apply w-full h-full;
   }

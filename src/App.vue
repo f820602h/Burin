@@ -1,19 +1,24 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { RouterView } from "vue-router";
 import { templateRef, useElementSize } from "@vueuse/core";
 import { useUserStore } from "@/stores/user";
+import { useLoadingStore } from "@/stores/loading";
 import GlobalHeader from "@/components/global/GlobalHeader.vue";
+import BlurMask from "@/components/common/BlurMask.vue";
 import UserLogger from "@/components/global/logger/UserLogger.vue";
-import LoadingLayer from "./components/global/LoadingLayer.vue";
-import BlurMask from "./components/common/BlurMask.vue";
+import LoadingHourglass from "@/components/basic/LoadingHourglass.vue";
 
 const head = templateRef<HTMLElement | null>("head", null);
 const { height: headerHeight } = useElementSize(head);
 
 const userStore = useUserStore();
+const loadingStore = useLoadingStore();
 
 const isUserLoggerShow = ref<boolean>(false);
+const show = computed<boolean>(() => {
+  return !!loadingStore.show || !!loadingStore.queue.size;
+});
 </script>
 
 <template>
@@ -40,11 +45,14 @@ const isUserLoggerShow = ref<boolean>(false);
       </BlurMask>
     </Transition>
 
-    <LoadingLayer class="z-global-5" />
+    <BlurMask v-if="show" class="justify-center items-center z-global-5">
+      <LoadingHourglass></LoadingHourglass>
+    </BlurMask>
   </div>
 </template>
 
 <style lang="scss" scoped>
+@import "@/scss/animation.scss";
 .root {
   --headerHeight: v-bind(headerHeight + "px");
 
@@ -52,24 +60,6 @@ const isUserLoggerShow = ref<boolean>(false);
     @apply fixed left-0 w-full z-global-1;
     top: var(--headerHeight);
     height: calc(100vh - var(--headerHeight));
-  }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  @apply transition-opacity duration-500;
-
-  > * {
-    @apply transition-transform duration-500;
-  }
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  @apply opacity-0;
-
-  > * {
-    @apply -translate-y-10;
   }
 }
 </style>

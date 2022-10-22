@@ -1,0 +1,80 @@
+.fade-enter-active,
+.fade-leave-active {
+  @apply transition-opacity duration-500;
+}
+
+.fade-enter-active > *,
+.fade-leave-active > * {
+  @apply transition-transform duration-500;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  @apply opacity-0;
+}
+
+.fade-enter-from > *,
+.fade-leave-to > * {
+  @apply -translate-y-10;
+}
+
+.collapse-up-enter-active,
+.collapse-up-leave-active {
+  @apply transition-transform duration-500;
+}
+
+.collapse-up-enter-from,
+.collapse-up-leave-to {
+  @apply translate-y-full;
+}
+
+.collapse-down-enter-active,
+.collapse-down-leave-active {
+  @apply transition-transform duration-500;
+}
+
+.collapse-down-enter-from,
+.collapse-down-leave-to {
+  @apply -translate-y-full;
+}
+
+.mask-collapse-up-enter-active,
+.mask-collapse-up-leave-active {
+  @apply transition-opacity duration-500;
+}
+
+.mask-collapse-up-enter-active > *,
+.mask-collapse-up-leave-active > * {
+  @apply transition-transform duration-300;
+}
+
+.mask-collapse-up-enter-from,
+.mask-collapse-up-leave-to {
+  @apply opacity-0;
+}
+
+.mask-collapse-up-enter-from > *,
+.mask-collapse-up-leave-to > * {
+  @apply translate-y-full;
+}
+
+
+.mask-collapse-down-enter-active,
+.mask-collapse-down-leave-active {
+  @apply transition-opacity duration-500;
+}
+
+.mask-collapse-down-enter-active > *,
+.mask-collapse-down-leave-active > * {
+  @apply transition-transform duration-300;
+}
+
+.mask-collapse-down-enter-from,
+.mask-collapse-down-leave-to {
+  @apply opacity-0;
+}
+
+.mask-collapse-down-enter-from > *,
+.mask-collapse-down-leave-to > * {
+  @apply -translate-y-full;
+}
