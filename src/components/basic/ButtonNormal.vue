@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { computed, type StyleValue } from "vue";
-import {
-  buttonColorThemes,
-  type ColorThemeObject,
-  type ColorThemes,
-} from "@/components/basic/colorThemes";
+
+type ButtonTheme = "normal" | "dark" | "confirm" | "cancel";
+type ButtonThemeColor = { front: string; back: string };
+const buttonThemeMap: Record<ButtonTheme, ButtonThemeColor> = {
+  normal: { front: "bg-zinc-200", back: "bg-zinc-400" },
+  dark: { front: "bg-stone-400", back: "bg-stone-600" },
+  confirm: { front: "bg-green-600", back: "bg-green-900" },
+  cancel: { front: "bg-red-600", back: "bg-red-900" },
+};
 
 const props = withDefaults(
   defineProps<{
     text?: string;
-    theme?: keyof ColorThemes;
+    theme?: ButtonTheme;
     width?: number;
     height?: number;
     circle?: boolean;
@@ -30,9 +34,8 @@ defineEmits<{ (e: "press"): void }>();
 const btnSize = computed<StyleValue>(() => {
   return { width: props.width + "px", height: props.height + "px" };
 });
-const calcTheme = computed<ColorThemeObject>(() => {
-  const themeKey = props.disabled ? "disabled" : props.theme;
-  return buttonColorThemes[themeKey] || buttonColorThemes.normal;
+const calcTheme = computed<ButtonThemeColor>(() => {
+  return buttonThemeMap[props.theme] || buttonThemeMap.normal;
 });
 </script>
 
@@ -60,12 +63,12 @@ const calcTheme = computed<ColorThemeObject>(() => {
 <style lang="scss" scoped>
 .btn-back {
   @apply p-0 border-0 outline-none text-white shadow-sm;
-  @apply group-disabled:text-gray-100 group-active:shadow-none group-disabled:shadow-none;
+  @apply group-disabled:text-gray-100 group-disabled:bg-white/40 group-active:shadow-none group-disabled:shadow-none;
 }
 
 .btn-front {
   @apply relative flex-center-center transition-transform duration-200;
   @apply group-enabled:-top-1 group-enabled:group-active:-top-0 group-enabled:group-active:shadow-inner-sm group-enabled:group-active:shadow-darker;
-  @apply group-disabled:shadow-inner-sm group-disabled:shadow-darker group-disabled:text-black/20;
+  @apply group-disabled:bg-white/30 group-disabled:shadow-inner-sm group-disabled:shadow-darker group-disabled:text-black/20;
 }
 </style>

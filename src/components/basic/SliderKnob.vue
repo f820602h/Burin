@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import {
-  knobColorThemes,
-  type ColorThemeObject,
-  type ColorThemes,
-} from "@/components/basic/colorThemes";
 
-const props = withDefaults(defineProps<{ theme?: keyof ColorThemes }>(), {
+type KnobTheme = "normal" | "dark";
+type KnobThemeColor = { front: string; back: string };
+const knobThemeMap: Record<KnobTheme, KnobThemeColor> = {
+  normal: { front: "bg-zinc-200", back: "bg-zinc-400" },
+  dark: { front: "bg-stone-400", back: "bg-stone-600" },
+};
+
+const props = withDefaults(defineProps<{ theme?: KnobTheme }>(), {
   theme: "normal",
 });
 
-const calcTheme = computed<ColorThemeObject>(() => {
-  return knobColorThemes[props.theme] || knobColorThemes.normal;
+const calcTheme = computed<KnobThemeColor>(() => {
+  return knobThemeMap[props.theme] || knobThemeMap.normal;
 });
 </script>
 
