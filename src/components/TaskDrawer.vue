@@ -75,7 +75,7 @@ const setCurrentTask: (task: Task) => void = (task) => {
             v-for="(cate, index) in taskStore.categories"
             :key="index"
             :task-category="cate"
-            class="-mt-[80px]"
+            class="-mt-[90px]"
             @click="selectCategory(cate)"
           />
         </template>

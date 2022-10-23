@@ -167,11 +167,13 @@ const percentageScaleData = computed<Range[]>(() => {
 
     <div class="monitor-panel__controller">
       <ButtonNormal
-        :width="50"
+        :width="32"
         theme="cancel"
-        text="關閉"
+        :circle="true"
         @press="$emit('close')"
-      />
+      >
+        <span class="icon-cancel text-white/75"></span>
+      </ButtonNormal>
     </div>
   </div>
 </template>
@@ -200,7 +202,7 @@ const percentageScaleData = computed<Range[]>(() => {
   }
 
   &__controller {
-    @apply absolute -top-3 right-0 pt-[10px] pb-2 px-3 border-4 border-b-0 border-gray-200 rounded-t-md bg-gray-200 shadow-inner-sm shadow-light -translate-y-full;
+    @apply absolute -top-3 right-0 py-[6px] px-2 border-4 border-b-0 border-gray-200 rounded-t-md bg-gray-200 shadow-inner-sm shadow-light -translate-y-full;
   }
 }
 
