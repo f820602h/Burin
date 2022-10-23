@@ -15,8 +15,9 @@ const screenConfigModesMap: ScreenConfigModesMap = {
   LogIn: {
     component: ModeLogIn,
     confirmButtonText: "登入",
-    confirmButtonCallback: () => {
-      currentModeInstance.value?.confirmHandler();
+    confirmButtonCallback: async () => {
+      await currentModeInstance.value?.confirmHandler();
+      emit("close");
     },
     cancelButtonText: "取消",
     cancelButtonCallback: () => emit("close"),

@@ -1,5 +1,15 @@
 <script setup lang="ts">
-defineEmits<{ (e: "toggle-logger"): void }>();
+import { useUserStore } from "@/stores/user";
+import { axiosUserLogout } from "@/api/user/index";
+
+const emit = defineEmits<{ (e: "toggle-logger"): void }>();
+
+const userStore = useUserStore();
+
+const onAvatarClick: () => void = () => {
+  if (userStore.user) axiosUserLogout();
+  else emit("toggle-logger");
+};
 </script>
 
 <template>
@@ -10,7 +20,7 @@ defineEmits<{ (e: "toggle-logger"): void }>();
     <div class="flex-between-center h-full px-4">
       <span></span>
       <div class="text-white/75 text-[32px] cursor-pointer hover:text-white">
-        <span class="icon-avatar" @click="$emit('toggle-logger')" />
+        <span class="icon-avatar" @click="onAvatarClick" />
       </div>
     </div>
   </header>

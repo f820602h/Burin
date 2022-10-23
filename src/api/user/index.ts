@@ -30,3 +30,9 @@ export const axiosUserLogin: (
     data: payload,
   });
 };
+
+export const axiosUserLogout: () => Promise<never> = () => {
+  return BaseAxiosRequestor.post({
+    url: "/user/logout",
+  });
+};

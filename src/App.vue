@@ -2,7 +2,6 @@
 import { ref, computed } from "vue";
 import { RouterView } from "vue-router";
 import { templateRef, useElementSize } from "@vueuse/core";
-import { useUserStore } from "@/stores/user";
 import { useLoadingStore } from "@/stores/loading";
 import GlobalHeader from "@/components/global/GlobalHeader.vue";
 import BlurMask from "@/components/common/BlurMask.vue";
@@ -12,7 +11,6 @@ import LoadingHourglass from "@/components/basic/LoadingHourglass.vue";
 const head = templateRef<HTMLElement | null>("head", null);
 const { height: headerHeight } = useElementSize(head);
 
-const userStore = useUserStore();
 const loadingStore = useLoadingStore();
 
 const isUserLoggerShow = ref<boolean>(false);
@@ -37,10 +35,7 @@ const show = computed<boolean>(() => {
     <div class="footer-container"></div>
 
     <Transition name="fade">
-      <BlurMask
-        v-if="isUserLoggerShow && !userStore.user"
-        class="justify-center items-center"
-      >
+      <BlurMask v-if="isUserLoggerShow" class="justify-center items-center">
         <UserLogger @close="isUserLoggerShow = false" />
       </BlurMask>
     </Transition>

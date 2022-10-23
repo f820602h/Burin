@@ -39,7 +39,7 @@ defineExpose({ confirmHandler });
 <template>
   <div>
     <div class="font-bold italic text-2xl text-center">WELCOME</div>
-    <div class="min-h-5 text-sm text-center my-2">
+    <div class="min-h-5 text-sm text-center text-red-500 my-2">
       {{ isAccountWrong ? "!! 錯誤的帳號或密碼 !!" : "" }}
     </div>
     <div class="w-[250px] mx-auto">
