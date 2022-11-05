@@ -35,19 +35,46 @@ const category = computed<TaskCategory>(() => {
         ><span>{{ task.getLastDurationTimeText() }}</span>
       </div>
     </div>
-    <div class="flex-1">
+    <div class="task-card__body flex-1">
       <div
         class="flex flex-col justify-center items-center h-full bg-white rounded-md p-3"
       >
-        <div class="text-xl font-bold text-center">{{ task.title }}</div>
-        <div class="text-xs text-center mt-2">{{ task.additionContent }}</div>
+        <div class="task-card__body__title">{{ task.title }}</div>
+        <div class="task-card__body__content">
+          <template v-if="!task.additionUrl">
+            <span>{{ task.additionContent }}</span>
+          </template>
+          <template v-else>
+            <a
+              :href="task.additionUrl"
+              target="_blank"
+              class="text-blue-700 underline"
+              @click.stop
+            >
+              {{ task.additionContent }}
+            </a>
+          </template>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+@import "@/scss/mixin.scss";
 .task-card {
   @apply flex flex-col w-[200px] h-[200px] px-3 pt-2 pb-3 rounded-md shadow-md shadow-light;
+
+  &__body {
+    &__title {
+      @apply text-xl font-bold text-center;
+      @include text-overflow(28, 1);
+    }
+
+    &__content {
+      @apply text-xs text-center mt-2;
+      @include text-overflow(32, 2);
+    }
+  }
 }
 </style>

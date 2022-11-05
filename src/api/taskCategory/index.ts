@@ -1,5 +1,4 @@
 import { BaseAxiosRequestor } from "../axios/index";
-import type { AxiosResponse } from "axios";
 import type {
   TaskCategoryId,
   TaskCategoryInfo,
@@ -25,7 +24,7 @@ export const axiosTaskCategoryCreate: (
 
 export const axiosTaskCategoryUpdate: (
   payload: TaskCategoryInfo
-) => Promise<AxiosResponse<never>> = (payload) => {
+) => Promise<never> = (payload) => {
   return BaseAxiosRequestor.post({
     url: "/taskCategory/update",
     data: payload,
@@ -34,7 +33,7 @@ export const axiosTaskCategoryUpdate: (
 
 export const axiosTaskCategoryDelete: (
   payload: TaskCategoryId
-) => Promise<AxiosResponse<never>> = (payload) => {
+) => Promise<never> = (payload) => {
   return BaseAxiosRequestor.delete({
     url: "/taskCategory/delete",
     params: payload,

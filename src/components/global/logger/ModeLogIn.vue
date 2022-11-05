@@ -43,8 +43,8 @@ defineExpose({ confirmHandler });
       {{ isAccountWrong ? "!! 錯誤的帳號或密碼 !!" : "" }}
     </div>
     <div class="w-[250px] mx-auto">
-      <LoggerField label="電子信箱" name="email" type="text" />
-      <LoggerField label="密碼" name="password" type="password" />
+      <LoggerField label="電子信箱" name="email" type="text" value="" />
+      <LoggerField label="密碼" name="password" type="password" value="" />
 
       <div class="flex-center-center text-sm mt-3">
         <div class="link">忘記密碼</div>

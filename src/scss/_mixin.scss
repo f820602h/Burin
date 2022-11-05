@@ -1,0 +1,7 @@
+@mixin text-overflow($h, $line) {
+  @apply break-all overflow-hidden text-ellipsis;
+  max-height: ($h) + px;
+  display: -webkit-box;
+  -webkit-line-clamp: $line;
+  -webkit-box-orient: vertical;
+}

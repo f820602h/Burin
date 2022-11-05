@@ -19,8 +19,11 @@ const onAvatarClick: () => void = () => {
   >
     <div class="flex-between-center h-full px-4">
       <span></span>
-      <div class="text-white/75 text-[32px] cursor-pointer hover:text-white">
-        <span class="icon-avatar" @click="onAvatarClick" />
+      <div
+        class="text-white/75 text-[32px] cursor-pointer hover:text-white"
+        @click="onAvatarClick"
+      >
+        <span class="icon-avatar" />
       </div>
     </div>
   </header>

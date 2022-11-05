@@ -7,7 +7,8 @@ import TaskCategoryFolder from "@/components/common/TaskCategoryFolder.vue";
 import TaskCategoryFolderNew from "@/components/common/TaskCategoryFolderNew.vue";
 import TaskCard from "@/components/common/TaskCard.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
-import FolderCreator from "./FolderCreator.vue";
+import TaskFolderCreator from "@/components/TaskFolderCreator.vue";
+import TaskCardCreator from "@/components/TaskCardCreator.vue";
 import BlurMask from "@/components/common/BlurMask.vue";
 import DialogModal from "./basic/DialogModal.vue";
 
@@ -16,6 +17,7 @@ const emit = defineEmits<{ (e: "close"): void }>();
 const taskStore = useTaskStore();
 const selectedCategory = ref<TaskCategory>();
 const editingCategory = ref<TaskCategory>();
+const editingTask = ref<Task>();
 
 const selectCategory: (category: TaskCategory) => void = (category) => {
   selectedCategory.value = category;
@@ -40,6 +42,17 @@ const deleteCategory: () => void = async () => {
   isDeleteCheckDialogShow.value = false;
   selectedCategory.value = undefined;
 };
+
+const isCardCreatorShow = ref<boolean>(false);
+const addNewTask: () => void = () => {
+  editingTask.value = undefined;
+  isCardCreatorShow.value = true;
+};
+// const editTask: () => void = () => {
+//   if (!selectedCategory.value) return;
+//   editingTask.value = selectedCategory.value;
+//   isFolderCreatorShow.value = true;
+// };
 
 const setCurrentTask: (task: Task) => void = (task) => {
   taskStore._actUpdateCurrentTask(task);
@@ -111,21 +124,36 @@ const setCurrentTask: (task: Task) => void = (task) => {
         </div>
 
         <div class="cards">
-          <div class="flex justify-evenly py-5">
+          <div class="flex justify-between pt-5 px-3">
             <ButtonNormal
               :width="90"
-              theme="cancel"
-              text="刪除群組"
+              :height="25"
+              theme="darker"
               class="font-bold text-sm"
               @press="isDeleteCheckDialogShow = true"
-            />
+            >
+              <span class="text-xs text-white">刪除群組</span>
+            </ButtonNormal>
             <ButtonNormal
               :width="90"
-              theme="confirm"
-              text="編輯群組"
+              :height="25"
+              theme="normal"
               class="font-bold text-sm"
               @press="editCategory"
-            />
+            >
+              <span class="text-xs text-darker">編輯群組</span>
+            </ButtonNormal>
+          </div>
+          <div class="pt-2 pb-5 px-3">
+            <ButtonNormal
+              :width="194"
+              :height="35"
+              theme="confirm"
+              class="font-bold text-sm"
+              @press="addNewTask"
+            >
+              <span class="text-lg">新增任務</span>
+            </ButtonNormal>
           </div>
 
           <template v-if="taskStore.tasks.length">
@@ -148,11 +176,24 @@ const setCurrentTask: (task: Task) => void = (task) => {
           v-if="isFolderCreatorShow"
           class="justify-center items-center"
         >
-          <FolderCreator
+          <TaskFolderCreator
             :editing-category="editingCategory"
             @close="
               [(isFolderCreatorShow = false), (editingCategory = undefined)]
             "
+          />
+        </BlurMask>
+      </Transition>
+
+      <Transition name="fade">
+        <BlurMask
+          v-if="selectedCategory && isCardCreatorShow"
+          class="justify-center items-center"
+        >
+          <TaskCardCreator
+            :category="selectedCategory"
+            :editing-task="editingTask"
+            @close="[(isCardCreatorShow = false), (editingTask = undefined)]"
           />
         </BlurMask>
       </Transition>
@@ -161,6 +202,7 @@ const setCurrentTask: (task: Task) => void = (task) => {
     <DialogModal
       :show="isDeleteCheckDialogShow"
       title="確定刪除任務群組？"
+      :theme="'warning'"
       content="注意：任務群組中的任務卡片均會一併刪除。"
       rightBtnType="negative"
       rightBtnText="刪除"

@@ -14,7 +14,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="fixed-layer bg-black/30 backdrop-blur-[2px] flex">
+  <div class="fixed-layer bg-black/40 flex">
     <slot></slot>
   </div>
 </template>

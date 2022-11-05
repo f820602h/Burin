@@ -8,12 +8,14 @@ const props = withDefaults(
     type: string;
     name?: string;
     placeholder?: string;
+    disabled?: boolean;
   }>(),
   {
     value: "",
     type: "",
     name: "",
     placeholder: "",
+    disabled: false,
   }
 );
 
@@ -51,10 +53,12 @@ const validationListeners = computed(() => {
   >
     <input
       class="block w-full"
+      :id="name"
       :name="name"
       :type="type"
       :placeholder="placeholder"
       :value="value"
+      :disabled="disabled"
       v-on="validationListeners"
     />
     <slot name="error" :errorMessage="errorMessage" :meta="meta"></slot>

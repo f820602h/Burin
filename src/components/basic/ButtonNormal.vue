@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, type StyleValue } from "vue";
 
-type ButtonTheme = "normal" | "dark" | "confirm" | "cancel";
+type ButtonTheme = "normal" | "dark" | "darker" | "confirm" | "cancel";
 type ButtonThemeColor = { front: string; back: string };
 const buttonThemeMap: Record<ButtonTheme, ButtonThemeColor> = {
-  normal: { front: "bg-zinc-200", back: "bg-zinc-400" },
-  dark: { front: "bg-stone-400", back: "bg-stone-600" },
+  normal: { front: "bg-zinc-300", back: "bg-zinc-600" },
+  dark: { front: "bg-zinc-400", back: "bg-zinc-600" },
+  darker: { front: "bg-zinc-500", back: "bg-zinc-700" },
   confirm: { front: "bg-green-600", back: "bg-green-900" },
   cancel: { front: "bg-red-600", back: "bg-red-900" },
 };

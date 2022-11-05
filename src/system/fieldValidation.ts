@@ -15,3 +15,9 @@ export const taskCategoryFieldValidation: FieldValidation = {
   colorS: string().max(7),
   colorE: string().max(7),
 };
+
+export const taskCardFieldValidation: FieldValidation = {
+  title: string().max(12, "最多 12 個字元").required("請輸入任務標題"),
+  additionContent: string().max(40, "最多 40 個字元"),
+  additionUrl: string(),
+};

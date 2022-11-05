@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { TaskCategory, type TaskCategoryInfo } from "@/class/TaskCategory";
-import { Task } from "@/class/Task";
+import { Task, type TaskBasicInfo } from "@/class/Task";
 import { axiosCurrentTaskGet, axiosPunch } from "@/api/currentTask";
 import {
   axiosTaskCategoryGetList,
@@ -8,7 +8,7 @@ import {
   axiosTaskCategoryUpdate,
   axiosTaskCategoryDelete,
 } from "@/api/taskCategory";
-import { axiosTaskGetList } from "@/api/task";
+import { axiosTaskGetList, axiosTaskCreate, axiosTaskUpdate } from "@/api/task";
 
 const defaultCategory = new TaskCategory({
   id: 0,
@@ -67,6 +67,27 @@ export const useTaskStore = defineStore({
     async _actFetchTaskList(categoryId: Task["categoryId"]): Promise<void> {
       const list = await axiosTaskGetList({ categoryId });
       this.tasks = list.map((task) => new Task(task));
+    },
+    async _actCreateTask(payload: Omit<TaskBasicInfo, "id">): Promise<void> {
+      const id = await axiosTaskCreate(payload);
+      const newTask = new Task({
+        ...payload,
+        id,
+        lastStartTimestamp: 0,
+        lastEndTimestamp: 0,
+        createTimestamp: 0,
+        updateTimestamp: 0,
+      });
+      this.tasks.push(newTask);
+    },
+    async _actUpdateTask(payload: TaskBasicInfo): Promise<void> {
+      await axiosTaskUpdate(payload);
+      const updateTask = this.tasks.find((t) => t.id === payload.id);
+      if (updateTask) {
+        updateTask.title = payload.title;
+        updateTask.additionContent = payload.additionContent;
+        updateTask.additionUrl = payload.additionUrl;
+      }
     },
     async _actFetchCurrentTask(): Promise<void> {
       const currentTask = await axiosCurrentTaskGet();

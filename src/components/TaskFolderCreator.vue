@@ -212,7 +212,7 @@ const colorPickerOverrides: GlobalThemeOverrides = {
             :width="100"
             :height="35"
             class="font-bold"
-            @click="$emit('close')"
+            @press="$emit('close')"
           />
           <ButtonNormal
             theme="confirm"
@@ -220,7 +220,7 @@ const colorPickerOverrides: GlobalThemeOverrides = {
             :width="100"
             :height="35"
             class="font-bold ml-3"
-            @click="confirmHandler"
+            @press="confirmHandler"
           />
         </div>
       </div>
@@ -238,7 +238,7 @@ const colorPickerOverrides: GlobalThemeOverrides = {
 }
 
 .paper {
-  @apply relative mx-auto -mt-5 px-10 py-4 rounded-bl-[25px] bg-stone-200 shadow-sm overflow-hidden;
+  @apply relative w-[322px] h-[465px] mx-auto -mt-5 px-10 py-4 rounded-bl-[25px] bg-stone-200 shadow-sm overflow-hidden;
 
   &::after {
     content: "";

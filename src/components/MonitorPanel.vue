@@ -109,7 +109,10 @@ const percentageScaleData = computed<Range[]>(() => {
 
         <div class="monitor-panel__scale">
           <div class="shadow-mask" />
-          <div ref="historyScroll" class="px-5 py-3 bg-slate-100 overflow-auto">
+          <div
+            ref="historyScroll"
+            class="px-5 py-3 bg-slate-100 overflow-auto scrollbar-hide"
+          >
             <GraduatedScale
               ref="historyScale"
               :data="historyScaleData"
@@ -147,7 +150,7 @@ const percentageScaleData = computed<Range[]>(() => {
           <div class="shadow-mask" />
           <div
             ref="percentageScroll"
-            class="px-5 py-3 bg-slate-100 overflow-auto"
+            class="px-5 py-3 bg-slate-100 overflow-auto scrollbar-hide"
           >
             <GraduatedScale
               ref="percentageScale"
@@ -179,9 +182,6 @@ const percentageScaleData = computed<Range[]>(() => {
 </template>
 
 <style lang="scss" scoped>
-.mask {
-  @apply w-screen h-screen flex-center-end bg-black/30 backdrop-blur-[2px];
-}
 .monitor-panel {
   @apply relative w-full sm:w-11/12 max-w-[855px] min-w-[320px] border-t-12 border-b-0 sm:border-x-12 border-x-0 bg-zinc-300 shadow-xl shadow-darker;
   border-image: repeating-linear-gradient(

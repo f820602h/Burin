@@ -5,11 +5,14 @@ export interface TaskId {
   id: number;
 }
 
-export interface TaskInfo extends TaskId {
+export interface TaskBasicInfo extends TaskId {
   categoryId: number;
   title: string;
   additionContent: string;
   additionUrl: string;
+}
+
+export interface TaskInfo extends TaskBasicInfo {
   lastStartTimestamp: number;
   lastEndTimestamp: number;
 }
