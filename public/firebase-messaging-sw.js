@@ -1,8 +1,8 @@
-/* eslint-disable no-undef */
-importScripts("https://www.gstatic.com/firebasejs/9.0.1/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/9.0.1/firebase-messaging.js");
+import { initializeApp } from "firebase/app";
+import { getMessaging } from "firebase/messaging/sw";
+import { onBackgroundMessage } from "firebase/messaging/sw";
 
-const config = {
+const firebaseApp = initializeApp({
   apiKey: "AIzaSyC3OPc_bL1v5xaA6TKtkQC_wAsOC4g7JEs",
   authDomain: "burin-e5cb0.firebaseapp.com",
   projectId: "burin-e5cb0",
@@ -10,22 +10,20 @@ const config = {
   messagingSenderId: "36735080632",
   appId: "1:36735080632:web:36b03204343eb2a4563c4d",
   measurementId: "G-NM57RFF3RT",
-};
-firebase.initializeApp(config);
-const messaging = firebase.messaging();
+});
 
-// 後端推播
-messaging.onBackgroundMessage(function (payload) {
-  const notification = payload.notification;
+const messaging = getMessaging(firebaseApp);
+onBackgroundMessage(messaging, (payload) => {
   console.log(
     "[firebase-messaging-sw.js] Received background message ",
     payload
   );
-  console.log("self...", self);
   // Customize notification here
-  const notificationTitle = `${notification.title}`;
+  const notificationTitle = "Background Message Title";
   const notificationOptions = {
-    body: `${notification.body}`,
+    body: "Background Message body.",
+    icon: "/firebase-logo.png",
   };
+
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
