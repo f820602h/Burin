@@ -9,6 +9,7 @@ export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
+      navigateFallbackAllowlist: [/^index.html$/],
       injectRegister: "auto",
       registerType: "autoUpdate",
       devOptions: {
