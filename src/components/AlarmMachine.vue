@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useTaskStore } from "@/stores/task";
-import { useCurrentTaskDuration } from "@/composables/useCurrentTaskDuration";
 import DigitalNumber from "@/components/basic/DigitalNumber.vue";
 import ToggleSwitch from "@/components/basic/ToggleSwitch.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
 
 const taskStore = useTaskStore();
-const { duration } = useCurrentTaskDuration();
 
 const intervalList: number[] = [5, 10, 15, 20, 25, 30, 45, 60, 90];
 
-const isSwitchOn = ref<boolean>(true);
 const isAutoRemind = ref<boolean>(true);
 const isAutoUnplug = ref<boolean>(false);
 const intervalIndex = ref<number>(2);
@@ -19,35 +16,41 @@ const intervalIndex = ref<number>(2);
 const intervalMinutes = computed<number>(() => {
   return intervalList[intervalIndex.value];
 });
-const afterIntervalTimes = computed<number>(() => {
-  return Math.floor(duration.value / (intervalMinutes.value * 1000));
-});
 
-let unWatchAfterIntervalTimes: () => void = () => {
-  return;
-};
-const startWatchAfterIntervalTimes: () => void = () => {
-  if (!taskStore.currentTask || !isSwitchOn.value) return;
-  unWatchAfterIntervalTimes = watch(afterIntervalTimes, () => {
-    if (isAutoRemind.value) console.log("time out!");
-    if (isAutoUnplug.value) taskStore._actUpdateCurrentTask(null);
+const subscribeNotification: () => void = () => {
+  if (!taskStore.currentTask || !isAutoRemind.value) return;
+  navigator.serviceWorker.controller?.postMessage({
+    method: "subscribeTaskNotification",
+    data: {
+      taskName: taskStore.currentTask.title,
+      startTime: taskStore.currentTask.lastStartTimestamp,
+      intervalMinutes: intervalMinutes.value,
+    },
   });
 };
-const onIntervalBtnPress: (direction: number) => void = (direction) => {
-  unWatchAfterIntervalTimes();
-  intervalIndex.value += direction;
-  startWatchAfterIntervalTimes();
+
+const unsubscribeNotification: () => void = () => {
+  navigator.serviceWorker.controller?.postMessage({
+    method: "unsubscribeTaskNotification",
+  });
 };
 
-watch(isSwitchOn, (status) => {
-  if (status) startWatchAfterIntervalTimes();
-  else unWatchAfterIntervalTimes();
+const onIntervalBtnPress: (direction: number) => void = (direction) => {
+  unsubscribeNotification();
+  intervalIndex.value += direction;
+  subscribeNotification();
+};
+
+watch(isAutoRemind, () => {
+  unsubscribeNotification();
+  subscribeNotification();
 });
+
 watch(
   () => taskStore.currentTask,
   () => {
-    unWatchAfterIntervalTimes();
-    startWatchAfterIntervalTimes();
+    unsubscribeNotification();
+    subscribeNotification();
   },
   { immediate: true }
 );
@@ -120,10 +123,6 @@ watch(
       <div class="flex justify-between items-center mb-4">
         <div class="text-lg leading-5 font-black italic text-orange-700">
           TOMATO
-        </div>
-        <div class="flex-center-center text-neutral-600">
-          <span class="text-sm mr-2">開／關</span>
-          <ToggleSwitch v-model="isSwitchOn" />
         </div>
       </div>
 

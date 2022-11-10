@@ -9,11 +9,18 @@ export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
-      navigateFallbackAllowlist: [/^index.html$/],
-      injectRegister: "auto",
-      registerType: "autoUpdate",
+      mode: "development",
+      base: "/",
+      // injectRegister: null,
+      srcDir: "src/service",
+      filename: "sw.ts",
+      strategies: "injectManifest",
+      injectManifest: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,txt}"],
+      },
       devOptions: {
         enabled: true,
+        type: "module",
       },
       includeAssets: [
         "masked-icon.svg",
@@ -24,10 +31,14 @@ export default defineConfig({
         "apple-icon-114x114.png",
       ],
       manifest: {
-        short_name: "Burin",
         name: "Burin",
+        short_name: "Burin",
         lang: "zh-Hant-TW",
         description: "carving your every step",
+        background_color: "#ffffff",
+        theme_color: "#ffffff",
+        start_url: "/",
+        display: "standalone",
         icons: [
           {
             src: "pwa-192x192.png",
@@ -40,12 +51,6 @@ export default defineConfig({
             sizes: "512x512",
           },
         ],
-        start_url: "/",
-        background_color: "#ffffff",
-        display: "standalone",
-        scope: "/",
-        theme_color: "#000000",
-        gcm_sender_id: "103953800507",
       },
     }),
   ],
