@@ -10,6 +10,6 @@
     "types": [
       "vite/client"
     ],
-    "lib": ["es2017", "dom"]
+    "lib": ["es2017", "dom", "WebWorker"]
   }
 }

@@ -39,7 +39,6 @@ const { values: formValue, handleSubmit } = useForm({
 
 const taskStore = useTaskStore();
 const confirmHandler = handleSubmit(async (values) => {
-  console.log(123);
   if (props.editingTask) {
     await taskStore._actUpdateTask({ ...props.editingTask, ...values });
   } else {
