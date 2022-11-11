@@ -12,14 +12,14 @@ export const pipelineGuard: NavigationGuard = (to, from, next) => {
 
   if (!middlewareArray.length) return next();
 
-  const concatenatedMiddleware: () => void = () => {
+  function concatenatedMiddleware(): void {
     index = index !== undefined ? index + 1 : 0;
     const isLastMiddleware = index === middlewareArray.length - 1;
     const nextPipeline = isLastMiddleware
       ? () => next()
       : concatenatedMiddleware;
     middlewareArray[index](to, from, next, nextPipeline);
-  };
+  }
 
   concatenatedMiddleware();
 };

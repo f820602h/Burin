@@ -1,25 +1,23 @@
 import { BaseAxiosRequestor } from "../axios/index";
 
-export const axiosPusherGetVapidPublicKey: () => Promise<string> = () => {
+export function axiosPusherGetVapidPublicKey(): Promise<string> {
   return BaseAxiosRequestor.get({
     url: `/pusher/vapidPublicKey`,
     showLoading: false,
   });
-};
+}
 
-export const axiosPusherPostRegister: (payload: any) => Promise<never> = (
-  payload
-) => {
+export function axiosPusherPostRegister(payload: any): Promise<never> {
   return BaseAxiosRequestor.post({
     url: `/pusher/register`,
     data: payload,
     showLoading: false,
   });
-};
+}
 
-export const axiosPusherPostSendNotification: () => Promise<string> = () => {
+export function axiosPusherPostSendNotification(): Promise<string> {
   return BaseAxiosRequestor.post({
     url: `/pusher/sendNotification`,
     showLoading: false,
   });
-};
+}

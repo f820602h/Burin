@@ -37,9 +37,9 @@ const currentScreenConfig = computed<ScreenConfig>(() => {
   return screenConfigModesMap[currentMode.value];
 });
 
-const changeMode: (mode: keyof ScreenConfigModesMap) => void = (mode) => {
+function changeMode(mode: keyof ScreenConfigModesMap): void {
   currentMode.value = mode;
-};
+}
 </script>
 
 <template>

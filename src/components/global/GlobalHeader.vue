@@ -6,10 +6,10 @@ const emit = defineEmits<{ (e: "toggle-logger"): void }>();
 
 const userStore = useUserStore();
 
-const onAvatarClick: () => void = () => {
+function onAvatarClick(): void {
   if (userStore.user) axiosUserLogout();
   else emit("toggle-logger");
-};
+}
 </script>
 
 <template>

@@ -19,46 +19,46 @@ const selectedCategory = ref<TaskCategory>();
 const editingCategory = ref<TaskCategory>();
 const editingTask = ref<Task>();
 
-const selectCategory: (category: TaskCategory) => void = (category) => {
+function selectCategory(category: TaskCategory): void {
   selectedCategory.value = category;
   taskStore._actFetchTaskList(category.id);
-};
+}
 
 const isFolderCreatorShow = ref<boolean>(false);
-const addNewCategory: () => void = () => {
+function addNewCategory(): void {
   editingCategory.value = undefined;
   isFolderCreatorShow.value = true;
-};
-const editCategory: () => void = () => {
+}
+function editCategory(): void {
   if (!selectedCategory.value) return;
   editingCategory.value = selectedCategory.value;
   isFolderCreatorShow.value = true;
-};
+}
 
 const isDeleteCheckDialogShow = ref<boolean>(false);
-const deleteCategory: () => void = async () => {
+async function deleteCategory(): Promise<void> {
   if (!selectedCategory.value) return;
   await taskStore._actDeleteTaskCategory(selectedCategory.value.id);
   isDeleteCheckDialogShow.value = false;
   selectedCategory.value = undefined;
-};
+}
 
 const isCardCreatorShow = ref<boolean>(false);
-const addNewTask: () => void = () => {
+function addNewTask(): void {
   editingTask.value = undefined;
   isCardCreatorShow.value = true;
-};
-// const editTask: () => void = () => {
+}
+// function editTask(): void {
 //   if (!selectedCategory.value) return;
 //   editingTask.value = selectedCategory.value;
 //   isFolderCreatorShow.value = true;
 // };
 
-const setCurrentTask: (task: Task) => void = (task) => {
+function setCurrentTask(task: Task): void {
   taskStore._actUpdateCurrentTask(task);
   selectedCategory.value = undefined;
   emit("close");
-};
+}
 </script>
 
 <template>
