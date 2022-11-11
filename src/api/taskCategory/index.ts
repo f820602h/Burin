@@ -5,37 +5,37 @@ import type {
   TaskCategoryCompleteInfo,
 } from "@/class/TaskCategory";
 
-export const axiosTaskCategoryGetList: () => Promise<
+export function axiosTaskCategoryGetList(): Promise<
   TaskCategoryCompleteInfo[]
-> = () => {
+> {
   return BaseAxiosRequestor.get({
     url: "/taskCategory/list",
   });
-};
+}
 
-export const axiosTaskCategoryCreate: (
+export function axiosTaskCategoryCreate(
   payload: Omit<TaskCategoryInfo, "id">
-) => Promise<TaskCategoryId["id"]> = (payload) => {
+): Promise<TaskCategoryId["id"]> {
   return BaseAxiosRequestor.post({
     url: "/taskCategory/create",
     data: payload,
   });
-};
+}
 
-export const axiosTaskCategoryUpdate: (
+export function axiosTaskCategoryUpdate(
   payload: TaskCategoryInfo
-) => Promise<never> = (payload) => {
+): Promise<never> {
   return BaseAxiosRequestor.post({
     url: "/taskCategory/update",
     data: payload,
   });
-};
+}
 
-export const axiosTaskCategoryDelete: (
+export function axiosTaskCategoryDelete(
   payload: TaskCategoryId
-) => Promise<never> = (payload) => {
+): Promise<never> {
   return BaseAxiosRequestor.delete({
     url: "/taskCategory/delete",
     params: payload,
   });
-};
+}

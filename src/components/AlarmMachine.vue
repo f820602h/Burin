@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, reactive, watch } from "vue";
 import { useTaskStore } from "@/stores/task";
 import DigitalNumber from "@/components/basic/DigitalNumber.vue";
 import ToggleSwitch from "@/components/basic/ToggleSwitch.vue";
@@ -9,39 +9,21 @@ const taskStore = useTaskStore();
 
 const intervalList: number[] = [5, 10, 15, 20, 25, 30, 45, 60, 90];
 
-const isAutoRemind = ref<boolean>(true);
-const isAutoUnplug = ref<boolean>(false);
-const intervalIndex = ref<number>(2);
-
-const intervalMinutes = computed<number>(() => {
-  return intervalList[intervalIndex.value];
+const alarmSetting = reactive<{
+  isAutoRemind: boolean;
+  isAutoUnplug: boolean;
+  intervalIndex: number;
+}>({
+  isAutoRemind: true,
+  isAutoUnplug: false,
+  intervalIndex: 2,
 });
 
-const subscribeNotification: () => void = () => {
-  if (!taskStore.currentTask || !isAutoRemind.value) return;
-  navigator.serviceWorker.controller?.postMessage({
-    method: "subscribeTaskNotification",
-    data: {
-      taskName: taskStore.currentTask.title,
-      startTime: taskStore.currentTask.lastStartTimestamp,
-      intervalMinutes: intervalMinutes.value,
-    },
-  });
-};
+const intervalMinutes = computed<number>(() => {
+  return intervalList[alarmSetting.intervalIndex];
+});
 
-const unsubscribeNotification: () => void = () => {
-  navigator.serviceWorker.controller?.postMessage({
-    method: "unsubscribeTaskNotification",
-  });
-};
-
-const onIntervalBtnPress: (direction: number) => void = (direction) => {
-  unsubscribeNotification();
-  intervalIndex.value += direction;
-  subscribeNotification();
-};
-
-watch(isAutoRemind, () => {
+watch(alarmSetting, () => {
   unsubscribeNotification();
   subscribeNotification();
 });
@@ -54,6 +36,24 @@ watch(
   },
   { immediate: true }
 );
+
+function subscribeNotification(): void {
+  if (!taskStore.currentTask) return;
+  navigator.serviceWorker.controller?.postMessage({
+    method: "subscribeTaskNotification",
+    data: {
+      taskName: taskStore.currentTask.title,
+      startTime: taskStore.currentTask.lastStartTimestamp,
+      intervalMinutes: intervalMinutes.value,
+    },
+  });
+}
+
+function unsubscribeNotification(): void {
+  navigator.serviceWorker.controller?.postMessage({
+    method: "unsubscribeTaskNotification",
+  });
+}
 </script>
 
 <template>
@@ -79,8 +79,8 @@ watch(
             :circle="true"
             :width="28"
             :height="25"
-            :disabled="intervalIndex === intervalList.length - 1"
-            @press="onIntervalBtnPress(1)"
+            :disabled="alarmSetting.intervalIndex === intervalList.length - 1"
+            @press="alarmSetting.intervalIndex += 1"
           >
             <span class="icon-top"></span>
           </ButtonNormal>
@@ -90,8 +90,8 @@ watch(
             :circle="true"
             :width="28"
             :height="25"
-            :disabled="intervalIndex === 0"
-            @press="onIntervalBtnPress(-1)"
+            :disabled="alarmSetting.intervalIndex === 0"
+            @press="alarmSetting.intervalIndex -= 1"
           >
             <span class="icon-down"></span>
           </ButtonNormal>
@@ -102,7 +102,7 @@ watch(
             <div class="flex-center-center text-neutral-600">
               <span class="icon-bell mr-1"></span>
               <span class="text-sm mr-2">提醒</span>
-              <ToggleSwitch v-model="isAutoRemind" />
+              <ToggleSwitch v-model="alarmSetting.isAutoRemind" />
             </div>
           </div>
 
@@ -110,7 +110,7 @@ watch(
             <div class="flex-center-center text-neutral-600">
               <span class="icon-cancel mr-1"></span>
               <span class="text-sm mr-2">退卡</span>
-              <ToggleSwitch v-model="isAutoUnplug" />
+              <ToggleSwitch v-model="alarmSetting.isAutoUnplug" />
             </div>
           </div>
         </div>

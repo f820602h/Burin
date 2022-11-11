@@ -16,10 +16,10 @@ const historyScale = ref<InstanceType<typeof GraduatedScale> | null>(null);
 const percentageScroll = ref<HTMLElement | null>(null);
 const percentageScale = ref<InstanceType<typeof GraduatedScale> | null>(null);
 
-const setResizeObserver: (
+function setResizeObserver(
   scroll: Ref<HTMLElement | null>,
   scale: Ref<InstanceType<typeof GraduatedScale> | null>
-) => void = (scroll, scale) => {
+): void {
   let lastClientWidth = 0;
   let lastScrollWidth = 0;
 
@@ -38,7 +38,7 @@ const setResizeObserver: (
     lastClientWidth = clientWidth;
     lastScrollWidth = scrollWidth;
   });
-};
+}
 
 onMounted(async () => {
   await logState._actFetchTodayLog();
@@ -52,13 +52,13 @@ const oneHour = 1000 * 60 * 60;
 const historyScaleWidthPercent = ref<number>(200);
 const percentageScaleWidthPercent = ref<number>(100);
 
-const clockTickFormatter: (v: number, i: number) => string = (v, i) => {
-  const hour = new Date(v).getHours();
-  return !(i % 3) ? `${hour}:00` : "";
-};
-const percentTickFormatter: (v: number) => string = (v) => {
-  return v + "%";
-};
+function clockTickFormatter(value: number, index: number): string {
+  const hour = new Date(value).getHours();
+  return !(index % 3) ? `${hour}:00` : "";
+}
+function percentTickFormatter(value: number): string {
+  return value + "%";
+}
 
 const logState = useLogStore();
 const historyScaleData = computed<Range[]>(() => {

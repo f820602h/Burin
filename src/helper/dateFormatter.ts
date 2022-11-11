@@ -11,10 +11,10 @@ type DateFormatterOptions = {
   second: DateFormatterOptionsValue;
 };
 
-export const dateFormatter: (
+export function dateFormatter(
   timeStamp: number,
-  mixinOptions?: Partial<DateFormatterOptions>
-) => string = (timeStamp, mixinOptions = {}) => {
+  mixinOptions: Partial<DateFormatterOptions> = {}
+): string {
   const defaultOptions: DateFormatterOptions = {
     timeZone: "Asia/Taipei",
     year: "numeric",
@@ -30,4 +30,4 @@ export const dateFormatter: (
     ...defaultOptions,
     ...mixinOptions,
   });
-};
+}

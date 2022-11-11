@@ -5,9 +5,9 @@ export type durationTimeObject = {
   outputText: string;
 };
 
-export const durationTimeFormatter: (
+export function durationTimeFormatter(
   milliseconds: number
-) => durationTimeObject = (milliseconds) => {
+): durationTimeObject {
   const hour = 60 * 60 * 1000;
   const minute = 60 * 1000;
   const second = 1000;
@@ -30,4 +30,4 @@ export const durationTimeFormatter: (
     seconds,
     outputText,
   };
-};
+}

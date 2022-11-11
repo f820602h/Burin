@@ -61,16 +61,16 @@ const colors = computed(() => {
     return new Color([colors.start, colors.end]);
   });
 });
-const selectSystemColor: (color: Color) => void = (color) => {
+function selectSystemColor(color: Color): void {
   startColor.value = color.hexStringList[0];
   endColor.value = color.hexStringList[1];
-};
-const isSystemColorSelected: (color: Color) => boolean = (color) => {
+}
+function isSystemColorSelected(color: Color): boolean {
   return (
     startColor.value === color.hexStringList[0] &&
     endColor.value === color.hexStringList[1]
   );
-};
+}
 
 const demoCategory = computed<TaskCategory>(
   () =>

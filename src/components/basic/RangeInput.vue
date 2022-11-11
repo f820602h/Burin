@@ -54,53 +54,53 @@ onMounted(() => {
   }
 });
 
-const onGrooveClick: (e: MouseEvent) => void = (e) => {
+function onGrooveClick(e: MouseEvent): void {
   lastLeftRatio.value = e.offsetX / props.width;
   emit("jump");
-};
+}
 // mouse event
-const onKnobMousedown: (e: MouseEvent) => void = (e) => {
+function onKnobMousedown(e: MouseEvent): void {
   isActive.value = true;
   originX.value = e.clientX;
   emit("start");
-};
-const onBodyMousemove: (e: MouseEvent) => void = (e) => {
+}
+function onBodyMousemove(e: MouseEvent): void {
   if (!isActive.value) return;
   e.preventDefault();
   offsetX.value = e.clientX - originX.value;
   emit("move");
-};
-const onBodyMouseup: () => void = () => {
+}
+function onBodyMouseup(): void {
   if (!isActive.value) return;
   isActive.value = false;
   lastLeftRatio.value = currentLeftRatio.value;
   offsetX.value = 0;
   emit("end");
-};
-const onBodyMouseleave: () => void = () => {
+}
+function onBodyMouseleave(): void {
   if (!isActive.value) return;
   isActive.value = false;
   emit("end");
-};
+}
 // touch event
-const onKnobTouchstart: (e: TouchEvent) => void = (e) => {
+function onKnobTouchstart(e: TouchEvent): void {
   e.preventDefault();
   isActive.value = true;
   originX.value = e.touches[0].clientX;
   emit("start");
-};
-const onBodyTouchmove: (e: TouchEvent) => void = (e) => {
+}
+function onBodyTouchmove(e: TouchEvent): void {
   if (!isActive.value) return;
   offsetX.value = e.touches[0].clientX - originX.value;
   emit("move");
-};
-const onBodyTouchend: () => void = () => {
+}
+function onBodyTouchend(): void {
   if (!isActive.value) return;
   isActive.value = false;
   lastLeftRatio.value = currentLeftRatio.value;
   offsetX.value = 0;
   emit("end");
-};
+}
 </script>
 
 <template>

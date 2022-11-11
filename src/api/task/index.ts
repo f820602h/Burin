@@ -1,29 +1,27 @@
 import { BaseAxiosRequestor } from "../axios/index";
 import type { TaskInfo, TaskBasicInfo, TaskCompleteInfo } from "@/class/Task";
 
-export const axiosTaskGetList: (
+export function axiosTaskGetList(
   payload: Pick<TaskInfo, "categoryId">
-) => Promise<TaskCompleteInfo[]> = (payload) => {
+): Promise<TaskCompleteInfo[]> {
   return BaseAxiosRequestor.get({
     url: `/task/list/${payload.categoryId}`,
     showLoading: false,
   });
-};
+}
 
-export const axiosTaskCreate: (
+export function axiosTaskCreate(
   payload: Omit<TaskBasicInfo, "id">
-) => Promise<TaskInfo["id"]> = (payload) => {
+): Promise<TaskInfo["id"]> {
   return BaseAxiosRequestor.post({
     url: "/task/create",
     data: payload,
   });
-};
+}
 
-export const axiosTaskUpdate: (payload: TaskBasicInfo) => Promise<never> = (
-  payload
-) => {
+export function axiosTaskUpdate(payload: TaskBasicInfo): Promise<never> {
   return BaseAxiosRequestor.post({
     url: "/task/update",
     data: payload,
   });
-};
+}

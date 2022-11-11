@@ -30,7 +30,7 @@ const endValue = computed<number>(() => {
   return props.startValue + props.tickInterval * props.tickAmount;
 });
 
-const getRangeStyle: (range: Range) => StyleValue = (range) => {
+function getRangeStyle(range: Range): StyleValue {
   const r = (range.x2 - props.startValue) / (endValue.value - props.startValue);
   const l = (range.x1 - props.startValue) / (endValue.value - props.startValue);
   return {
@@ -38,7 +38,7 @@ const getRangeStyle: (range: Range) => StyleValue = (range) => {
     left: l * 100 + "%",
     background: range.color,
   };
-};
+}
 </script>
 
 <template>

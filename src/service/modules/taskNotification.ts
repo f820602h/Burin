@@ -9,17 +9,17 @@ type TaskNotificationData = {
 let afterTimes = 0;
 let intervalId = 0;
 
-const calcAfterTimes: (data: TaskNotificationData) => number = (data) => {
+function calcAfterTimes(data: TaskNotificationData): number {
   const now = new Date().getTime();
   const duration = Math.max(now - data.startTime, 0);
   return Math.floor(duration / (data.intervalMinutes * 1000));
-};
+}
 
-const initAfterTimes: (data: TaskNotificationData) => void = (data) => {
+function initAfterTimes(data: TaskNotificationData): void {
   afterTimes = calcAfterTimes(data);
-};
+}
 
-const sendNotification: (data: TaskNotificationData) => void = (data) => {
+function sendNotification(data: TaskNotificationData): void {
   intervalId = self.setInterval(() => {
     const newAfterTimes = calcAfterTimes(data);
     if (afterTimes < newAfterTimes) {
@@ -31,16 +31,14 @@ const sendNotification: (data: TaskNotificationData) => void = (data) => {
       });
     }
   }, 500);
-};
+}
 
-export const subscribeTaskNotification: (data: TaskNotificationData) => void = (
-  data
-) => {
+export function subscribeTaskNotification(data: TaskNotificationData): void {
   initAfterTimes(data);
   sendNotification(data);
-};
+}
 
-export const unsubscribeTaskNotification: () => void = () => {
+export function unsubscribeTaskNotification(): void {
   afterTimes = 0;
   self.clearInterval(intervalId);
-};
+}
