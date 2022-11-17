@@ -62,9 +62,16 @@ function getSpecificTimestamp(specificTime: Partial<SpecificTime>): TimeStamp {
 }
 
 export const timestampCalculator: TimestampCalculator = (...arg) => {
-  if (arg[0] === "now") return getNowTimestamp();
-  else if (arg[0] === "today") return getTodayTimestamp();
-  else if (arg[0] === "yesterday") return getYesterdayTimestamp();
-  else if (arg[0] === "tomorrow") return getTomorrowTimestamp();
-  else return getSpecificTimestamp(arg[0]);
+  switch (arg[0]) {
+    case "now":
+      return getNowTimestamp();
+    case "today":
+      return getTodayTimestamp();
+    case "yesterday":
+      return getYesterdayTimestamp();
+    case "tomorrow":
+      return getTomorrowTimestamp();
+    default:
+      return getSpecificTimestamp(arg[0]);
+  }
 };

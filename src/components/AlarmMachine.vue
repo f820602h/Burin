@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
 import { useTaskStore } from "@/stores/task";
+import { useServiceWorkerPostMessage } from "@/composables/useServiceWorkerPostMessage";
 import DigitalNumber from "@/components/basic/DigitalNumber.vue";
 import ToggleSwitch from "@/components/basic/ToggleSwitch.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
@@ -39,20 +40,15 @@ watch(
 
 function subscribeNotification(): void {
   if (!taskStore.currentTask) return;
-  navigator.serviceWorker.controller?.postMessage({
-    method: "subscribeTaskNotification",
-    data: {
-      taskName: taskStore.currentTask.title,
-      startTime: taskStore.currentTask.lastStartTimestamp,
-      intervalMinutes: intervalMinutes.value,
-    },
+  useServiceWorkerPostMessage("subscribeTaskNotification", {
+    taskName: taskStore.currentTask.title,
+    startTime: taskStore.currentTask.lastStartTimestamp,
+    intervalMinutes: intervalMinutes.value,
   });
 }
 
 function unsubscribeNotification(): void {
-  navigator.serviceWorker.controller?.postMessage({
-    method: "unsubscribeTaskNotification",
-  });
+  useServiceWorkerPostMessage("unsubscribeTaskNotification");
 }
 </script>
 
