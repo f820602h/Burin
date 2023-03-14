@@ -39,7 +39,7 @@ watch(
 );
 
 function subscribeNotification(): void {
-  if (!taskStore.currentTask) return;
+  if (!taskStore.currentTask || !alarmSetting.isAutoRemind) return;
   useServiceWorkerPostMessage("subscribeTaskNotification", {
     taskName: taskStore.currentTask.title,
     startTime: taskStore.currentTask.lastStartTimestamp,
