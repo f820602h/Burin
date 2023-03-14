@@ -4,7 +4,7 @@ import { useField } from "vee-validate";
 
 const props = withDefaults(
   defineProps<{
-    value: string;
+    value?: string;
     type: string;
     name?: string;
     placeholder?: string;
