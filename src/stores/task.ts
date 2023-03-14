@@ -1,6 +1,10 @@
 import { defineStore } from "pinia";
-import { TaskCategory, type TaskCategoryInfo } from "@/class/TaskCategory";
-import { Task, type TaskBasicInfo } from "@/class/Task";
+import {
+  TaskCategory,
+  type TaskCategoryId,
+  type TaskCategoryInfo,
+} from "@/class/TaskCategory";
+import { Task, type TaskId, type TaskBasicInfo } from "@/class/Task";
 import { axiosCurrentTaskGet, axiosPunch } from "@/api/currentTask";
 import {
   axiosTaskCategoryGetList,
@@ -8,7 +12,12 @@ import {
   axiosTaskCategoryUpdate,
   axiosTaskCategoryDelete,
 } from "@/api/taskCategory";
-import { axiosTaskGetList, axiosTaskCreate, axiosTaskUpdate } from "@/api/task";
+import {
+  axiosTaskGetList,
+  axiosTaskCreate,
+  axiosTaskUpdate,
+  axiosTaskDelete,
+} from "@/api/task";
 
 const defaultCategory = new TaskCategory({
   id: 0,
@@ -35,6 +44,7 @@ export const useTaskStore = defineStore({
     currentTask: null,
   }),
   actions: {
+    // task category
     async _actFetchTaskCategoryList(): Promise<void> {
       const list = await axiosTaskCategoryGetList();
       this.categories = list.map((cate) => new TaskCategory(cate));
@@ -60,10 +70,11 @@ export const useTaskStore = defineStore({
         updateCategory.endColor = payload.endColor;
       }
     },
-    async _actDeleteTaskCategory(id: TaskCategory["id"]): Promise<void> {
+    async _actDeleteTaskCategory(id: TaskCategoryId["id"]): Promise<void> {
       await axiosTaskCategoryDelete({ id });
       this.categories = this.categories.filter((c) => c.id !== id);
     },
+    // task
     async _actFetchTaskList(categoryId: Task["categoryId"]): Promise<void> {
       const list = await axiosTaskGetList({ categoryId });
       this.tasks = list.map((task) => new Task(task));
@@ -89,6 +100,11 @@ export const useTaskStore = defineStore({
         updateTask.additionUrl = payload.additionUrl;
       }
     },
+    async _actDeleteTask(id: TaskId["id"]): Promise<void> {
+      await axiosTaskDelete({ id });
+      this.categories = this.categories.filter((c) => c.id !== id);
+    },
+    // current task
     async _actFetchCurrentTask(): Promise<void> {
       const currentTask = await axiosCurrentTaskGet();
       this.currentTask = currentTask ? new Task(currentTask) : null;
