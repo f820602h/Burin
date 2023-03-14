@@ -7,6 +7,7 @@ import GraduatedScale from "@/components/basic/GraduatedScale.vue";
 import RangeInput from "@/components/basic/RangeInput.vue";
 import ButtonNormal from "@/components/basic/ButtonNormal.vue";
 import { timestampCalculator } from "@/helper/timestampCalculator";
+import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
 
 defineEmits<{ (e: "close"): void }>();
 
@@ -61,24 +62,45 @@ function percentTickFormatter(value: number): string {
 }
 
 const logState = useLogStore();
+
 const historyScaleData = computed<Range[]>(() => {
   return logState.today.map((log) => ({
     x1: log.startTimestamp,
     x2: log.endTimestamp,
-    name: `${log.categoryName}/${log.taskTitle}`,
+    name: `${log.categoryName} / ${log.taskTitle}`,
     color: log.getColor().styleString,
+    tipFormatter() {
+      return `
+        <b>${this.name}</b><br/>
+        花費: ${durationTimeFormatter(this.x2 - this.x1).outputText}
+        `;
+    },
   }));
 });
+
 const percentageScaleData = computed<Range[]>(() => {
   let lastPercent = 0;
-  return Object.entries(logState._getCategorizeTodayLog).map(([cate, logs]) => {
-    const totalTime = logs.reduce<number>((sum, log) => {
-      return sum + log.endTimestamp - log.startTimestamp;
+  return Object.values(logState._getCategorizeTodayLog).map((logs) => {
+    const spendTime = logs.reduce((acc, log) => {
+      return acc + log.endTimestamp - log.startTimestamp;
     }, 0);
     const x1 = lastPercent;
-    const x2 = Math.round(totalTime / logState._getTotalTodayLogTime) * 100;
+    const x2 =
+      x1 + Math.round((spendTime / logState._getTotalTodayLogTime) * 1000) / 10;
     lastPercent = x2;
-    return { x1, x2, name: cate, color: logs[0].getColor().styleString };
+    return {
+      x1,
+      x2,
+      name: logs[0].categoryName,
+      color: logs[0].getColor().styleString,
+      tipFormatter() {
+        return `
+        <b>${this.name}</b> (共 ${logs.length} 筆紀錄)<br/>
+        佔比: ${this.x2 - this.x1}%<br/>
+        花費: ${durationTimeFormatter(spendTime).outputText}
+        `;
+      },
+    };
   });
 });
 </script>
@@ -130,7 +152,7 @@ const percentageScaleData = computed<Range[]>(() => {
         <!-- percentage -->
         <div class="flex-between-end mt-8">
           <div class="monitor-panel__scale-tag">
-            <span class="font-bold text-gray-600">任務分類佔比</span>
+            <span class="font-bold text-gray-600">任務費時佔比</span>
           </div>
 
           <div class="flex items-center text-gray-600 mb-1 ml-1">
