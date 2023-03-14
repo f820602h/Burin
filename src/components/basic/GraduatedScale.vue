@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { computed, type StyleValue } from "vue";
+import { NPopover } from "naive-ui";
+import { ref, computed, type StyleValue } from "vue";
 
 export type Range = {
   x1: number;
   x2: number;
   name: string;
   color: string;
+  tipFormatter?: (range: Range) => string;
 };
 
 const props = withDefaults(
@@ -39,6 +41,25 @@ function getRangeStyle(range: Range): StyleValue {
     background: range.color,
   };
 }
+
+const tipX = ref<number>(0);
+const tipY = ref<number>(0);
+const hoverRange = ref<Range | null>(null);
+
+const handleMouseenter = (range: Range, e: MouseEvent) => {
+  if (!(e.target instanceof HTMLElement)) return;
+  hoverRange.value = range;
+  tipX.value = e.clientX;
+  tipY.value = e.target.getBoundingClientRect().y;
+};
+
+const handleMouseleave = () => {
+  hoverRange.value = null;
+};
+
+const defaultTipFormatter: Range["tipFormatter"] = (range) => {
+  return `${range.name}: ${range.x2 - range.x1}`;
+};
 </script>
 
 <template>
@@ -65,14 +86,27 @@ function getRangeStyle(range: Range): StyleValue {
     </div>
 
     <div class="relative rounded-md bg-white overflow-hidden">
-      <div class="shadow-mask pointer-events-none" />
+      <div class="shadow-mask rounded-md pointer-events-none" />
       <div class="relative h-5">
         <div
           v-for="(range, index) in data"
           :key="index"
           :style="getRangeStyle(range)"
-          class="absolute top-0 h-full"
+          class="absolute top-0 h-full border-r-2 border-white last:border-r-0"
+          @mouseenter="handleMouseenter(range, $event)"
+          @mouseleave="handleMouseleave"
         ></div>
+
+        <NPopover :show="!!hoverRange" :x="tipX" :y="tipY" trigger="manual">
+          <span
+            v-if="!!hoverRange"
+            v-html="
+              hoverRange.tipFormatter
+                ? hoverRange.tipFormatter(hoverRange)
+                : defaultTipFormatter(hoverRange)
+            "
+          />
+        </NPopover>
       </div>
     </div>
   </div>

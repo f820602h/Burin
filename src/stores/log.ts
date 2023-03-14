@@ -29,7 +29,8 @@ export const useLogStore = defineStore({
     },
     _getCategorizeTodayLog(): Record<string, Log[]> {
       return this.today.reduce<Record<string, Log[]>>((obj, log) => {
-        obj[log.categoryName] = [...(obj[log.categoryName] || []), log];
+        const version = `${log.categoryId}-${log.categoryUpdateTimestamp}`;
+        obj[version] = [...(obj[version] || []), log];
         return obj;
       }, {});
     },
