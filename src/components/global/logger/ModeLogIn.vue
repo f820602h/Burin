@@ -21,15 +21,18 @@ const validationSchema = object({
 });
 const { handleSubmit } = useForm({ validationSchema });
 const confirmHandler = handleSubmit(async (values) => {
+  isAccountWrong.value = false;
   const { email, password } = values;
-  await axiosUserLogin({ email, password })
+  return await axiosUserLogin({ email, password })
     .then(async () => {
       await userStore._actFetchUserInfo();
       await taskStore._actFetchTaskCategoryList();
       await taskStore._actFetchCurrentTask();
+      return Promise.resolve();
     })
     .catch(() => {
       isAccountWrong.value = true;
+      return Promise.reject();
     });
 });
 
