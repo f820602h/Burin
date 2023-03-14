@@ -35,11 +35,11 @@ function editCategory(): void {
   isFolderCreatorShow.value = true;
 }
 
-const isDeleteCheckDialogShow = ref<boolean>(false);
+const isTaskCategoryDeleteCheckDialogShow = ref<boolean>(false);
 async function deleteCategory(): Promise<void> {
   if (!selectedCategory.value) return;
   await taskStore._actDeleteTaskCategory(selectedCategory.value.id);
-  isDeleteCheckDialogShow.value = false;
+  isTaskCategoryDeleteCheckDialogShow.value = false;
   selectedCategory.value = undefined;
 }
 
@@ -48,11 +48,17 @@ function addNewTask(): void {
   editingTask.value = undefined;
   isCardCreatorShow.value = true;
 }
-// function editTask(): void {
-//   if (!selectedCategory.value) return;
-//   editingTask.value = selectedCategory.value;
-//   isFolderCreatorShow.value = true;
-// };
+function editTask(task: Task): void {
+  editingTask.value = task;
+  isCardCreatorShow.value = true;
+}
+
+const prepareDeleteTask = ref<Task>();
+async function deleteTask(): Promise<void> {
+  if (!prepareDeleteTask.value) return;
+  await taskStore._actDeleteTask(prepareDeleteTask.value.id);
+  prepareDeleteTask.value = undefined;
+}
 
 function setCurrentTask(task: Task): void {
   taskStore._actUpdateCurrentTask(task);
@@ -107,7 +113,7 @@ function setCurrentTask(task: Task): void {
     <Transition name="collapse-down">
       <div v-if="selectedCategory" class="task-drawer__tray">
         <div
-          class="absolute top-[90px] right-0 pb-2 rounded-r-md bg-gray-400 shadow-md shadow-light translate-x-full"
+          class="absolute top-5 right-0 pb-2 rounded-r-md bg-gray-400 shadow-md shadow-light translate-x-full"
         >
           <div
             class="px-2 py-[6px] border-4 border-l-0 border-gray-300 rounded-r-md bg-gray-300 shadow-inner-sm"
@@ -124,13 +130,13 @@ function setCurrentTask(task: Task): void {
         </div>
 
         <div class="cards">
-          <div class="flex justify-between pt-5 px-3">
+          <div class="flex flex-wrap justify-center pt-5 px-3">
             <ButtonNormal
               :width="90"
               :height="25"
               theme="darker"
-              class="font-bold text-sm"
-              @press="isDeleteCheckDialogShow = true"
+              class="font-bold text-sm mr-4"
+              @press="isTaskCategoryDeleteCheckDialogShow = true"
             >
               <span class="text-xs text-white">刪除群組</span>
             </ButtonNormal>
@@ -143,13 +149,11 @@ function setCurrentTask(task: Task): void {
             >
               <span class="text-xs text-darker">編輯群組</span>
             </ButtonNormal>
-          </div>
-          <div class="pt-2 pb-5 px-3">
             <ButtonNormal
               :width="194"
               :height="35"
               theme="confirm"
-              class="font-bold text-sm"
+              class="font-bold text-sm mt-2 mb-5"
               @press="addNewTask"
             >
               <span class="text-lg">新增任務</span>
@@ -157,13 +161,28 @@ function setCurrentTask(task: Task): void {
           </div>
 
           <template v-if="taskStore.tasks.length">
-            <TaskCard
+            <div
               v-for="(task, index) in taskStore.tasks"
               :key="index"
-              :task="task"
-              class="mx-auto mb-3 cursor-pointer last:mb-0"
-              @click="setCurrentTask(task)"
-            />
+              class="mb-3 last:mb-0"
+            >
+              <TaskCard
+                :task="task"
+                class="mx-auto cursor-pointer relative"
+                @click="setCurrentTask(task)"
+              />
+              <div class="w-[200px] mx-auto flex justify-end pr-2">
+                <div
+                  class="card-action-button mr-2"
+                  @click="prepareDeleteTask = task"
+                >
+                  刪除
+                </div>
+                <div class="card-action-button" @click="editTask(task)">
+                  編輯
+                </div>
+              </div>
+            </div>
           </template>
         </div>
         <div class="handle" />
@@ -200,7 +219,7 @@ function setCurrentTask(task: Task): void {
     </teleport>
 
     <DialogModal
-      :show="isDeleteCheckDialogShow"
+      :show="isTaskCategoryDeleteCheckDialogShow"
       title="確定刪除任務群組？"
       :theme="'warning'"
       content="注意：任務群組中的任務卡片均會一併刪除。"
@@ -209,7 +228,20 @@ function setCurrentTask(task: Task): void {
       leftBtnType="normal"
       leftBtnText="取消"
       @right="deleteCategory"
-      @left="isDeleteCheckDialogShow = false"
+      @left="isTaskCategoryDeleteCheckDialogShow = false"
+    />
+
+    <DialogModal
+      :show="!!prepareDeleteTask"
+      title="確定刪除任務卡片？"
+      :theme="'warning'"
+      content="注意：任務卡片刪除後無法復原。"
+      rightBtnType="negative"
+      rightBtnText="刪除"
+      leftBtnType="normal"
+      leftBtnText="取消"
+      @right="deleteTask"
+      @left="prepareDeleteTask = undefined"
     />
   </div>
 </template>
@@ -248,13 +280,17 @@ function setCurrentTask(task: Task): void {
 
   &__tray {
     height: calc(100% - 90px);
-    @apply absolute top-0 left-1/2 flex flex-col w-[90%] -translate-x-1/2;
+    @apply absolute top-0 left-1/2 flex flex-col w-[100%] -translate-x-1/2;
     @media (min-width: theme("screens.md")) {
       height: calc(100% - 180px);
     }
 
     .cards {
       @apply flex-1 pb-4 border-x-8 border-gray-300 bg-gray-400 shadow-inner-md shadow-dark overflow-auto scrollbar-hide;
+
+      .card-action-button {
+        @apply px-2 py-1 rounded-b-md bg-slate-300 text-sm font-bold shadow-sm cursor-pointer;
+      }
     }
 
     .handle {
