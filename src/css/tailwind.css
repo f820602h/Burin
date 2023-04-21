@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 html, body {
-  @apply w-full min-w-[320px] text-gray-800;
+  @apply w-full min-w-[320px] text-gray-300;
 }
 
 /* utility class */
@@ -51,5 +51,9 @@ html, body {
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .btn {
+    @apply flex justify-center items-center  cursor-pointer transition duration-300 bg-violet-600 hover:bg-violet-500 disabled:bg-gray-300 disabled:text-slate-400 disabled:cursor-not-allowed;
   }
 }
