@@ -1,20 +1,12 @@
 <script setup lang="ts">
 import VerifyInput from "../../basic/VerifyInput.vue";
 
-withDefaults(defineProps<{ label: string }>(), { label: "" });
+withDefaults(defineProps<{ label: string; field: string }>(), { label: "" });
 </script>
 
 <template>
   <div class="text-sm mb-1">{{ label }}</div>
-  <VerifyInput v-bind="$attrs">
-    <template #error="{ errorMessage, meta }">
-      <div class="text-xs text-right min-h-4 mt-1">
-        <template v-if="errorMessage && meta.touched">
-          {{ errorMessage }}
-        </template>
-      </div>
-    </template>
-  </VerifyInput>
+  <VerifyInput v-bind="$attrs" :field="field"></VerifyInput>
 </template>
 
 <style scoped lang="scss">
