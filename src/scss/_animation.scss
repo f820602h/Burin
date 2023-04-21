@@ -38,6 +38,16 @@
   @apply -translate-y-full;
 }
 
+.slide-right-enter-active,
+.slide-right-leave-active {
+  @apply overflow-hidden duration-500;
+}
+
+.slide-right-enter-from,
+.slide-right-leave-to {
+  @apply w-0;
+}
+
 .mask-collapse-up-enter-active,
 .mask-collapse-up-leave-active {
   @apply transition-opacity duration-500;
