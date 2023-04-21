@@ -56,8 +56,8 @@ function changeMode(mode: keyof ScreenConfigModesMap): void {
           <div class="monitor-screen">
             <div class="stripe" />
             <component
-              ref="currentModeInstance"
               :is="currentScreenConfig.component"
+              ref="currentModeInstance"
               @change-mode="changeMode"
             />
           </div>

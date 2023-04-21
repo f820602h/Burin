@@ -1,37 +1,28 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { RouterView } from "vue-router";
-import { templateRef, useElementSize } from "@vueuse/core";
-import { useLoadingStore } from "@/stores/loading";
-import GlobalHeader from "@/components/global/GlobalHeader.vue";
-import BlurMask from "@/components/common/BlurMask.vue";
+import MenuSidebar from "@/components/global/sidebar/MenuSidebar.vue";
 import UserLogger from "@/components/global/logger/UserLogger.vue";
-import LoadingHourglass from "@/components/basic/LoadingHourglass.vue";
-
-const head = templateRef<HTMLElement | null>("head", null);
-const { height: headerHeight } = useElementSize(head);
-
-const loadingStore = useLoadingStore();
+import BlurMask from "./components/common/BlurMask.vue";
 
 const isUserLoggerShow = ref<boolean>(false);
-const show = computed<boolean>(() => {
-  return !!loadingStore.show || !!loadingStore.queue.size;
-});
 </script>
 
 <template>
-  <div class="root flex flex-col w-full min-h-screen">
-    <div
-      ref="head"
-      class="header-container sticky top-0 z-global-4 flex-shrink-0"
-    >
-      <GlobalHeader @toggle-logger="isUserLoggerShow = !isUserLoggerShow" />
+  <div class="root min-w-[360px]">
+    <div class="view-container relative flex">
+      <aside
+        class="flex-shrink-0 hidden lg:block w-[240px] h-screen border-r border-stone-900 bg-gray-800"
+      >
+        <MenuSidebar class="h-full overflow-auto" />
+      </aside>
+
+      <main class="flex-grow bg-gray-900">
+        <!-- <div @click="isUserLoggerShow = true">123</div> -->
+        <router-view class="min-h-screen overflow-auto" />
+      </main>
     </div>
-    <div class="view-container relative flex-1 flex bg-gray-700">
-      <div class="view-wrapper w-full">
-        <router-view />
-      </div>
-    </div>
+
     <div class="footer-container"></div>
 
     <Transition name="fade">
@@ -39,21 +30,16 @@ const show = computed<boolean>(() => {
         <UserLogger @close="isUserLoggerShow = false" />
       </BlurMask>
     </Transition>
-
-    <BlurMask v-if="show" class="justify-center items-center z-global-5">
-      <LoadingHourglass></LoadingHourglass>
-    </BlurMask>
   </div>
 </template>
 
 <style lang="scss" scoped>
 @import "@/scss/animation.scss";
-.root {
-  --headerHeight: v-bind(headerHeight + "px");
 
+.root {
   :deep(.fixed-layer) {
     @apply fixed left-0 w-full z-global-1;
-    top: var(--headerHeight);
+    top: 0;
     height: calc(100vh - var(--headerHeight));
   }
 }
