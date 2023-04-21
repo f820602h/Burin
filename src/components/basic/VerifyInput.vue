@@ -1,68 +1,54 @@
 <script setup lang="ts">
-import { toRef, computed } from "vue";
+import { toRef } from "vue";
 import { useField } from "vee-validate";
 
 const props = withDefaults(
   defineProps<{
-    value?: string;
+    defaultValue?: string;
     type: string;
-    name?: string;
+    field: string;
     placeholder?: string;
     disabled?: boolean;
   }>(),
   {
-    value: "",
-    type: "",
-    name: "",
+    defaultValue: "",
+    type: "text",
     placeholder: "",
     disabled: false,
   }
 );
 
-const name = toRef(props, "name");
-
-const { value, errorMessage, meta, handleChange, handleBlur } = useField(
-  name,
-  undefined,
-  {
-    initialValue: props.value,
-    validateOnValueUpdate: false,
-  }
-);
-
-const validationListeners = computed(() => {
-  if (!errorMessage.value) {
-    return {
-      blur: handleBlur,
-      change: handleChange,
-      input: (e: Event) => handleChange(e, false),
-    };
-  }
-  return {
-    blur: handleBlur,
-    change: handleChange,
-    input: handleChange,
-  };
+const field = toRef(props, "field");
+const { value, errorMessage, meta } = useField(field, undefined, {
+  initialValue: props.defaultValue,
 });
 </script>
 
 <template>
-  <div
-    class="vee-field relative"
-    :class="{ invalid: !!errorMessage, success: meta.valid }"
-  >
+  <div class="relative">
     <input
-      class="block w-full"
-      :id="name"
-      :name="name"
+      :id="field"
+      v-model="value"
+      :name="field"
       :type="type"
       :placeholder="placeholder"
-      :value="value"
       :disabled="disabled"
-      v-on="validationListeners"
+      :class="{ isInvalid: errorMessage }"
     />
-    <slot name="error" :errorMessage="errorMessage" :meta="meta"></slot>
+    <slot name="error" :error-message="errorMessage" :meta="meta">
+      <div class="min-h-4 mt-1 text-xs text-right text-red-600">
+        <template v-if="!!errorMessage">{{ errorMessage }}</template>
+      </div>
+    </slot>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+input {
+  @apply block w-full h-9 px-2 border border-transparent rounded outline-none leading-9 bg-gray-700 duration-150 hover:border-violet-400 focus:border-violet-400;
+
+  &.isInvalid {
+    @apply border-red-500;
+  }
+}
+</style>
