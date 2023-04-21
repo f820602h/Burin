@@ -1,4 +1,4 @@
-type DateFormatterOptionsValue = "numeric" | "2-digit";
+type DateFormatterOptionsValue = "numeric" | "2-digit" | undefined;
 
 type DateFormatterOptions = {
   timeZone: string;
