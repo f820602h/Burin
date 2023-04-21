@@ -1,23 +1,64 @@
-import { string, type AnySchema } from "yup";
+import { object, string, array, number, type AnySchema } from "yup";
+import type { UserInfo } from "@/class/User";
+import type { Log } from "@/class/Log";
+import type { Category } from "@/class/Category";
 
 interface FieldValidation {
   [field: string]: AnySchema;
 }
 
-export const userFieldValidation: FieldValidation = {
-  name: string().max(40, "請勿超過 40 個字元").required("請輸入使用者名稱"),
-  email: string().email("電子信箱格式錯誤").required("請輸入電子信箱"),
-  password: string().min(8, "密碼長度不足").required("請輸入密碼"),
+export enum UserFieldsName {
+  NAME = "name",
+  EMAIL = "email",
+  PASSWORD = "password",
+}
+
+export type UserFields = {
+  [UserFieldsName.NAME]: UserInfo["name"];
+  [UserFieldsName.EMAIL]: UserInfo["email"];
+  [UserFieldsName.PASSWORD]: UserInfo["password"];
 };
 
-export const taskCategoryFieldValidation: FieldValidation = {
-  name: string().max(12, "最多 12 個字元").required("請輸入群組名稱"),
-  colorS: string().max(7),
-  colorE: string().max(7),
+export const userFieldsValidation: FieldValidation = {
+  [UserFieldsName.NAME]: string()
+    .max(40, "max 40 characters allowed")
+    .required("required fields"),
+  [UserFieldsName.EMAIL]: string()
+    .email("is not a valid email format")
+    .required("required fields"),
+  [UserFieldsName.PASSWORD]: string()
+    .min(8, "at least 8 characters")
+    .required("required fields"),
 };
 
-export const taskCardFieldValidation: FieldValidation = {
-  title: string().max(12, "最多 12 個字元").required("請輸入任務標題"),
-  additionContent: string().max(40, "最多 40 個字元"),
-  additionUrl: string(),
+export enum WorkFieldsName {
+  TITLE = "title",
+  TAGS = "tags",
+}
+
+export enum WorkTagsFieldsName {
+  BINDING = "binding",
+  ADDING = "adding",
+}
+
+export type WorkFields = {
+  [WorkFieldsName.TITLE]: Log["title"];
+  [WorkFieldsName.TAGS]: {
+    [WorkTagsFieldsName.BINDING]: Category["id"][];
+    [WorkTagsFieldsName.ADDING]: Category["category"];
+  };
+};
+
+export const workFieldsValidation: FieldValidation = {
+  [WorkFieldsName.TITLE]: string()
+    .max(40, "max 40 characters allowed")
+    .required("required fields"),
+  [WorkFieldsName.TAGS]: object({
+    [WorkTagsFieldsName.BINDING]: array()
+      .of(number())
+      .max(5, "max 5 tags allowed"),
+    [WorkTagsFieldsName.ADDING]: string()
+      .trim()
+      .max(40, "max 40 characters allowed"),
+  }),
 };

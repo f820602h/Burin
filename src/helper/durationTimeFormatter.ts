@@ -1,8 +1,11 @@
 export type durationTimeObject = {
+  totalMilliseconds: number;
   hours: number;
   minutes: number;
   seconds: number;
-  outputText: string;
+  hoursText: string;
+  minutesText: string;
+  secondsText: string;
 };
 
 export function durationTimeFormatter(
@@ -19,15 +22,17 @@ export function durationTimeFormatter(
     0
   );
 
-  const hoursText = hours ? hours + "小時" : "";
-  const minutesText = minutes ? minutes + "分鐘" : "";
-  const secondsText = hours ? "" : seconds + "秒";
-  const outputText = hoursText + minutesText + secondsText;
+  const hoursText = String(hours).length < 2 ? `0${hours}` : `${hours}`;
+  const minutesText = String(minutes).length < 2 ? `0${minutes}` : `${minutes}`;
+  const secondsText = String(seconds).length < 2 ? `0${seconds}` : `${seconds}`;
 
   return {
+    totalMilliseconds: milliseconds,
     hours,
     minutes,
     seconds,
-    outputText,
+    hoursText,
+    minutesText,
+    secondsText,
   };
 }
