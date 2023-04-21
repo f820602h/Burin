@@ -1,12 +1,45 @@
 <script setup lang="ts">
 import type { MenuItemToggle as MenuItemToggleType } from "./types";
+import { computed } from "vue";
 import { useLogStore } from "@/stores/log";
 import { useStampStore } from "@/stores/stamp";
+import { monthNameGetter } from "@/helper/monthNameGetter";
 import MenuItem from "./MenuItem.vue";
 import MenuItemToggle from "./MenuItemToggle.vue";
 
 const logStore = useLogStore();
 const stampStore = useStampStore();
+
+const calendarMenuItems = computed(() =>
+  stampStore.stamps.reduce<MenuItemToggleType[]>((acc, timestamp) => {
+    const year: string = new Date(timestamp).getFullYear().toString();
+    const month: string = monthNameGetter(new Date(timestamp).getMonth());
+    const date: string = new Date(timestamp).getDate().toString();
+
+    const yearItem = acc.find((item) => item.name === year);
+    if (!yearItem) {
+      acc.push({
+        name: year,
+        children: [{ name: month, children: [{ name: date }] }],
+      });
+      return acc;
+    }
+
+    const monthItem = yearItem?.children.find((item) => item.name === month);
+    if (!monthItem || !("children" in monthItem)) {
+      yearItem.children.push({ name: month, children: [{ name: date }] });
+      return acc;
+    }
+
+    const dateItem = monthItem?.children.find((item) => item.name === date);
+    if (!dateItem) {
+      monthItem.children.push({ name: date });
+      return acc;
+    }
+
+    return acc;
+  }, [])
+);
 </script>
 
 <template>
@@ -29,7 +62,7 @@ const stampStore = useStampStore();
     <ul class="mb-3">
       <MenuItem :item="{ name: 'TODAY', icon: 'icon-task' }" />
       <MenuItemToggle
-        v-for="(item, index) in stampStore._getYearMonthDateMenuItems"
+        v-for="(item, index) in calendarMenuItems"
         :key="index"
         :item="item"
       />
