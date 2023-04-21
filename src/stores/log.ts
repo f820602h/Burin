@@ -1,38 +1,63 @@
 import { defineStore } from "pinia";
-import { Log } from "@/class/Log";
-import { axiosLogGetListBetweenPeriod } from "@/api/log/index";
-import { timestampCalculator } from "@/helper/timestampCalculator";
+import {
+  Log,
+  CurrentLog,
+  type LogInfo,
+  type LogCompleteInfo,
+} from "@/class/Log";
+import {
+  axiosLogGetCurrent,
+  axiosLogPostPush,
+  axiosLogPostPause,
+  axiosLogPostResume,
+  axiosLogPostFinish,
+} from "@/api/log/index";
 
 export type LogState = {
-  today: Log[];
+  currentLog: CurrentLog | null;
+  dailyLogs: {
+    [key: number | string]: Log[];
+  };
 };
 
 export const useLogStore = defineStore({
   id: "log",
   state: (): LogState => ({
-    today: [],
+    currentLog: null,
+    dailyLogs: {},
   }),
   actions: {
-    async _actFetchTodayLog(): Promise<void> {
-      const logs = await axiosLogGetListBetweenPeriod({
-        start: timestampCalculator("today"),
-        end: timestampCalculator("tomorrow"),
+    _actUpdateCurrentLog(logData: LogCompleteInfo) {
+      this.currentLog = new CurrentLog(logData, {
+        pause: axiosLogPostPause,
+        resume: axiosLogPostResume,
+        finish: (payload: CurrentLog) =>
+          axiosLogPostFinish(payload).then(() => {
+            this.currentLog = null;
+          }),
       });
-      this.today = logs.map((log) => new Log(log));
     },
-  },
-  getters: {
-    _getTotalTodayLogTime(): number {
-      return this.today.reduce<number>((sum, log) => {
-        return sum + log.endTimestamp - log.startTimestamp;
-      }, 0);
+    async _actPushLog(
+      payload: Pick<LogInfo, "title" | "startTimestamp" | "categories">
+    ): Promise<void> {
+      if (this.currentLog) await this.currentLog.finish();
+      const { id } = await axiosLogPostPush(payload);
+      this._actUpdateCurrentLog({
+        id,
+        title: payload.title,
+        categories: payload.categories,
+        startTimestamp: payload.startTimestamp,
+        finishTimestamp: 0,
+        pauseTimestamp: 0,
+        pauseDuration: 0,
+        createTimestamp: payload.startTimestamp,
+        updateTimestamp: payload.startTimestamp,
+      });
     },
-    _getCategorizeTodayLog(): Record<string, Log[]> {
-      return this.today.reduce<Record<string, Log[]>>((obj, log) => {
-        const version = `${log.categoryId}-${log.categoryUpdateTimestamp}`;
-        obj[version] = [...(obj[version] || []), log];
-        return obj;
-      }, {});
+    async _actFetchCurrentLog(): Promise<void> {
+      const data = await axiosLogGetCurrent();
+      if (!data) return;
+      this._actUpdateCurrentLog(data);
     },
   },
 });
