@@ -4,18 +4,18 @@ declare let self: ServiceWorkerGlobalScope;
 precacheAndRoute(self.__WB_MANIFEST);
 
 import {
-  subscribeTaskNotification,
-  unsubscribeTaskNotification,
-} from "./modules/taskNotification";
+  subscribeCurrentLogNotification,
+  unsubscribeCurrentLogNotification,
+} from "./modules/currentLogNotification";
 
 enum ServiceWorkerMethods {
-  SUBSCRIBE = "subscribeTaskNotification",
-  UNSUBSCRIBE = "unsubscribeTaskNotification",
+  SUBSCRIBE = "subscribeCurrentLogNotification",
+  UNSUBSCRIBE = "unsubscribeCurrentLogNotification",
 }
 
 export const serviceWorkerMethods = {
-  [ServiceWorkerMethods.SUBSCRIBE]: subscribeTaskNotification,
-  [ServiceWorkerMethods.UNSUBSCRIBE]: unsubscribeTaskNotification,
+  [ServiceWorkerMethods.SUBSCRIBE]: subscribeCurrentLogNotification,
+  [ServiceWorkerMethods.UNSUBSCRIBE]: unsubscribeCurrentLogNotification,
 };
 
 self.addEventListener("install", function (event) {
