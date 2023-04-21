@@ -35,6 +35,8 @@ withDefaults(
     content: "",
     rightBtnType: "positive",
     rightBtnText: "確定",
+    leftBtnType: "negative",
+    leftBtnText: "取消",
   }
 );
 
