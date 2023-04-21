@@ -18,10 +18,7 @@ function onAvatarClick(): void {
 </script>
 
 <template>
-  <header
-    ref="header"
-    class="h-[55px] pt-2 pb-1 bg-[#131417] shadow-md shadow-dark"
-  >
+  <header ref="header" class="h-[55px] bg-gray-700 pt-2 pb-1">
     <div class="flex-between-center h-full px-4">
       <span></span>
       <div

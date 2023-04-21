@@ -1,7 +1,9 @@
 import type { Middleware } from "./types";
 import { axiosUserGetStatus } from "@/api/user/index";
 import { useUserStore } from "@/stores/user";
-import { useTaskStore } from "@/stores/task";
+import { useLogStore } from "@/stores/log";
+import { useCategoryStore } from "@/stores/category";
+import { useStampStore } from "@/stores/stamp";
 
 export const checkUserStatusMiddleware: Middleware = async (
   to,
@@ -11,11 +13,16 @@ export const checkUserStatusMiddleware: Middleware = async (
 ) => {
   if (from.name) return;
   const userStore = useUserStore();
-  const taskStore = useTaskStore();
+  const logStore = useLogStore();
+  const categoryStore = useCategoryStore();
+  const stampStore = useStampStore();
+
   if (await axiosUserGetStatus()) {
     await userStore._actFetchUserInfo();
-    await taskStore._actFetchTaskCategoryList();
-    await taskStore._actFetchCurrentTask();
+    await categoryStore._actFetchCategories();
+    await logStore._actFetchCurrentLog();
+    await stampStore._actFetchStamps();
   }
+
   done();
 };

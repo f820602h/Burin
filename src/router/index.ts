@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory, type Router } from "vue-router";
 import { pipelineGuard } from "./middleware/index";
-import MainView from "@/views/MainView.vue";
+import ProgressView from "@/views/ProgressView.vue";
 
 const router: Router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
-      name: "main",
-      component: MainView,
+      name: "Progress",
+      component: ProgressView,
       meta: {
         middleware: [],
       },
