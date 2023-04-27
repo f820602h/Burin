@@ -22,17 +22,18 @@ function onItemClick(): void {
       @click="onItemClick"
     >
       <template v-if="layer > 1">
-        <span v-for="i in layer" :key="i" class="mr-4" />
+        <span v-for="i in layer" :key="i" class="mr-3" />
       </template>
 
-      <div class="w-[14px] mr-2 text-center duration-150">
-        <span class="icon-down" :class="{ 'rotate-[-90deg]': !isOpen }" />
-      </div>
+      <div
+        class="icon-down duration-150 mr-2"
+        :class="{ 'rotate-[-90deg]': !isOpen }"
+      />
 
       <span>{{ item.name }}</span>
     </div>
 
-    <template v-if="isOpen">
+    <ul v-show="isOpen">
       <template v-for="(child, index) in item.children" :key="index">
         <template v-if="'children' in child">
           <MenuItemToggle :key="index" :item="child" :layer="layer + 1" />
@@ -41,7 +42,7 @@ function onItemClick(): void {
           <MenuItem :item="child" :layer="layer + 1" />
         </template>
       </template>
-    </template>
+    </ul>
   </li>
 </template>
 

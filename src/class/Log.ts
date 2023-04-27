@@ -58,16 +58,11 @@ export class Log implements LogCompleteInfo {
     return LogStatus.FINISH;
   }
 
-  get isTodayLog(): boolean {
-    const nowTimestamp = new Date().getTime();
-    return nowTimestamp - this.startTimestamp < 24 * 60 * 60 * 1000;
-  }
-
   get startTimeText(): string {
     return dateFormatter(this.startTimestamp, {
       year: undefined,
-      month: this.isTodayLog ? undefined : "2-digit",
-      day: this.isTodayLog ? undefined : "2-digit",
+      month: undefined,
+      day: undefined,
       hour12: false,
       second: undefined,
     });
@@ -75,10 +70,10 @@ export class Log implements LogCompleteInfo {
 
   get finishTimeText(): string {
     return this.finishTimestamp
-      ? dateFormatter(this.startTimestamp, {
+      ? dateFormatter(this.finishTimestamp, {
           year: undefined,
-          month: this.isTodayLog ? undefined : "2-digit",
-          day: this.isTodayLog ? undefined : "2-digit",
+          month: undefined,
+          day: undefined,
           hour12: false,
           second: undefined,
         })

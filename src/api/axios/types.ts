@@ -51,7 +51,7 @@ export class AxiosRequestor {
   request<T>(config: RequestConfig): Promise<T> {
     return new Promise((resolve, reject) => {
       const loadingStore = useLoadingStore();
-      const showLoading = config.showLoading ?? this.showLoading ?? false;
+      const showLoading = this.showLoading || config.showLoading || false;
 
       if (showLoading) loadingStore._actAddQueue(config);
 

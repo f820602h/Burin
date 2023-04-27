@@ -64,7 +64,7 @@ export const BaseAxiosRequestor: AxiosRequestor = new AxiosRequestor({
   paramsSerializer: (params) => Qs.stringify(params, { arrayFormat: "repeat" }),
   timeout: 60000,
   withCredentials: true,
-  showLoading: true,
+  showLoading: false,
   reqInterceptors: [cancelDuplicateRequestInterceptor],
   resInterceptors: [
     removeCancelResponseInterceptor,

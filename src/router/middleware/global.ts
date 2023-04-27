@@ -11,7 +11,8 @@ export const checkUserStatusMiddleware: Middleware = async (
   next,
   done
 ) => {
-  if (from.name) return;
+  if (from.name) return done();
+
   const userStore = useUserStore();
   const logStore = useLogStore();
   const categoryStore = useCategoryStore();

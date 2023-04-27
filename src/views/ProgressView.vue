@@ -175,7 +175,7 @@ const {
 <style scoped lang="scss">
 @import "@/scss/animation.scss";
 .progress-view {
-  @apply relative flex justify-center items-center px-3;
+  @apply relative flex justify-center items-center;
 
   &__progressing {
     @apply absolute-default w-full p-2;

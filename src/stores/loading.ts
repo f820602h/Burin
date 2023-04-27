@@ -12,6 +12,11 @@ export const useLoadingStore = defineStore({
     show: false,
     queue: new Set(),
   }),
+  getters: {
+    _getIsLoading(): boolean {
+      return this.show || !!this.queue.size;
+    },
+  },
   actions: {
     _actShowLoading(): void {
       this.show = true;

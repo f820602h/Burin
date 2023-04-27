@@ -1,9 +1,15 @@
 type DateFormatterOptionsValue = "numeric" | "2-digit" | undefined;
+type DateMonthFormatterOptionsValue =
+  | "numeric"
+  | "2-digit"
+  | "long"
+  | "short"
+  | undefined;
 
 type DateFormatterOptions = {
   timeZone: string;
   year: DateFormatterOptionsValue;
-  month: DateFormatterOptionsValue;
+  month: DateMonthFormatterOptionsValue;
   day: DateFormatterOptionsValue;
   hour12: boolean;
   hour: DateFormatterOptionsValue;
@@ -13,10 +19,11 @@ type DateFormatterOptions = {
 
 export function dateFormatter(
   timeStamp: number,
-  mixinOptions: Partial<DateFormatterOptions> = {}
+  mixinOptions: Partial<DateFormatterOptions> = {},
+  locales = "en-us"
 ): string {
   const defaultOptions: DateFormatterOptions = {
-    timeZone: "Asia/Taipei",
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -26,7 +33,7 @@ export function dateFormatter(
     second: "2-digit",
   };
 
-  return new Date(timeStamp).toLocaleString("zh-hant", {
+  return new Date(timeStamp).toLocaleString(locales, {
     ...defaultOptions,
     ...mixinOptions,
   });

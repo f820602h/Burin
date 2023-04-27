@@ -10,6 +10,7 @@ export const axiosCategoryGetList: () => Promise<
 > = () => {
   return BaseAxiosRequestor.get({
     url: "/category/list",
+    showLoading: true,
   });
 };
 

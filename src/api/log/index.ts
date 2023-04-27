@@ -7,14 +7,14 @@ export function axiosLogPostPush(
   return BaseAxiosRequestor.post({
     url: `/log/push`,
     data: payload,
-    showLoading: false,
+    showLoading: true,
   });
 }
 
 export function axiosLogGetCurrent(): Promise<LogCompleteInfo> {
   return BaseAxiosRequestor.get({
     url: `/log/current`,
-    showLoading: false,
+    showLoading: true,
   });
 }
 
@@ -22,7 +22,7 @@ export function axiosLogPostPause(payload: CurrentLog): Promise<void> {
   return BaseAxiosRequestor.post({
     url: `/log/pause`,
     data: payload,
-    showLoading: false,
+    showLoading: true,
   });
 }
 
@@ -30,7 +30,7 @@ export function axiosLogPostResume(payload: CurrentLog): Promise<void> {
   return BaseAxiosRequestor.post({
     url: `/log/resume`,
     data: payload,
-    showLoading: false,
+    showLoading: true,
   });
 }
 
@@ -38,17 +38,16 @@ export function axiosLogPostFinish(payload: CurrentLog): Promise<void> {
   return BaseAxiosRequestor.post({
     url: `/log/finish`,
     data: payload,
-    showLoading: false,
+    showLoading: true,
   });
 }
 
-export function axiosLogGetListBetweenPeriod(payload: {
-  start: LogInfo["startTimestamp"];
-  end: LogInfo["finishTimestamp"];
+export function axiosLogGetListInSpecificDate(payload: {
+  stamp: number;
 }): Promise<LogCompleteInfo[]> {
   return BaseAxiosRequestor.get({
     url: `/log/period`,
     params: payload,
-    showLoading: false,
+    showLoading: true,
   });
 }
