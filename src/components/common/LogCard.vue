@@ -1,22 +1,19 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import type { Log, CurrentLog } from "@/class/Log";
+import { type Log, CurrentLog } from "@/class/Log";
+import { LogStatus } from "@/class/Log";
 import CategoryTag from "@/components/common/CategoryTag.vue";
-import CollapseTransition from "@/components/common/transition/CollapseTransition.vue";
 
 defineProps<{
   log: Log | CurrentLog;
 }>();
-
-const isCollapse = ref<boolean>(true);
 </script>
 
 <template>
-  <div class="log-block">
-    <div class="flex items-start">
-      <div class="w-full lg:flex-grow">
-        <div class="log-block__title">{{ log.title }}</div>
-        <div class="flex flex-wrap">
+  <div class="log-card" :class="{ current: log instanceof CurrentLog }">
+    <div class="flex">
+      <div class="flex flex-col justify-between w-full">
+        <div class="log-card__title">{{ log.title }}</div>
+        <div class="flex flex-wrap mt-2">
           <CategoryTag
             v-for="(cate, index) in log.categories"
             :key="index"
@@ -26,68 +23,71 @@ const isCollapse = ref<boolean>(true);
         </div>
       </div>
 
-      <div class="flex justify-center px-2 lg:px-3 lg:py-2 rounded bg-white/20">
-        <div class="lg:text-4xl font-bold">
-          <span>{{
-            "duringTime" in log
-              ? log.duringTime.hoursText
-              : log.durationTime.hoursText
-          }}</span>
-          <span class="hidden lg:inline text-sm mx-1">hour</span>
-          <span class="inline lg:hidden">:</span>
+      <div>
+        <div
+          class="w-[120px] md:w-[245px] md:py-1 text-center rounded bg-white/20"
+        >
+          <div class="text-lg md:text-3xl font-bold">
+            <span>{{
+              log instanceof CurrentLog
+                ? log.duringTime.hoursText
+                : log.durationTime.hoursText
+            }}</span>
+            <span class="hidden md:inline text-sm mx-1">hour</span>
+            <span class="inline md:hidden mx-1">:</span>
 
-          <span>{{
-            "duringTime" in log
-              ? log.duringTime.minutesText
-              : log.durationTime.minutesText
-          }}</span>
-          <span class="hidden lg:inline text-sm mx-1">min</span>
-          <span class="inline lg:hidden">:</span>
+            <span>{{
+              log instanceof CurrentLog
+                ? log.duringTime.minutesText
+                : log.durationTime.minutesText
+            }}</span>
+            <span class="hidden md:inline text-sm mx-1">min</span>
+            <span class="inline md:hidden mx-1">:</span>
 
-          <span>{{
-            "duringTime" in log
-              ? log.duringTime.secondsText
-              : log.durationTime.secondsText
-          }}</span>
-          <span class="hidden lg:inline text-sm mx-1">sec</span>
+            <span>{{
+              log instanceof CurrentLog
+                ? log.duringTime.secondsText
+                : log.durationTime.secondsText
+            }}</span>
+            <span class="hidden md:inline text-sm mx-1">sec</span>
+          </div>
+        </div>
+
+        <div class="md:flex md:items-center w-full mt-2 px-1 whitespace-nowrap">
+          <div class="flex justify-between text-gray-300 text-xs mb-1 md:mb-0">
+            <div class="mr-2 font-bold">Started at:</div>
+            <div>{{ log.startTimeText }}</div>
+          </div>
+          <div class="hidden md:block mx-1">｜</div>
+          <div class="flex justify-between text-gray-300 text-xs">
+            <div v-if="log.status === LogStatus.FINISH" class="mr-2 font-bold">
+              Finished at:
+            </div>
+            <div>{{ log.finishTimeText.toLocaleUpperCase() }}</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <CollapseTransition :duration="200">
-      <template v-if="!isCollapse">
-        <div class="w-full mt-2 pt-2 py-3 border-t border-gray-500">
-          <div class="flex text-gray-300 text-sm mb-1">
-            <div class="mr-2 font-bold">Started at:</div>
-            <div>{{ log.startTimeText }}</div>
-          </div>
-          <div class="flex text-gray-300 text-sm">
-            <div class="mr-2 font-bold">Finished at:</div>
-            <div>{{ log.finishTimeText }}</div>
-          </div>
-        </div>
-      </template>
-    </CollapseTransition>
-
-    <div class="log-block__more" @click="isCollapse = !isCollapse">
-      <div class="text-xs font-bold text-gray-500">···</div>
-    </div>
-
-    <div class="log-block__lighting"></div>
+    <div v-if="'duringTime' in log" class="log-card__lighting"></div>
   </div>
 </template>
 
 <style scoped lang="scss">
 @import "@/scss/mixin.scss";
-.log-block {
+.log-card {
   @apply relative px-4 py-3 rounded bg-gray-700 overflow-hidden;
+
+  &.current {
+    @apply bg-[#2c1c5b];
+  }
 
   * {
     z-index: 2;
   }
 
   &__title {
-    @apply flex-shrink-0  lg:text-2xl font-bold mr-3;
+    @apply flex-shrink-0 text-lg md:text-2xl font-bold mr-3;
     @include text-overflow(64, 2);
   }
 
@@ -101,7 +101,7 @@ const isCollapse = ref<boolean>(true);
     background: linear-gradient(
       45deg,
       rgba(0, 0, 0, 0) 33%,
-      theme("colors.gray.600"),
+      theme("colors.violet.900"),
       rgba(0, 0, 0, 0) 66%
     );
     animation: shine 2.5s infinite linear;
