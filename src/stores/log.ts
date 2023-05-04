@@ -13,7 +13,6 @@ import {
   axiosLogPostFinish,
   axiosLogGetListInSpecificDate,
 } from "@/api/log/index";
-import { thingDark } from "naive-ui";
 
 export type LogState = {
   currentLog: CurrentLog | null;
@@ -60,14 +59,15 @@ export const useLogStore = defineStore({
       this._actUpdateCurrentLog(data);
     },
     async _actFetchDailyLogs(payload: { stamp: number }): Promise<void> {
-      const data = await axiosLogGetListInSpecificDate(payload);
-      this.dailyLogs[payload.stamp] = data
-        .reverse()
-        .map((logData) =>
-          logData.id === this.currentLog?.id
-            ? this.currentLog
-            : new Log(logData)
-        );
+      const startTimestamp = payload.stamp;
+      const endTimestamp = startTimestamp + 24 * 60 * 60 * 1000 - 1;
+      const data = await axiosLogGetListInSpecificDate({
+        start: startTimestamp,
+        end: endTimestamp,
+      });
+      this.dailyLogs[payload.stamp] = data.map((logData) =>
+        logData.id === this.currentLog?.id ? this.currentLog : new Log(logData)
+      );
     },
   },
 });

@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 import { computed } from "vue";
-import isEqual from "lodash/isEqual";
+import isEqual from "lodash-es/isEqual";
 
 type TagProps<T> = {
   label: string;

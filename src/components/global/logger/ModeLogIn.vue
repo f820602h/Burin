@@ -6,6 +6,7 @@ import { userFieldsValidation } from "@/system/fieldValidation";
 import { useUserStore } from "@/stores/user";
 import { useLogStore } from "@/stores/log";
 import { useCategoryStore } from "@/stores/category";
+import { useStampStore } from "@/stores/stamp";
 import { axiosUserLogin } from "@/api/user/index";
 import type { ScreenConfigModesMap } from "./types";
 import LoggerField from "./LoggerField.vue";
@@ -15,6 +16,7 @@ defineEmits<{ (e: "change-mode", mode: keyof ScreenConfigModesMap): void }>();
 const userStore = useUserStore();
 const logStore = useLogStore();
 const categoryStore = useCategoryStore();
+const stampStore = useStampStore();
 const isAccountWrong = ref<boolean>(false);
 
 const validationSchema = object({
@@ -30,6 +32,7 @@ const confirmHandler = handleSubmit(async (values) => {
       await userStore._actFetchUserInfo();
       await categoryStore._actFetchCategories();
       await logStore._actFetchCurrentLog();
+      await stampStore._actFetchStamps();
       return Promise.resolve();
     })
     .catch(() => {

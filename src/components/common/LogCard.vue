@@ -59,12 +59,19 @@ defineProps<{
             <div>{{ log.startTimeText }}</div>
           </div>
           <div class="hidden md:block mx-1">｜</div>
-          <div class="flex justify-between text-gray-300 text-xs">
-            <div v-if="log.status === LogStatus.FINISH" class="mr-2 font-bold">
-              Finished at:
+          <template v-if="log.status === LogStatus.FINISH">
+            <div class="flex justify-between text-gray-300 text-xs">
+              <div class="mr-2 font-bold">Finished at:</div>
+              <div>{{ log.finishTimeText }}</div>
             </div>
-            <div>{{ log.finishTimeText.toLocaleUpperCase() }}</div>
-          </div>
+          </template>
+          <template v-else>
+            <div class="text-gray-300 text-xs text-center">
+              <div class="font-bold px-2 rounded-full border">
+                {{ log.finishTimeText.toLocaleUpperCase() }}
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>

@@ -59,47 +59,49 @@ const tagMenuItems = computed(() =>
 
 <template>
   <div class="menu-sidebar">
-    <router-link :to="{ name: 'Progress' }" class="menu-sidebar__progress">
-      <template v-if="logStore.currentLog">
-        <div class="font-bold">{{ logStore.currentLog.title }}</div>
-        <div class="text-sm text-gray-400">
-          {{ logStore.currentLog.duringTime.hoursText }}:{{
-            logStore.currentLog.duringTime.minutesText
-          }}:{{ logStore.currentLog.duringTime.secondsText }}
-        </div>
-      </template>
-      <template v-else>
-        <div class="text-sm p-1">Nothing In Progress...</div>
-      </template>
-    </router-link>
+    <div class="flex items-center h-[66px] p-2">
+      <router-link :to="{ name: 'Progress' }" class="menu-sidebar__progress">
+        <template v-if="logStore.currentLog">
+          <div class="font-bold">{{ logStore.currentLog.title }}</div>
+          <div class="text-gray-400">
+            {{ logStore.currentLog.duringTime.hoursText }}:{{
+              logStore.currentLog.duringTime.minutesText
+            }}:{{ logStore.currentLog.duringTime.secondsText }}
+          </div>
+        </template>
+        <template v-else>
+          <div class="text-sm p-1">Nothing In Progress...</div>
+        </template>
+      </router-link>
+    </div>
 
-    <div class="menu-sidebar__group-title">CALENDAR</div>
-    <ul class="mb-3">
-      <MenuItem :item="todayMenuItem" />
-      <MenuItemToggle
-        v-for="(item, index) in calendarMenuItems"
-        :key="index"
-        :item="item"
-      />
-    </ul>
+    <div class="p-3">
+      <div class="menu-sidebar__group-title">CALENDAR</div>
+      <ul class="mb-3">
+        <MenuItem :item="todayMenuItem" />
+        <MenuItemToggle
+          v-for="(item, index) in calendarMenuItems"
+          :key="index"
+          :item="item"
+        />
+      </ul>
 
-    <div class="menu-sidebar__group-title">TAG</div>
-    <ul class="mb-3">
-      <MenuItem
-        v-for="(item, index) in tagMenuItems"
-        :key="index"
-        :item="item"
-      />
-    </ul>
+      <div class="menu-sidebar__group-title">TAG</div>
+      <ul class="mb-3">
+        <MenuItem
+          v-for="(item, index) in tagMenuItems"
+          :key="index"
+          :item="item"
+        />
+      </ul>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .menu-sidebar {
-  @apply px-2 py-3 bg-gray-800;
-
   &__progress {
-    @apply block mb-5 px-2 py-1 rounded bg-slate-700 cursor-pointer duration-200 hover:bg-slate-600;
+    @apply w-full px-2 py-1 rounded bg-slate-700 cursor-pointer duration-200 hover:bg-slate-600;
   }
 
   &__group-title {
