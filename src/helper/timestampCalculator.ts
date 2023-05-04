@@ -19,10 +19,10 @@ interface TimestampCalculator {
 }
 
 function setDateToMidnight(date: Date): Date {
-  date.setUTCHours(0);
-  date.setUTCMinutes(0);
-  date.setUTCSeconds(0);
-  date.setUTCMilliseconds(0);
+  date.setHours(0);
+  date.setMinutes(0);
+  date.setSeconds(0);
+  date.setMilliseconds(0);
   return date;
 }
 
@@ -37,13 +37,13 @@ function getTodayTimestamp(): TimeStamp {
 
 function getYesterdayTimestamp(): TimeStamp {
   const d = setDateToMidnight(new Date());
-  d.setUTCDate(d.getDate() - 1);
+  d.setDate(d.getDate() - 1);
   return d.getTime();
 }
 
 function getTomorrowTimestamp(): TimeStamp {
   const d = setDateToMidnight(new Date());
-  d.setUTCDate(d.getDate() + 1);
+  d.setDate(d.getDate() + 1);
   return d.getTime();
 }
 

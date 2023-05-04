@@ -11,7 +11,7 @@
     "@vueuse/components": "^9.13.0",
     "@vueuse/core": "^9.13.0",
     "axios": "^0.27.2",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "pinia": "^2.0.14",
     "qs": "^6.11.0",
     "sass": "^1.53.0",

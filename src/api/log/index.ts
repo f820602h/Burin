@@ -43,7 +43,8 @@ export function axiosLogPostFinish(payload: CurrentLog): Promise<void> {
 }
 
 export function axiosLogGetListInSpecificDate(payload: {
-  stamp: number;
+  start: number;
+  end: number;
 }): Promise<LogCompleteInfo[]> {
   return BaseAxiosRequestor.get({
     url: `/log/period`,
