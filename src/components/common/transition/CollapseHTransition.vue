@@ -81,7 +81,7 @@ function prepareElement(
   element.style.height = initialStyle.height;
   element.style.position = initialStyle.position;
   element.style.visibility = initialStyle.visibility;
-  element.style.overflow = "hidden";
+  // element.style.overflow = "hidden";
   return initialStyle.width && initialStyle.width != closed
     ? initialStyle.width
     : width;
@@ -130,8 +130,8 @@ function getEnterKeyframes(
   ];
 }
 
-function enterTransition(element: HTMLElement, done: () => void): void {
-  const HTMLElement = element;
+function enterTransition(element: Element, done: () => void): void {
+  const HTMLElement = element as HTMLElement;
   const initialStyle = getElementStyle(HTMLElement);
   const width = prepareElement(HTMLElement, initialStyle);
   const keyframes = getEnterKeyframes(width, initialStyle);
@@ -139,12 +139,12 @@ function enterTransition(element: HTMLElement, done: () => void): void {
   animateTransition(HTMLElement, initialStyle, done, keyframes, options);
 }
 
-function leaveTransition(element: HTMLElement, done: () => void): void {
-  const HTMLElement = element;
+function leaveTransition(element: Element, done: () => void): void {
+  const HTMLElement = element as HTMLElement;
   const initialStyle = getElementStyle(HTMLElement);
   const { width } = getComputedStyle(HTMLElement);
   HTMLElement.style.width = width;
-  HTMLElement.style.overflow = "hidden";
+  // HTMLElement.style.overflow = "hidden";
   const keyframes = getEnterKeyframes(width, initialStyle).reverse();
   const options = { duration: props.duration, easing: props.easingLeave };
   animateTransition(HTMLElement, initialStyle, done, keyframes, options);

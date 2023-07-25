@@ -2,6 +2,8 @@
 import { onMounted, onUnmounted } from "vue";
 import { useBodyScrollFixed } from "@/composables/useBodyScrollFixed";
 
+defineEmits<{ (e: "mask-close"): void }>();
+
 const { fixed, reset } = useBodyScrollFixed();
 
 onMounted(() => {
@@ -14,7 +16,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="fixed-layer bg-black/40 flex">
+  <div
+    class="fixed top-0 left-0 z-global-3 full flex bg-black/40"
+    @click.self="$emit('mask-close')"
+  >
     <slot></slot>
   </div>
 </template>

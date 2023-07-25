@@ -130,8 +130,8 @@ function getEnterKeyframes(
   ];
 }
 
-function enterTransition(element: HTMLElement, done: () => void): void {
-  const HTMLElement = element;
+function enterTransition(element: Element, done: () => void): void {
+  const HTMLElement = element as HTMLElement;
   const initialStyle = getElementStyle(HTMLElement);
   const height = prepareElement(HTMLElement, initialStyle);
   const keyframes = getEnterKeyframes(height, initialStyle);
@@ -139,8 +139,8 @@ function enterTransition(element: HTMLElement, done: () => void): void {
   animateTransition(HTMLElement, initialStyle, done, keyframes, options);
 }
 
-function leaveTransition(element: HTMLElement, done: () => void): void {
-  const HTMLElement = element;
+function leaveTransition(element: Element, done: () => void): void {
+  const HTMLElement = element as HTMLElement;
   const initialStyle = getElementStyle(HTMLElement);
   const { height } = getComputedStyle(HTMLElement);
   HTMLElement.style.height = height;

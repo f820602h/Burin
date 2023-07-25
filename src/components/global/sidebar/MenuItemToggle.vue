@@ -18,7 +18,7 @@ function onItemClick(): void {
 <template>
   <li class="text-sm text-gray-400">
     <div
-      class="flex items-center mb-[1px] px-3 py-1 rounded cursor-pointer duration-200 hover:bg-white/10"
+      class="flex items-center mb-[1px] px-3 py-1 rounded cursor-pointer duration-200 hover:bg-white/20"
       @click="onItemClick"
     >
       <template v-if="layer > 1">

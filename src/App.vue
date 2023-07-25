@@ -3,18 +3,27 @@ import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useElementSize } from "@vueuse/core";
 import { useLoadingStore } from "./stores/loading";
+import { useBreakPoint } from "./composables/useBreakPoint";
+import CollapseHTransition from "./components/common/transition/CollapseHTransition.vue";
+import BlurMask from "@/components/common/BlurMask.vue";
+import HeaderToolBar from "./components/global/header/HeaderToolBar.vue";
 import MenuSidebar from "@/components/global/sidebar/MenuSidebar.vue";
 import UserLogger from "@/components/global/logger/UserLogger.vue";
-import BlurMask from "./components/common/BlurMask.vue";
+import NewWorkLauncher from "./components/global/NewWorkLauncher.vue";
 import { NSpin } from "naive-ui";
 
 const route = useRoute();
-
 const loadingStore = useLoadingStore();
-const isUserLoggerShow = ref<boolean>(false);
+const breakpoints = useBreakPoint();
 
+const headerRef = ref<HTMLElement | null>(null);
+const { height: headerHeight } = useElementSize(headerRef);
 const titleRef = ref<HTMLElement | null>(null);
 const { height: titleHeight } = useElementSize(titleRef);
+
+const isUserLoggerShow = ref<boolean>(false);
+const isNewWorkLauncherShow = ref<boolean>(false);
+const isSidebarShow = breakpoints.greaterOrEqual("lg");
 
 const pageTitle = computed<string>(() => {
   if (typeof route.meta?.title === "string") {
@@ -26,33 +35,53 @@ const pageTitle = computed<string>(() => {
 </script>
 
 <template>
-  <div class="root min-w-[360px]">
-    <div class="view-container relative flex">
-      <aside>
-        <MenuSidebar class="h-full overflow-auto" />
-      </aside>
+  <div class="root">
+    <header ref="headerRef">
+      <HeaderToolBar
+        @toggle-sidebar="isSidebarShow = !isSidebarShow"
+        @toggle-logger="isUserLoggerShow = !isUserLoggerShow"
+        @toggle-launcher="isNewWorkLauncherShow! = !isNewWorkLauncherShow"
+      />
+    </header>
 
-      <main>
+    <main class="relative flex">
+      <CollapseHTransition>
+        <aside v-if="isSidebarShow">
+          <nav><MenuSidebar /></nav>
+        </aside>
+      </CollapseHTransition>
+
+      <section>
         <n-spin
-          size="medium"
           :show="loadingStore._getIsLoading"
+          size="medium"
           stroke="#7c3aed"
         >
-          <!-- <div @click="isUserLoggerShow = true">123</div> -->
           <div v-if="pageTitle" ref="titleRef" class="main__title">
-            <h2>{{ pageTitle }}</h2>
+            <h2 class="pl-3 border-l-4 border-primary-400 font-bold text-lg">
+              {{ pageTitle }}
+            </h2>
           </div>
 
           <router-view class="main__content" />
         </n-spin>
-      </main>
-    </div>
+      </section>
+    </main>
 
-    <div class="footer-container"></div>
+    <footer></footer>
 
     <Transition name="fade">
       <BlurMask v-if="isUserLoggerShow" class="justify-center items-center">
         <UserLogger @close="isUserLoggerShow = false" />
+      </BlurMask>
+    </Transition>
+
+    <Transition name="fade">
+      <BlurMask
+        v-if="isNewWorkLauncherShow"
+        class="justify-center items-start pt-[160px]"
+      >
+        <NewWorkLauncher @close="isNewWorkLauncherShow = false" />
       </BlurMask>
     </Transition>
   </div>
@@ -60,34 +89,45 @@ const pageTitle = computed<string>(() => {
 
 <style lang="scss" scoped>
 @import "@/scss/animation.scss";
-
 .root {
+  --rootBackgroundColor: theme("colors.gray.900");
+  --headerHeight: v-bind(headerHeight + "px");
   --titleHeight: v-bind(titleHeight + "px");
+  --asideWidth: 240px;
 
-  :deep(.fixed-layer) {
-    @apply fixed left-0 w-full z-global-1;
-    top: 0;
-  }
+  min-width: 360px;
+  background-color: var(--rootBackgroundColor);
+}
+
+header {
+  @apply sticky top-0 z-global-2 border-b border-slate-600 shadow-md shadow-black/30;
 }
 
 aside {
-  @apply sticky top-0 flex-shrink-0 hidden lg:block w-[240px] h-screen bg-gray-800 overflow-auto scrollbar-hide;
+  @apply absolute lg:static z-global-1 flex-shrink-0 h-full lg:h-auto border-r border-slate-600;
+  top: 0;
+  left: 0;
+  width: var(--asideWidth);
+  background-color: var(--rootBackgroundColor);
+
+  nav {
+    position: sticky;
+    top: var(--headerHeight);
+  }
 }
 
-main {
-  @apply flex-grow bg-gray-900;
+section {
+  @apply min-w-full lg:min-w-0 flex-1;
+  min-height: calc(100vh - var(--headerHeight));
 
   .main__title {
-    @apply sticky top-0 z-10 flex items-center h-[66px] px-5 bg-gray-900;
-
-    h2 {
-      @apply text-lg pl-3 border-l-4 border-violet-500 font-bold;
-    }
+    @apply sticky z-10 flex items-center px-5 pt-3 pb-2 mb-2;
+    top: var(--headerHeight);
+    background-color: var(--rootBackgroundColor);
   }
 
   .main__content {
-    @apply max-w-[560px] md:max-w-[768px] lg:max-w-[1024px] mx-auto px-5;
-    height: calc(100vh - var(--titleHeight));
+    @apply max-w-[560px] md:max-w-[768px] lg:max-w-[1024px] mx-auto px-5 overflow-hidden;
   }
 }
 </style>
