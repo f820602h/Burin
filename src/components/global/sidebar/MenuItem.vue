@@ -11,18 +11,20 @@ const props = withDefaults(defineProps<{ item: MenuItem; layer?: number }>(), {
     <component
       :is="props.item.route ? 'router-link' : 'dev'"
       :to="props.item.route ? props.item.route : undefined"
-      class="flex items-center mb-[1px] px-3 py-1 rounded cursor-pointer duration-200 hover:bg-white/10"
+      class="flex items-center mb-[1px] px-3 py-1 rounded cursor-pointer duration-200 hover:bg-white/20"
     >
       <template v-if="layer > 1">
         <span v-for="i in layer" :key="i" class="mr-4" />
       </template>
 
-      <div class="mr-2">
+      <div v-else-if="item.icon !== null" class="mr-2">
         <div v-if="item.icon" :class="item.icon" />
         <div v-else>．</div>
       </div>
 
-      <span>{{ item.name }}</span>
+      <slot>
+        <span>{{ item.name }}</span>
+      </slot>
     </component>
   </li>
 </template>

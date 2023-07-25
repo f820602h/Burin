@@ -27,13 +27,12 @@ export const useLogStore = defineStore({
   }),
   actions: {
     _actUpdateCurrentLog(logData: LogCompleteInfo) {
-      this.currentLog = new CurrentLog(logData, {
-        pause: axiosLogPostPause,
-        resume: axiosLogPostResume,
-        finish: (payload: CurrentLog) =>
-          axiosLogPostFinish(payload).then(() => {
-            this.currentLog = null;
-          }),
+      this.currentLog = new CurrentLog(logData);
+      this.currentLog.subscribePauseCallback(axiosLogPostPause);
+      this.currentLog.subscribeResumeCallback(axiosLogPostResume);
+      this.currentLog.subscribeFinishCallback(axiosLogPostFinish);
+      this.currentLog.subscribeFinishCallback(() => {
+        this.currentLog = null;
       });
     },
     async _actPushLog(

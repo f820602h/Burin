@@ -23,6 +23,7 @@ export interface LogInfo extends LogId {
   startTimestamp: number;
   finishTimestamp: number;
   pauseTimestamp: number;
+  pauseTimes: number;
   pauseDuration: number;
 }
 
@@ -38,6 +39,7 @@ export class Log implements LogCompleteInfo {
   startTimestamp: LogCompleteInfo["startTimestamp"];
   finishTimestamp: LogCompleteInfo["finishTimestamp"];
   pauseTimestamp: LogCompleteInfo["pauseTimestamp"];
+  pauseTimes: LogCompleteInfo["pauseTimes"];
   pauseDuration: LogCompleteInfo["pauseDuration"];
   createTimestamp: LogCompleteInfo["createTimestamp"];
   updateTimestamp: LogCompleteInfo["updateTimestamp"];
@@ -49,6 +51,7 @@ export class Log implements LogCompleteInfo {
     this.startTimestamp = log.startTimestamp;
     this.finishTimestamp = log.finishTimestamp;
     this.pauseTimestamp = log.pauseTimestamp;
+    this.pauseTimes = log.pauseTimes;
     this.pauseDuration = log.pauseDuration;
     this.createTimestamp = log.createTimestamp;
     this.updateTimestamp = log.updateTimestamp;
@@ -93,23 +96,19 @@ const {
   resume: timestampResume,
 } = useTimestamp({ controls: true });
 
-export type CurrentLogCallBack = {
-  pause?: (payload: CurrentLog) => Promise<void>;
-  resume?: (payload: CurrentLog) => Promise<void>;
-  finish?: (payload: CurrentLog) => Promise<void>;
-};
+export type CurrentLogCallBack = (payload: CurrentLog) => Promise<void> | void;
 
 export class CurrentLog extends Log {
-  pauseCallback?: CurrentLogCallBack["pause"];
-  resumeCallback?: CurrentLogCallBack["resume"];
-  finishCallback?: CurrentLogCallBack["finish"];
+  private _pauseCallbacks: Set<CurrentLogCallBack>;
+  private _resumeCallbacks: Set<CurrentLogCallBack>;
+  private _finishCallbacks: Set<CurrentLogCallBack>;
 
-  constructor(log: LogCompleteInfo, callback?: CurrentLogCallBack) {
+  constructor(log: LogCompleteInfo) {
     super(log);
     timestampResume();
-    this.pauseCallback = callback?.pause;
-    this.resumeCallback = callback?.resume;
-    this.finishCallback = callback?.finish;
+    this._pauseCallbacks = new Set();
+    this._resumeCallbacks = new Set();
+    this._finishCallbacks = new Set();
   }
 
   get status(): string {
@@ -126,11 +125,28 @@ export class CurrentLog extends Log {
     }).value;
   }
 
+  subscribePauseCallback(callback: CurrentLogCallBack): () => void {
+    this._pauseCallbacks.add(callback);
+    return () => this._pauseCallbacks.delete(callback);
+  }
+
+  subscribeResumeCallback(callback: CurrentLogCallBack): () => void {
+    this._resumeCallbacks.add(callback);
+    return () => this._resumeCallbacks.delete(callback);
+  }
+
+  subscribeFinishCallback(callback: CurrentLogCallBack): () => void {
+    this._finishCallbacks.add(callback);
+    return () => this._finishCallbacks.delete(callback);
+  }
+
   async pause() {
     if (this.status !== LogStatus.IN_PROGRESS) return;
     timestampPause();
     this.pauseTimestamp = timestamp.value;
-    if (this.pauseCallback) await this.pauseCallback(this);
+    if (this._pauseCallbacks.size) {
+      for (const cb of this._pauseCallbacks) await cb(this);
+    }
   }
 
   async resume() {
@@ -139,7 +155,9 @@ export class CurrentLog extends Log {
     this.pauseDuration += now - this.pauseTimestamp;
     this.pauseTimestamp = 0;
     timestampResume();
-    if (this.resumeCallback) await this.resumeCallback(this);
+    if (this._resumeCallbacks.size) {
+      for (const cb of this._resumeCallbacks) await cb(this);
+    }
   }
 
   async finish() {
@@ -152,6 +170,8 @@ export class CurrentLog extends Log {
     }
     timestampPause();
     this.finishTimestamp = timestamp.value;
-    if (this.finishCallback) await this.finishCallback(this);
+    if (this._finishCallbacks.size) {
+      for (const cb of this._finishCallbacks) await cb(this);
+    }
   }
 }

@@ -4,6 +4,8 @@
 
 html, body {
   @apply w-full min-w-[320px] text-gray-300;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 16px;
 }
 
 /* utility class */
@@ -54,6 +56,6 @@ html, body {
   }
 
   .btn {
-    @apply flex justify-center items-center  cursor-pointer transition duration-300 bg-violet-600 hover:bg-violet-500 disabled:bg-gray-300 disabled:text-slate-400 disabled:cursor-not-allowed;
+    @apply flex justify-center items-center cursor-pointer transition duration-200 bg-primary hover:bg-primary-400 disabled:bg-gray-300 disabled:text-slate-400 disabled:cursor-not-allowed;
   }
 }

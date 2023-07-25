@@ -45,7 +45,7 @@ const { value, errorMessage, meta } = useField(field, undefined, {
 
 <style scoped lang="scss">
 input {
-  @apply block w-full h-9 px-2 border border-transparent rounded outline-none leading-9 bg-gray-700 duration-150 hover:border-violet-400 focus:border-violet-400;
+  @apply block w-full h-9 px-2 border border-transparent rounded outline-none leading-9 bg-gray-700 duration-150 hover:border-primary-300 focus:border-primary-300;
 
   &.isInvalid {
     @apply border-red-500;

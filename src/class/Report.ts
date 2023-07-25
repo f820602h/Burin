@@ -4,19 +4,35 @@ import union from "lodash-es/union";
 
 export class Report<T extends Log | CurrentLog> {
   private _logs: T[] = [];
+  private _currentLog: CurrentLog | null = null;
   private _groupBy: "category" | null = null;
   private _orderBy: keyof Log = "updateTimestamp";
   private _direction: "asc" | "desc" = "desc";
 
   constructor(logs: T[]) {
     this.logs = logs;
+    this.currentLog = logs.find(
+      (log) => log instanceof CurrentLog
+    ) as CurrentLog;
   }
 
   set logs(logs: typeof this._logs) {
-    this._logs = this.sort(logs);
+    const _log: typeof this._logs = [];
+    logs.forEach((log) => {
+      if (log instanceof CurrentLog) return;
+      else _log.push(log);
+    });
+    this._logs = this.sort(_log);
   }
   get logs(): typeof this._logs {
     return this._logs;
+  }
+
+  set currentLog(currentLog: typeof this._currentLog) {
+    this._currentLog = currentLog;
+  }
+  get currentLog(): typeof this._currentLog {
+    return this._currentLog;
   }
 
   set groupBy(value: typeof this._groupBy) {

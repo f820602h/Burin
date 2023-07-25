@@ -1,25 +1,26 @@
 <script setup lang="ts">
-import type { MenuItemToggle as MenuItemToggleType } from "./types";
+import type {
+  MenuItem as MenuItemType,
+  MenuItemToggle as MenuItemToggleType,
+} from "./types";
 import { computed } from "vue";
-import { useLogStore } from "@/stores/log";
 import { useStampStore } from "@/stores/stamp";
+import { useCategoryStore } from "@/stores/category";
 import { monthNameGetter } from "@/helper/monthNameGetter";
 import MenuItem from "./MenuItem.vue";
 import MenuItemToggle from "./MenuItemToggle.vue";
-import { timestampCalculator } from "@/helper/timestampCalculator";
-import { useCategoryStore } from "@/stores/category";
+import CalendarIcon from "@/components/basic/CalendarIcon.vue";
 
-const logStore = useLogStore();
 const stampStore = useStampStore();
 const categoryStore = useCategoryStore();
 
-const todayMenuItem = computed(() => ({
+const todayMenuItem = computed<MenuItemType>(() => ({
   name: "Today",
-  icon: "icon-clock",
-  route: { name: "Daily", params: { date: timestampCalculator("today") } },
+  icon: null,
+  route: { name: "Today" },
 }));
 
-const calendarMenuItems = computed(() =>
+const calendarMenuItems = computed<MenuItemToggleType[]>(() =>
   stampStore.stamps.reduce<MenuItemToggleType[]>((acc, timestamp) => {
     const year: string = new Date(timestamp).getFullYear().toString();
     const month: string = monthNameGetter(new Date(timestamp).getMonth(), {
@@ -59,26 +60,16 @@ const tagMenuItems = computed(() =>
 
 <template>
   <div class="menu-sidebar">
-    <div class="flex items-center h-[66px] p-2">
-      <router-link :to="{ name: 'Progress' }" class="menu-sidebar__progress">
-        <template v-if="logStore.currentLog">
-          <div class="font-bold">{{ logStore.currentLog.title }}</div>
-          <div class="text-gray-400">
-            {{ logStore.currentLog.duringTime.hoursText }}:{{
-              logStore.currentLog.duringTime.minutesText
-            }}:{{ logStore.currentLog.duringTime.secondsText }}
-          </div>
-        </template>
-        <template v-else>
-          <div class="text-sm p-1">Nothing In Progress...</div>
-        </template>
-      </router-link>
-    </div>
-
     <div class="p-3">
       <div class="menu-sidebar__group-title">CALENDAR</div>
       <ul class="mb-3">
-        <MenuItem :item="todayMenuItem" />
+        <MenuItem :item="todayMenuItem">
+          <div class="flex items-center">
+            <CalendarIcon class="w-[14px] h-[14px] mr-2" />
+            Today
+          </div>
+        </MenuItem>
+
         <MenuItemToggle
           v-for="(item, index) in calendarMenuItems"
           :key="index"
@@ -100,9 +91,7 @@ const tagMenuItems = computed(() =>
 
 <style scoped lang="scss">
 .menu-sidebar {
-  &__progress {
-    @apply w-full px-2 py-1 rounded bg-slate-700 cursor-pointer duration-200 hover:bg-slate-600;
-  }
+  min-width: calc(var(--asideWidth) - 1px);
 
   &__group-title {
     @apply text-gray-500 mb-2 text-xs px-1;

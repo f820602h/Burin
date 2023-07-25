@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRef, computed, watch } from "vue";
+import { ref, toRef, computed } from "vue";
 import { useField } from "vee-validate";
 import type { Log } from "@/class/Log";
 import type { Category } from "@/class/Category";
@@ -50,9 +50,9 @@ const optionsFirstIndex = computed<number>(() => {
   return adding.value && !hitCategory.value ? newOptionIndex.value : 0;
 });
 
-watch(hoverOptionIndex, (index) => {
-  optionScrollIntoView(index);
-});
+// watch(hoverOptionIndex, (index) => {
+//   optionScrollIntoView(index);
+// });
 
 function switchTag(cateId: Category["id"]): void {
   if (binding.value.includes(cateId)) {
@@ -96,6 +96,7 @@ function keyboardControl(e: KeyboardEvent): void {
         hoverOptionIndex.value <= optionsFirstIndex.value
           ? categoryStore.categories.length - 1
           : hoverOptionIndex.value - 1;
+      optionScrollIntoView(hoverOptionIndex.value);
       break;
 
     case "ArrowDown":
@@ -103,6 +104,7 @@ function keyboardControl(e: KeyboardEvent): void {
         hoverOptionIndex.value >= categoryStore.categories.length - 1
           ? optionsFirstIndex.value
           : hoverOptionIndex.value + 1;
+      optionScrollIntoView(hoverOptionIndex.value);
       break;
 
     default:
@@ -114,11 +116,13 @@ function handleInput(): void {
   hoverOptionIndex.value = hitCategory.value
     ? categoryStore.categories.findIndex((cate) => cate === hitCategory.value)
     : newOptionIndex.value;
+  optionScrollIntoView(hoverOptionIndex.value);
 }
 
 function handleFocus(): void {
   isFocused.value = true;
   hoverOptionIndex.value = optionsFirstIndex.value;
+  optionScrollIntoView(hoverOptionIndex.value);
 }
 
 function handleBlur(): void {
@@ -219,10 +223,10 @@ function handleBlur(): void {
 
 <style scoped lang="scss">
 .tag-selector {
-  @apply relative flex items-center flex-wrap min-h-9 px-2 py-[2px] border border-transparent rounded outline-none bg-gray-700 duration-150 cursor-pointer hover:border-violet-400;
+  @apply relative flex items-center flex-wrap min-h-9 px-2 py-[2px] border border-transparent rounded outline-none bg-gray-700 duration-150 cursor-pointer hover:border-primary-300;
 
   &.isFocused {
-    @apply border-violet-400;
+    @apply border-primary-300;
   }
 
   &.isInvalid {
@@ -230,7 +234,7 @@ function handleBlur(): void {
   }
 
   &__dropdown {
-    @apply absolute top-full left-0 w-full max-h-[120px] p-1 rounded bg-gray-600 overflow-auto translate-y-1;
+    @apply absolute top-full left-0 w-full max-h-[140px] p-1 rounded bg-gray-600 overflow-auto translate-y-1;
   }
 
   &__option {

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { type Log, CurrentLog } from "@/class/Log";
-import { LogStatus } from "@/class/Log";
 import CategoryTag from "@/components/common/CategoryTag.vue";
 
 defineProps<{
@@ -9,97 +8,79 @@ defineProps<{
 </script>
 
 <template>
-  <div class="log-card" :class="{ current: log instanceof CurrentLog }">
-    <div class="flex">
-      <div class="flex flex-col justify-between w-full">
-        <div class="log-card__title">{{ log.title }}</div>
-        <div class="flex flex-wrap mt-2">
-          <CategoryTag
-            v-for="(cate, index) in log.categories"
-            :key="index"
-            :category-id="cate"
-            class="flex-shrink-0 mr-2 my-1"
-          />
+  <div>
+    <div
+      class="log-card relative p-2 rounded-sm bg-gray-700 overflow-hidden"
+      :class="{ 'bg-primary': log instanceof CurrentLog }"
+    >
+      <div class="flex justify-between items-center">
+        <div class="w-full mr-3 px-1 md:text-lg lg:text-3xl font-bold truncate">
+          {{ log.title }}
         </div>
-      </div>
 
-      <div>
         <div
-          class="w-[120px] md:w-[245px] md:py-1 text-center rounded bg-white/20"
+          class="flex-shrink-0 px-2 py-[2px] rounded-sm text-sm lg:text-3xl font-bold bg-white/20"
         >
-          <div class="text-lg md:text-3xl font-bold">
-            <span>{{
-              log instanceof CurrentLog
-                ? log.duringTime.hoursText
-                : log.durationTime.hoursText
-            }}</span>
-            <span class="hidden md:inline text-sm mx-1">hour</span>
-            <span class="inline md:hidden mx-1">:</span>
+          <span>{{
+            log instanceof CurrentLog
+              ? log.duringTime.hoursText
+              : log.durationTime.hoursText
+          }}</span>
+          <span class="hidden lg:inline text-sm mx-1">hour</span>
+          <span class="inline lg:hidden mx-1">:</span>
 
-            <span>{{
-              log instanceof CurrentLog
-                ? log.duringTime.minutesText
-                : log.durationTime.minutesText
-            }}</span>
-            <span class="hidden md:inline text-sm mx-1">min</span>
-            <span class="inline md:hidden mx-1">:</span>
+          <span>{{
+            log instanceof CurrentLog
+              ? log.duringTime.minutesText
+              : log.durationTime.minutesText
+          }}</span>
+          <span class="hidden lg:inline text-sm mx-1">min</span>
+          <span class="inline lg:hidden mx-1">:</span>
 
-            <span>{{
-              log instanceof CurrentLog
-                ? log.duringTime.secondsText
-                : log.durationTime.secondsText
-            }}</span>
-            <span class="hidden md:inline text-sm mx-1">sec</span>
-          </div>
-        </div>
-
-        <div class="md:flex md:items-center w-full mt-2 px-1 whitespace-nowrap">
-          <div class="flex justify-between text-gray-300 text-xs mb-1 md:mb-0">
-            <div class="mr-2 font-bold">Started at:</div>
-            <div>{{ log.startTimeText }}</div>
-          </div>
-          <div class="hidden md:block mx-1">｜</div>
-          <template v-if="log.status === LogStatus.FINISH">
-            <div class="flex justify-between text-gray-300 text-xs">
-              <div class="mr-2 font-bold">Finished at:</div>
-              <div>{{ log.finishTimeText }}</div>
-            </div>
-          </template>
-          <template v-else>
-            <div class="text-gray-300 text-xs text-center">
-              <div class="font-bold px-2 rounded-full border">
-                {{ log.finishTimeText.toLocaleUpperCase() }}
-              </div>
-            </div>
-          </template>
+          <span>{{
+            log instanceof CurrentLog
+              ? log.duringTime.secondsText
+              : log.durationTime.secondsText
+          }}</span>
+          <span class="hidden lg:inline text-sm mx-1">sec</span>
         </div>
       </div>
+
+      <div class="min-h-[30px] flex flex-wrap mt-1 px-1">
+        <CategoryTag
+          v-for="(cate, index) in log.categories"
+          :key="index"
+          :category-id="cate"
+          class="flex-shrink-0 mr-2 my-1"
+        />
+      </div>
+
+      <div v-if="'duringTime' in log" class="log-card__lighting"></div>
     </div>
 
-    <div v-if="'duringTime' in log" class="log-card__lighting"></div>
+    <div
+      class="flex justify-end items-center px-1 mt-[2px] whitespace-nowrap text-gray-500"
+    >
+      <div class="flex justify-between text-xs">
+        <div class="mr-2 font-bold">Started at:</div>
+        <div>{{ log.startTimeText }}</div>
+      </div>
+
+      <div class="text-sm">｜</div>
+
+      <div class="flex justify-between text-xs">
+        <div class="mr-2 font-bold">Finished at:</div>
+        <div>{{ log.finishTimeText }}</div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 @import "@/scss/mixin.scss";
 .log-card {
-  @apply relative px-4 py-3 rounded bg-gray-700 overflow-hidden;
-
-  &.current {
-    @apply bg-[#2c1c5b];
-  }
-
   * {
     z-index: 2;
-  }
-
-  &__title {
-    @apply flex-shrink-0 text-lg md:text-2xl font-bold mr-3;
-    @include text-overflow(64, 2);
-  }
-
-  &__more {
-    @apply absolute bottom-[6px] left-1/2 px-[6px] rounded bg-gray-400/10 hover:bg-gray-400/20 -translate-x-1/2 duration-200 cursor-pointer;
   }
 
   &__lighting {
@@ -108,7 +89,7 @@ defineProps<{
     background: linear-gradient(
       45deg,
       rgba(0, 0, 0, 0) 33%,
-      theme("colors.violet.900"),
+      theme("colors.primary.500"),
       rgba(0, 0, 0, 0) 66%
     );
     animation: shine 2.5s infinite linear;

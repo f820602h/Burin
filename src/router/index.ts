@@ -1,15 +1,15 @@
 import { createRouter, createWebHistory, type Router } from "vue-router";
-import { pipelineGuard } from "./middleware/index";
-import ProgressView from "@/views/ProgressView.vue";
-import DailyView from "@/views/DailyView.vue";
 
+import DailyView from "@/views/DailyView.vue";
 import ErrorView from "@/views/ErrorView.vue";
 import ErrorPage404 from "@/views/error/ErrorPage404.vue";
 import ErrorPage500 from "@/views/error/ErrorPage500.vue";
 
+import { pipelineGuard } from "./middleware/index";
 import { checkDailyStampMiddleware } from "./middleware/daily";
 
 import { dateFormatter } from "@/helper/dateFormatter";
+import { timestampCalculator } from "@/helper/timestampCalculator";
 
 const router: Router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,7 +17,18 @@ const router: Router = createRouter({
     {
       path: "/",
       name: "Progress",
-      component: ProgressView,
+      redirect: { name: "Daily" },
+      meta: {
+        middleware: [],
+      },
+    },
+    {
+      path: "/today",
+      name: "Today",
+      redirect: {
+        name: "Daily",
+        params: { date: timestampCalculator("today") },
+      },
       meta: {
         middleware: [],
       },
@@ -45,6 +56,7 @@ const router: Router = createRouter({
       meta: {
         middleware: [],
       },
+      redirect: { name: "Error404" },
       children: [
         {
           path: "404",
