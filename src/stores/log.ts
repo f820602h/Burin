@@ -47,7 +47,8 @@ export const useLogStore = defineStore({
         startTimestamp: payload.startTimestamp,
         finishTimestamp: 0,
         pauseTimestamp: 0,
-        pauseDuration: 0,
+        pauseTimes: 0,
+        pauseDurationTime: 0,
         createTimestamp: payload.startTimestamp,
         updateTimestamp: payload.startTimestamp,
       });

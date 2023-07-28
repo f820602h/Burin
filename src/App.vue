@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 import { useElementSize } from "@vueuse/core";
 import { useLoadingStore } from "./stores/loading";
 import { useBreakPoint } from "./composables/useBreakPoint";
+import { vOnClickOutside } from "@vueuse/components";
 import CollapseHTransition from "./components/common/transition/CollapseHTransition.vue";
 import BlurMask from "@/components/common/BlurMask.vue";
 import HeaderToolBar from "./components/global/header/HeaderToolBar.vue";
@@ -23,7 +24,7 @@ const { height: titleHeight } = useElementSize(titleRef);
 
 const isUserLoggerShow = ref<boolean>(false);
 const isNewWorkLauncherShow = ref<boolean>(false);
-const isSidebarShow = breakpoints.greaterOrEqual("lg");
+const isSidebarShow = ref<boolean>(breakpoints.greaterOrEqual("lg").value);
 
 const pageTitle = computed<string>(() => {
   if (typeof route.meta?.title === "string") {
@@ -32,6 +33,12 @@ const pageTitle = computed<string>(() => {
     return route.meta.title(route);
   } else return "";
 });
+
+function closeSidebarOnClickOutside(): void {
+  if (!breakpoints.greaterOrEqual("lg").value) {
+    isSidebarShow.value = false;
+  }
+}
 </script>
 
 <template>
@@ -46,7 +53,10 @@ const pageTitle = computed<string>(() => {
 
     <main class="relative flex">
       <CollapseHTransition>
-        <aside v-if="isSidebarShow">
+        <aside
+          v-if="isSidebarShow"
+          v-on-click-outside="closeSidebarOnClickOutside"
+        >
           <nav><MenuSidebar /></nav>
         </aside>
       </CollapseHTransition>
@@ -79,7 +89,7 @@ const pageTitle = computed<string>(() => {
     <Transition name="fade">
       <BlurMask
         v-if="isNewWorkLauncherShow"
-        class="justify-center items-start pt-[160px]"
+        class="justify-center items-start pt-[160px] px-3"
       >
         <NewWorkLauncher @close="isNewWorkLauncherShow = false" />
       </BlurMask>

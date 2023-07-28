@@ -5,7 +5,7 @@ declare let self: ServiceWorkerGlobalScope;
 type CurrentLogNotificationData = {
   title: CurrentLog["title"];
   startTimestamp: CurrentLog["startTimestamp"];
-  pauseDuration: CurrentLog["pauseDuration"];
+  pauseDurationTime: CurrentLog["pauseDurationTime"];
   intervalMinutes: number;
 };
 
@@ -15,7 +15,7 @@ let intervalId = 0;
 function calcAfterTimes(data: CurrentLogNotificationData): number {
   const now = new Date().getTime();
   return Math.floor(
-    (now - data.startTimestamp - data.pauseDuration) /
+    (now - data.startTimestamp - data.pauseDurationTime) /
       (data.intervalMinutes * 1000)
   );
 }

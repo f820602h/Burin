@@ -1,10 +1,6 @@
 import type { Category } from "@/class/Category";
 import { computed } from "vue";
 import { dateFormatter } from "@/helper/dateFormatter";
-import {
-  type durationTimeObject,
-  durationTimeFormatter,
-} from "@/helper/durationTimeFormatter";
 import { useTimestamp } from "@vueuse/core";
 
 export enum LogStatus {
@@ -24,7 +20,7 @@ export interface LogInfo extends LogId {
   finishTimestamp: number;
   pauseTimestamp: number;
   pauseTimes: number;
-  pauseDuration: number;
+  pauseDurationTime: number;
 }
 
 export interface LogCompleteInfo extends LogInfo {
@@ -40,7 +36,7 @@ export class Log implements LogCompleteInfo {
   finishTimestamp: LogCompleteInfo["finishTimestamp"];
   pauseTimestamp: LogCompleteInfo["pauseTimestamp"];
   pauseTimes: LogCompleteInfo["pauseTimes"];
-  pauseDuration: LogCompleteInfo["pauseDuration"];
+  pauseDurationTime: LogCompleteInfo["pauseDurationTime"];
   createTimestamp: LogCompleteInfo["createTimestamp"];
   updateTimestamp: LogCompleteInfo["updateTimestamp"];
 
@@ -52,7 +48,7 @@ export class Log implements LogCompleteInfo {
     this.finishTimestamp = log.finishTimestamp;
     this.pauseTimestamp = log.pauseTimestamp;
     this.pauseTimes = log.pauseTimes;
-    this.pauseDuration = log.pauseDuration;
+    this.pauseDurationTime = log.pauseDurationTime;
     this.createTimestamp = log.createTimestamp;
     this.updateTimestamp = log.updateTimestamp;
   }
@@ -72,21 +68,27 @@ export class Log implements LogCompleteInfo {
   }
 
   get finishTimeText(): string {
+    const start = new Date(this.startTimestamp);
+    const finish = new Date(this.finishTimestamp);
+
     return this.finishTimestamp
       ? dateFormatter(this.finishTimestamp, {
-          year: undefined,
-          month: undefined,
-          day: undefined,
+          year:
+            start.getFullYear() !== finish.getFullYear()
+              ? "numeric"
+              : undefined,
+          month: start.getDate() !== finish.getDate() ? "short" : undefined,
+          day: start.getDate() !== finish.getDate() ? "2-digit" : undefined,
           hour12: false,
           second: undefined,
         })
       : this.status;
   }
 
-  get durationTime(): durationTimeObject {
+  get durationTime(): number {
     const duration =
-      this.finishTimestamp - this.startTimestamp - this.pauseDuration;
-    return durationTimeFormatter(Math.max(duration, 0));
+      this.finishTimestamp - this.startTimestamp - this.pauseDurationTime;
+    return Math.max(duration, 0);
   }
 }
 
@@ -115,13 +117,13 @@ export class CurrentLog extends Log {
     return this.pauseTimestamp ? LogStatus.PAUSE : LogStatus.IN_PROGRESS;
   }
 
-  get duringTime(): durationTimeObject {
-    return computed<durationTimeObject>(() => {
+  get duringTime(): number {
+    return computed<number>(() => {
       const duration =
         (this.pauseTimestamp || timestamp.value) -
         this.startTimestamp -
-        this.pauseDuration;
-      return durationTimeFormatter(Math.max(duration, 0));
+        this.pauseDurationTime;
+      return Math.max(duration, 0);
     }).value;
   }
 
@@ -152,7 +154,7 @@ export class CurrentLog extends Log {
   async resume() {
     if (this.status !== LogStatus.PAUSE) return;
     const now = new Date().getTime();
-    this.pauseDuration += now - this.pauseTimestamp;
+    this.pauseDurationTime += now - this.pauseTimestamp;
     this.pauseTimestamp = 0;
     timestampResume();
     if (this._resumeCallbacks.size) {
@@ -164,7 +166,7 @@ export class CurrentLog extends Log {
     if (this.status === LogStatus.FINISH) return;
     if (this.status === LogStatus.PAUSE) {
       const now = new Date().getTime();
-      this.pauseDuration += now - this.pauseTimestamp;
+      this.pauseDurationTime += now - this.pauseTimestamp;
       this.pauseTimestamp = 0;
       timestampResume();
     }

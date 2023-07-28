@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { type Log, CurrentLog } from "@/class/Log";
 import CategoryTag from "@/components/common/CategoryTag.vue";
+import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
 
 defineProps<{
   log: Log | CurrentLog;
@@ -14,7 +15,9 @@ defineProps<{
       :class="{ 'bg-primary': log instanceof CurrentLog }"
     >
       <div class="flex justify-between items-center">
-        <div class="w-full mr-3 px-1 md:text-lg lg:text-3xl font-bold truncate">
+        <div
+          class="w-full mr-3 px-1 md:text-lg lg:text-3xl lg:leading-10 font-bold truncate"
+        >
           {{ log.title }}
         </div>
 
@@ -22,25 +25,25 @@ defineProps<{
           class="flex-shrink-0 px-2 py-[2px] rounded-sm text-sm lg:text-3xl font-bold bg-white/20"
         >
           <span>{{
-            log instanceof CurrentLog
-              ? log.duringTime.hoursText
-              : log.durationTime.hoursText
+            durationTimeFormatter(
+              log instanceof CurrentLog ? log.duringTime : log.durationTime
+            ).hoursText
           }}</span>
           <span class="hidden lg:inline text-sm mx-1">hour</span>
           <span class="inline lg:hidden mx-1">:</span>
 
           <span>{{
-            log instanceof CurrentLog
-              ? log.duringTime.minutesText
-              : log.durationTime.minutesText
+            durationTimeFormatter(
+              log instanceof CurrentLog ? log.duringTime : log.durationTime
+            ).minutesText
           }}</span>
           <span class="hidden lg:inline text-sm mx-1">min</span>
           <span class="inline lg:hidden mx-1">:</span>
 
           <span>{{
-            log instanceof CurrentLog
-              ? log.duringTime.secondsText
-              : log.durationTime.secondsText
+            durationTimeFormatter(
+              log instanceof CurrentLog ? log.duringTime : log.durationTime
+            ).secondsText
           }}</span>
           <span class="hidden lg:inline text-sm mx-1">sec</span>
         </div>

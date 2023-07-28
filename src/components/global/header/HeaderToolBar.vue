@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useLogStore } from "@/stores/log";
 import { LogStatus } from "@/class/Log";
+import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
 
 defineEmits<{
   (e: "toggle-sidebar"): void;
@@ -57,15 +58,21 @@ const logStore = useLogStore();
         <div
           class="flex-shrink-0 px-2 py-[2px] rounded-sm text-sm font-bold bg-white/20"
         >
-          <span>{{ logStore.currentLog.duringTime.hoursText }}</span>
+          <span>{{
+            durationTimeFormatter(logStore.currentLog.duringTime).hoursText
+          }}</span>
           <span class="hidden lg:inline text-xs mx-1">hour</span>
           <span class="inline lg:hidden mx-1">:</span>
 
-          <span>{{ logStore.currentLog.duringTime.minutesText }}</span>
+          <span>{{
+            durationTimeFormatter(logStore.currentLog.duringTime).minutesText
+          }}</span>
           <span class="hidden lg:inline text-xs mx-1">min</span>
           <span class="inline lg:hidden mx-1">:</span>
 
-          <span>{{ logStore.currentLog.duringTime.secondsText }}</span>
+          <span>{{
+            durationTimeFormatter(logStore.currentLog.duringTime).secondsText
+          }}</span>
           <span class="hidden lg:inline text-xs mx-1">sec</span>
         </div>
 
