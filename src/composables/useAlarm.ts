@@ -71,7 +71,7 @@ export function useAlarm() {
     useServiceWorkerPostMessage("subscribeCurrentLogNotification", {
       title: logStore.currentLog.title,
       startTimestamp: logStore.currentLog.startTimestamp,
-      pauseDuration: logStore.currentLog.pauseDuration,
+      pauseDurationTime: logStore.currentLog.pauseDurationTime,
       intervalMinutes: intervalMinutes.value,
     });
   }

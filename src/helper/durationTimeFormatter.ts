@@ -1,4 +1,4 @@
-export type durationTimeObject = {
+export type DurationTimeObject = {
   totalMilliseconds: number;
   hours: number;
   minutes: number;
@@ -6,11 +6,12 @@ export type durationTimeObject = {
   hoursText: string;
   minutesText: string;
   secondsText: string;
+  completeText: string;
 };
 
 export function durationTimeFormatter(
   milliseconds: number
-): durationTimeObject {
+): DurationTimeObject {
   const hour = 60 * 60 * 1000;
   const minute = 60 * 1000;
   const second = 1000;
@@ -25,6 +26,7 @@ export function durationTimeFormatter(
   const hoursText = String(hours).length < 2 ? `0${hours}` : `${hours}`;
   const minutesText = String(minutes).length < 2 ? `0${minutes}` : `${minutes}`;
   const secondsText = String(seconds).length < 2 ? `0${seconds}` : `${seconds}`;
+  const completeText = `${hoursText} hour ${minutesText} min ${secondsText} sec`;
 
   return {
     totalMilliseconds: milliseconds,
@@ -34,5 +36,6 @@ export function durationTimeFormatter(
     hoursText,
     minutesText,
     secondsText,
+    completeText,
   };
 }
