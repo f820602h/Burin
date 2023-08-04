@@ -4,7 +4,7 @@
 
 html, body {
   @apply w-full min-w-[320px] text-gray-300;
-  font-family: 'Noto Sans TC', sans-serif;
+  font-family: 'Roboto Mono', monospace, 'Noto Sans TC', sans-serif;
   font-size: 16px;
 }
 

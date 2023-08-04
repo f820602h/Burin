@@ -7,6 +7,7 @@ import { computed } from "vue";
 import { useStampStore } from "@/stores/stamp";
 import { useCategoryStore } from "@/stores/category";
 import { monthNameGetter } from "@/helper/monthNameGetter";
+import { dayNameGetter } from "@/helper/dayNameGetter";
 import MenuItem from "./MenuItem.vue";
 import MenuItemToggle from "./MenuItemToggle.vue";
 import CalendarIcon from "@/components/basic/CalendarIcon.vue";
@@ -27,6 +28,9 @@ const calendarMenuItems = computed<MenuItemToggleType[]>(() =>
       mode: "short",
     });
     const date: string = new Date(timestamp).getDate().toString();
+    const day: string = dayNameGetter(new Date(timestamp).getDay(), {
+      mode: "short",
+    });
 
     const yearItem =
       acc.find((item) => item.name === year) ||
@@ -40,7 +44,7 @@ const calendarMenuItems = computed<MenuItemToggleType[]>(() =>
 
     if ("children" in monthItem) {
       monthItem.children.push({
-        name: date,
+        name: `${date.padStart(2, "0")}, ${day}`,
         icon: "icon-file",
         route: { name: "Daily", params: { date: timestamp } },
       });
