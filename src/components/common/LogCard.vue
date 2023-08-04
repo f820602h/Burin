@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { type Log, CurrentLog } from "@/class/Log";
-import CategoryTag from "@/components/common/CategoryTag.vue";
+import { type Log, CurrentLog, LogStatus } from "@/class/Log";
 import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
+import CategoryTag from "@/components/common/CategoryTag.vue";
+import AlarmSetter from "@/components/common/AlarmSetter.vue";
 
 defineProps<{
   log: Log | CurrentLog;
@@ -10,6 +11,35 @@ defineProps<{
 
 <template>
   <div>
+    <div
+      v-if="log instanceof CurrentLog"
+      class="flex justify-between items-end mb-1 bg-violet-900/30"
+    >
+      <div class="flex">
+        <button
+          v-if="log.status === LogStatus.IN_PROGRESS"
+          class="btn p-2 rounded-sm mr-1"
+          @click="log?.pause"
+        >
+          <div class="icon-pause" />
+        </button>
+
+        <button
+          v-else-if="log.status === LogStatus.PAUSE"
+          class="btn p-2 rounded-sm mr-1"
+          @click="log?.resume"
+        >
+          <div class="icon-play relative left-[2px]" />
+        </button>
+
+        <button class="btn p-2 rounded-sm mr-1" @click="log?.finish">
+          <div class="icon-stop" />
+        </button>
+      </div>
+
+      <AlarmSetter />
+    </div>
+
     <div
       class="log-card relative p-2 rounded-sm bg-gray-700 overflow-hidden"
       :class="{ 'bg-primary': log instanceof CurrentLog }"

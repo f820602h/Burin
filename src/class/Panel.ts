@@ -1,402 +1,91 @@
-import type { Log } from "./Log";
-import type { Category } from "@/class/Category";
-import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
+import { Filter, type FilterConfig } from "./Field/Filter";
+import { Sorter, type SorterConfig } from "./Field/Sorter";
 
-enum FieldTypes {
-  STRING = "string",
-  CATEGORIES = "categories",
-  DATE = "date",
-  TIMES = "times",
-  TIME = "time",
+interface PanelId {
+  id: number;
 }
 
-enum SorterDirection {
-  ASC = "Ascending",
-  DESC = "Descending",
+interface PanelInfo<T> extends PanelId {
+  name: string;
+  order: number;
+  filterConfig: FilterConfig<T>[];
+  sorterConfig: SorterConfig<T>[];
 }
 
-enum FilterOperator {
-  IS = "IS",
-  IS_NOT = "IS NOT",
-  CONTAINS = "CONTAINS",
-  NOT_CONTAIN = "NOT CONTAIN",
-  BEFORE = "BEFORE",
-  AFTER = "AFTER",
-  BETWEEN = "BETWEEN",
-  EQUAL = "=",
-  NOT_EQUAL = "≠",
-  GREATER_THAN = ">",
-  LESS_THAN = "<",
-  GREATER_THAN_OR_EQUAL = "≥",
-  LESS_THAN_OR_EQUAL = "≤",
+export interface PanelCompleteInfo<T> extends PanelInfo<T> {
+  createTimestamp: number;
+  updateTimestamp: number;
 }
 
-export const LOG_FIELD_TYPE_MAP: Omit<
-  Record<keyof Log, FieldTypes>,
-  "id" | "status" | "startTimeText" | "finishTimeText" | "pauseTimestamp"
-> = {
-  title: FieldTypes.STRING,
-  categories: FieldTypes.CATEGORIES,
-  startTimestamp: FieldTypes.DATE,
-  finishTimestamp: FieldTypes.DATE,
-  pauseTimes: FieldTypes.TIMES,
-  pauseDurationTime: FieldTypes.TIME,
-  durationTime: FieldTypes.TIME,
-  createTimestamp: FieldTypes.DATE,
-  updateTimestamp: FieldTypes.DATE,
-};
+export class Panel<T> {
+  id: number;
+  name: string;
+  order: number;
+  filterConfig: FilterConfig<T>[];
+  sorterConfig: SorterConfig<T>[];
+  createTimestamp: number;
+  updateTimestamp: number;
+  Filter: Filter<T>;
+  Sorter: Sorter<T>;
 
-export const FIELD_TYPE_CONDITION_OPERATORS_MAP = {
-  [FieldTypes.STRING]: [
-    FilterOperator.IS,
-    FilterOperator.IS_NOT,
-    FilterOperator.CONTAINS,
-    FilterOperator.NOT_CONTAIN,
-  ],
-  [FieldTypes.CATEGORIES]: [
-    FilterOperator.CONTAINS,
-    FilterOperator.NOT_CONTAIN,
-  ],
-  [FieldTypes.DATE]: [
-    FilterOperator.IS,
-    FilterOperator.IS_NOT,
-    FilterOperator.BEFORE,
-    FilterOperator.AFTER,
-    FilterOperator.BETWEEN,
-  ],
-  [FieldTypes.TIMES]: [
-    FilterOperator.EQUAL,
-    FilterOperator.NOT_EQUAL,
-    FilterOperator.GREATER_THAN,
-    FilterOperator.LESS_THAN,
-    FilterOperator.GREATER_THAN_OR_EQUAL,
-    FilterOperator.LESS_THAN_OR_EQUAL,
-  ],
-  [FieldTypes.TIME]: [
-    FilterOperator.EQUAL,
-    FilterOperator.NOT_EQUAL,
-    FilterOperator.GREATER_THAN,
-    FilterOperator.LESS_THAN,
-    FilterOperator.GREATER_THAN_OR_EQUAL,
-    FilterOperator.LESS_THAN_OR_EQUAL,
-  ],
-} as const;
+  constructor(panel: PanelCompleteInfo<T>) {
+    this.id = panel.id;
+    this.name = panel.name;
+    this.order = panel.order;
+    this.filterConfig = panel.filterConfig;
+    this.sorterConfig = panel.sorterConfig;
+    this.createTimestamp = panel.createTimestamp;
+    this.updateTimestamp = panel.updateTimestamp;
+    this.Filter = new Filter(this.filterConfig);
+    this.Sorter = new Sorter(this.sorterConfig);
+  }
 
-type ColumnCount = 0.33 | 0.66 | 0.5 | 1;
+  calculator(list: T[]): T[] {
+    return this.Sorter.execute(this.Filter.execute(list));
+  }
+}
 
-class Panel {
-  private column: ColumnCount = 1;
+class PanelManager {
+  private panels: PanelCompleteInfo<any>[];
 
   constructor() {
-    this.resize(1);
+    this.panels = [];
   }
 
-  resize(col: ColumnCount) {
-    this.column = col;
-  }
-
-  calculator(logs: Log[]): Log[] | string {
-    return logs;
-  }
-}
-
-type ListPanelSorterConfig = {
-  direction: SorterDirection;
-} & (
-  | {
-      field: keyof Pick<typeof LOG_FIELD_TYPE_MAP, "title">;
-      type: FieldTypes.STRING;
-    }
-  | {
-      field: keyof Pick<typeof LOG_FIELD_TYPE_MAP, "pauseTimes">;
-      type: FieldTypes.TIMES;
-    }
-  | {
-      field: keyof Pick<
-        typeof LOG_FIELD_TYPE_MAP,
-        | "startTimestamp"
-        | "finishTimestamp"
-        | "createTimestamp"
-        | "updateTimestamp"
-      >;
-      type: FieldTypes.DATE;
-    }
-  | {
-      field: keyof Pick<typeof LOG_FIELD_TYPE_MAP, "pauseDurationTime">;
-      type: FieldTypes.TIME;
-    }
-  | {
-      field: keyof Pick<typeof LOG_FIELD_TYPE_MAP, "categories">;
-      type: FieldTypes.CATEGORIES;
-    }
-);
-
-type ListPanelFilterConfig =
-  | {
-      field: keyof Pick<typeof LOG_FIELD_TYPE_MAP, "title">;
-      type: FieldTypes.STRING;
-      condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.STRING][number];
-      value: string;
-    }
-  | {
-      field: keyof Pick<typeof LOG_FIELD_TYPE_MAP, "pauseTimes">;
-      type: FieldTypes.TIMES;
-      condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.TIMES][number];
-      value: number;
-    }
-  | ({
-      field: keyof Pick<
-        typeof LOG_FIELD_TYPE_MAP,
-        | "startTimestamp"
-        | "finishTimestamp"
-        | "createTimestamp"
-        | "updateTimestamp"
-      >;
-      type: FieldTypes.DATE;
-    } & (
-      | {
-          condition: Exclude<
-            typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.DATE][number],
-            FilterOperator.BETWEEN
-          >;
-          value: number;
-        }
-      | {
-          condition: FilterOperator.BETWEEN;
-          value: number[];
-        }
-    ))
-  | {
-      field: keyof Pick<typeof LOG_FIELD_TYPE_MAP, "pauseDurationTime">;
-      type: FieldTypes.TIME;
-      condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.TIME][number];
-      value: number;
-    }
-  | {
-      field: keyof Pick<typeof LOG_FIELD_TYPE_MAP, "categories">;
-      type: FieldTypes.CATEGORIES;
-      condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.CATEGORIES][number];
-      value: Category["id"][];
+  addPanel<T>(panel: PanelInfo<T>): Panel<T> {
+    const panelCompleteInfo = {
+      ...panel,
+      createTimestamp: Date.now(),
+      updateTimestamp: Date.now(),
     };
-
-export class ListPanel extends Panel {
-  private filterConfig: ListPanelFilterConfig[];
-  private sorterConfig: ListPanelSorterConfig[];
-
-  constructor(config: {
-    filterConfig: ListPanelFilterConfig[];
-    sorterConfig: ListPanelSorterConfig[];
-  }) {
-    super();
-    this.filterConfig = config.filterConfig;
-    this.sorterConfig = config.sorterConfig;
+    this.panels.push(panelCompleteInfo);
+    return new Panel(panelCompleteInfo);
   }
 
-  private filter(logs: Log[]): Log[] {
-    if (!this.filterConfig.length) return logs;
-
-    const filterFn: ((log: Log, index: number, arr: Log[]) => boolean)[] = [];
-
-    this.filterConfig.forEach((config) => {
-      const { field, type, condition, value } = config;
-
-      switch (type) {
-        case FieldTypes.STRING:
-          switch (condition) {
-            case FilterOperator.IS:
-              filterFn.push((log) => log[field] === value);
-              break;
-            case FilterOperator.IS_NOT:
-              filterFn.push((log) => log[field] !== value);
-              break;
-            case FilterOperator.CONTAINS:
-              filterFn.push((log) => {
-                const str = log[field];
-                return str.includes(value);
-              });
-              break;
-            case FilterOperator.NOT_CONTAIN:
-              filterFn.push((log) => {
-                const str = log[field];
-                return !str.includes(value);
-              });
-              break;
-          }
-          break;
-
-        case FieldTypes.CATEGORIES:
-          switch (condition) {
-            case FilterOperator.CONTAINS:
-              filterFn.push((log) => {
-                const categories = log[field];
-                return categories.some(
-                  (category) => value.indexOf(category) >= 0
-                );
-              });
-              break;
-            case FilterOperator.NOT_CONTAIN:
-              filterFn.push((log) => {
-                const categories = log[field];
-                return categories.every(
-                  (category) => value.indexOf(category) < 0
-                );
-              });
-              break;
-          }
-          break;
-
-        case FieldTypes.DATE:
-          switch (condition) {
-            case FilterOperator.IS:
-              filterFn.push((log) => log[field] === value);
-              break;
-            case FilterOperator.IS_NOT:
-              filterFn.push((log) => log[field] !== value);
-              break;
-            case FilterOperator.BEFORE:
-              filterFn.push((log) => log[field] < value);
-              break;
-            case FilterOperator.AFTER:
-              filterFn.push((log) => log[field] > value);
-              break;
-            case FilterOperator.BETWEEN:
-              filterFn.push((log) => {
-                const [start, end] = value;
-                return log[field] >= start && log[field] <= end;
-              });
-              break;
-          }
-          break;
-
-        case FieldTypes.TIMES:
-          switch (condition) {
-            case FilterOperator.EQUAL:
-              filterFn.push((log) => log[field] === value);
-              break;
-            case FilterOperator.NOT_EQUAL:
-              filterFn.push((log) => log[field] !== value);
-              break;
-            case FilterOperator.GREATER_THAN:
-              filterFn.push((log) => log[field] > value);
-              break;
-            case FilterOperator.LESS_THAN:
-              filterFn.push((log) => log[field] < value);
-              break;
-            case FilterOperator.GREATER_THAN_OR_EQUAL:
-              filterFn.push((log) => log[field] >= value);
-              break;
-            case FilterOperator.LESS_THAN_OR_EQUAL:
-              filterFn.push((log) => log[field] <= value);
-              break;
-          }
-          break;
-        case FieldTypes.TIME:
-          switch (condition) {
-            case FilterOperator.EQUAL:
-              filterFn.push((log) => log[field] === value);
-              break;
-            case FilterOperator.NOT_EQUAL:
-              filterFn.push((log) => log[field] !== value);
-              break;
-            case FilterOperator.GREATER_THAN:
-              filterFn.push((log) => log[field] > value);
-              break;
-            case FilterOperator.LESS_THAN:
-              filterFn.push((log) => log[field] < value);
-              break;
-            case FilterOperator.GREATER_THAN_OR_EQUAL:
-              filterFn.push((log) => log[field] >= value);
-              break;
-            case FilterOperator.LESS_THAN_OR_EQUAL:
-              filterFn.push((log) => log[field] <= value);
-              break;
-          }
-          break;
-      }
-    });
-
-    return logs.filter((log, index, arr) => {
-      return filterFn.every((fn) => fn(log, index, arr));
-    });
+  getPanel<T>(id: number): Panel<T> | null {
+    const panel = this.panels.find((panel) => panel.id === id);
+    if (!panel) return null;
+    return new Panel(panel);
   }
 
-  private sort(logs: Log[]): Log[] {
-    if (!this.sorterConfig.length) return logs;
-
-    const logsShallowCopy = [...logs];
-    const sortFn: ((a: Log, b: Log) => number)[] = [];
-
-    this.sorterConfig.forEach((config) => {
-      const { field, type, direction } = config;
-      switch (type) {
-        case FieldTypes.STRING:
-          sortFn.push((a: Log, b: Log) => {
-            const aValue = a[field];
-            const bValue = b[field];
-            return direction === SorterDirection.ASC
-              ? aValue.localeCompare(bValue)
-              : bValue.localeCompare(aValue);
-          });
-          break;
-        case FieldTypes.TIMES:
-        case FieldTypes.TIME:
-        case FieldTypes.DATE:
-          sortFn.push((a: Log, b: Log) => {
-            const aValue = a[field];
-            const bValue = b[field];
-            return direction === SorterDirection.ASC
-              ? aValue - bValue
-              : bValue - aValue;
-          });
-          break;
-      }
-    });
-
-    logsShallowCopy.sort((a, b) => {
-      const compareFn = sortFn.find((fn) => fn(a, b));
-      return compareFn ? compareFn(a, b) : 0;
-    });
-
-    return logsShallowCopy;
+  getPanels<T>(): Panel<T>[] {
+    return this.panels.map((panel) => new Panel(panel));
   }
 
-  calculator(logs: Log[]): Log[] {
-    return this.sort(this.filter(logs));
-  }
-}
-
-type StatisticsPanelField = keyof Pick<
-  typeof LOG_FIELD_TYPE_MAP,
-  "pauseTimes" | "pauseDurationTime" | "durationTime"
->;
-
-export class StatisticsPanel extends Panel {
-  private field: StatisticsPanelField;
-
-  constructor(field: StatisticsPanelField) {
-    super();
-    this.field = field;
+  updatePanel<T>(panel: PanelCompleteInfo<T>): Panel<T> {
+    const index = this.panels.findIndex((p) => p.id === panel.id);
+    if (index === -1) throw new Error("Panel not found");
+    this.panels[index] = {
+      ...panel,
+      updateTimestamp: Date.now(),
+    };
+    return new Panel(this.panels[index]);
   }
 
-  private reduce(logs: Log[]): number {
-    return logs.reduce((acc, log) => acc + log[this.field], 0);
-  }
-
-  private format(value: number): string {
-    let result = "";
-    switch (LOG_FIELD_TYPE_MAP[this.field]) {
-      case FieldTypes.TIMES:
-        result = String(value) + " times";
-        break;
-      case FieldTypes.TIME:
-        result = durationTimeFormatter(value).completeText;
-        break;
-    }
-    return result;
-  }
-
-  calculator(logs: Log[]): string {
-    if (!logs.length) return "0";
-    return this.format(this.reduce(logs));
+  deletePanel(id: number): boolean {
+    const index = this.panels.findIndex((p) => p.id === id);
+    if (index === -1) return false;
+    this.panels.splice(index, 1);
+    return true;
   }
 }

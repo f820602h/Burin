@@ -131,13 +131,13 @@ section {
   min-height: calc(100vh - var(--headerHeight));
 
   .main__title {
-    @apply sticky z-10 flex items-center px-5 pt-3 pb-2 mb-2;
+    @apply sticky z-10 flex items-center px-3 md:px-5 pt-3 pb-2 mb-2;
     top: var(--headerHeight);
     background-color: var(--rootBackgroundColor);
   }
 
   .main__content {
-    @apply max-w-[560px] md:max-w-[768px] lg:max-w-[1024px] mx-auto px-5 overflow-hidden;
+    @apply max-w-[560px] md:max-w-[768px] lg:max-w-[1024px] mx-auto px-3 md:px-5 overflow-hidden;
   }
 }
 </style>

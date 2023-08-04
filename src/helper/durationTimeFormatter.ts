@@ -23,9 +23,9 @@ export function durationTimeFormatter(
     0
   );
 
-  const hoursText = String(hours).length < 2 ? `0${hours}` : `${hours}`;
-  const minutesText = String(minutes).length < 2 ? `0${minutes}` : `${minutes}`;
-  const secondsText = String(seconds).length < 2 ? `0${seconds}` : `${seconds}`;
+  const hoursText = String(hours).padStart(2, "0");
+  const minutesText = String(minutes).padStart(2, "0");
+  const secondsText = String(seconds).padStart(2, "0");
   const completeText = `${hoursText} hour ${minutesText} min ${secondsText} sec`;
 
   return {

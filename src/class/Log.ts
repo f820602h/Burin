@@ -1,4 +1,5 @@
 import type { Category } from "@/class/Category";
+import { FieldTypes } from "@/class/Field/FieldTypeEnum";
 import { computed } from "vue";
 import { dateFormatter } from "@/helper/dateFormatter";
 import { useTimestamp } from "@vueuse/core";
@@ -53,7 +54,7 @@ export class Log implements LogCompleteInfo {
     this.updateTimestamp = log.updateTimestamp;
   }
 
-  get status(): string {
+  get status(): LogStatus {
     return LogStatus.FINISH;
   }
 
@@ -73,10 +74,7 @@ export class Log implements LogCompleteInfo {
 
     return this.finishTimestamp
       ? dateFormatter(this.finishTimestamp, {
-          year:
-            start.getFullYear() !== finish.getFullYear()
-              ? "numeric"
-              : undefined,
+          year: undefined,
           month: start.getDate() !== finish.getDate() ? "short" : undefined,
           day: start.getDate() !== finish.getDate() ? "2-digit" : undefined,
           hour12: false,
@@ -113,7 +111,7 @@ export class CurrentLog extends Log {
     this._finishCallbacks = new Set();
   }
 
-  get status(): string {
+  get status(): LogStatus {
     return this.pauseTimestamp ? LogStatus.PAUSE : LogStatus.IN_PROGRESS;
   }
 
@@ -177,3 +175,20 @@ export class CurrentLog extends Log {
     }
   }
 }
+
+export const LOG_FIELD_TYPE_MAP: Record<keyof Log, FieldTypes> = {
+  id: FieldTypes.NUMBER,
+  title: FieldTypes.STRING,
+  status: FieldTypes.SELECT,
+  categories: FieldTypes.MULTI_SELECT,
+  startTimestamp: FieldTypes.DATE,
+  finishTimestamp: FieldTypes.DATE,
+  pauseTimestamp: FieldTypes.DATE,
+  pauseTimes: FieldTypes.NUMBER,
+  pauseDurationTime: FieldTypes.TIME,
+  durationTime: FieldTypes.TIME,
+  createTimestamp: FieldTypes.DATE,
+  updateTimestamp: FieldTypes.DATE,
+  startTimeText: FieldTypes.STRING,
+  finishTimeText: FieldTypes.STRING,
+};
