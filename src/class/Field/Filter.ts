@@ -1,3 +1,4 @@
+import type { KeysHasSameValueInObject } from "@/types";
 import { FieldTypes } from "./FieldTypeEnum";
 
 export enum FilterOperator {
@@ -53,22 +54,22 @@ export const FIELD_TYPE_CONDITION_OPERATORS_MAP = {
   ],
 } as const;
 
-type StringFilterConfig<T> = {
-  field: keyof T;
+type StringFilterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
+  field: KeysHasSameValueInObject<Map, `${FieldTypes.STRING}`, keyof T>;
   type: FieldTypes.STRING;
   condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.STRING][number];
   value: string;
 };
 
-type NumberFilterConfig<T> = {
-  field: keyof T;
+type NumberFilterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
+  field: KeysHasSameValueInObject<Map, `${FieldTypes.NUMBER}`, keyof T>;
   type: FieldTypes.NUMBER;
   condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.NUMBER][number];
   value: number;
 };
 
-type DateFilterConfig<T> = {
-  field: keyof T;
+type DateFilterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
+  field: KeysHasSameValueInObject<Map, `${FieldTypes.DATE}`, keyof T>;
   type: FieldTypes.DATE;
 } & (
   | {
@@ -84,39 +85,55 @@ type DateFilterConfig<T> = {
     }
 );
 
-type TimeFilterConfig<T> = {
-  field: keyof T;
+type TimeFilterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
+  field: KeysHasSameValueInObject<Map, `${FieldTypes.TIME}`, keyof T>;
   type: FieldTypes.TIME;
   condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.TIME][number];
   value: number;
 };
 
-type SelectFilterConfig<T, K extends keyof T = keyof T> = {
-  field: keyof T;
+type SelectFilterConfig<
+  T,
+  Map extends Record<keyof T, FieldTypes>,
+  K extends keyof T = KeysHasSameValueInObject<
+    Map,
+    `${FieldTypes.SELECT}`,
+    keyof T
+  >
+> = {
+  field: K;
   type: FieldTypes.SELECT;
   condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.SELECT][number];
   value: T[K][];
 };
 
-type MultiSelectFilterConfig<T, K extends keyof T = keyof T> = {
-  field: keyof T;
+type MultiSelectFilterConfig<
+  T,
+  Map extends Record<keyof T, FieldTypes>,
+  K extends keyof T = KeysHasSameValueInObject<
+    Map,
+    `${FieldTypes.MULTI_SELECT}`,
+    keyof T
+  >
+> = {
+  field: K;
   type: FieldTypes.MULTI_SELECT;
   condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.MULTI_SELECT][number];
   value: T[K] extends any[] ? T[K] : T[K][];
 };
 
-export type FilterConfig<T> =
-  | StringFilterConfig<T>
-  | NumberFilterConfig<T>
-  | DateFilterConfig<T>
-  | TimeFilterConfig<T>
-  | SelectFilterConfig<T>
-  | MultiSelectFilterConfig<T>;
+export type FilterConfig<T, Map extends Record<keyof T, FieldTypes>> =
+  | StringFilterConfig<T, Map>
+  | NumberFilterConfig<T, Map>
+  | DateFilterConfig<T, Map>
+  | TimeFilterConfig<T, Map>
+  | SelectFilterConfig<T, Map>
+  | MultiSelectFilterConfig<T, Map>;
 
-export class Filter<T> {
-  private filterConfig: FilterConfig<T>[];
+export class Filter<T, Map extends Record<keyof T, FieldTypes>> {
+  private filterConfig: FilterConfig<T, Map>[];
 
-  constructor(filterConfig: FilterConfig<T>[]) {
+  constructor(filterConfig: FilterConfig<T, Map>[]) {
     this.filterConfig = filterConfig;
   }
 
