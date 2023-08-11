@@ -176,7 +176,7 @@ export class CurrentLog extends Log {
   }
 }
 
-export const LOG_FIELD_TYPE_MAP: Record<keyof Log, FieldTypes> = {
+export const LOG_FIELD_TYPE_MAP = {
   id: FieldTypes.NUMBER,
   title: FieldTypes.STRING,
   status: FieldTypes.SELECT,
@@ -191,4 +191,4 @@ export const LOG_FIELD_TYPE_MAP: Record<keyof Log, FieldTypes> = {
   updateTimestamp: FieldTypes.DATE,
   startTimeText: FieldTypes.STRING,
   finishTimeText: FieldTypes.STRING,
-};
+} as const;
