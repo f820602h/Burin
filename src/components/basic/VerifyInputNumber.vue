@@ -9,12 +9,18 @@ const props = withDefaults(
     field: string;
     placeholder?: string;
     disabled?: boolean;
+    max?: number;
+    min?: number;
+    showError?: boolean;
   }>(),
   {
     defaultValue: 0,
     type: "text",
     placeholder: "",
     disabled: false,
+    max: undefined,
+    min: undefined,
+    showError: true,
   }
 );
 
@@ -31,9 +37,16 @@ const { value, errorMessage, meta } = useField(field, undefined, {
       :placeholder="placeholder"
       :disabled="disabled"
       :status="!!errorMessage ? 'error' : undefined"
+      :max="max"
+      :min="min"
       type="number"
     />
-    <slot name="error" :error-message="errorMessage" :meta="meta">
+    <slot
+      v-if="showError"
+      name="error"
+      :error-message="errorMessage"
+      :meta="meta"
+    >
       <div class="min-h-4 mt-1 text-xs text-right text-red-600 empty:hidden">
         <template v-if="!!errorMessage">{{ errorMessage }}</template>
       </div>

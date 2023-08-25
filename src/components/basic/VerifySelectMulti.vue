@@ -10,11 +10,17 @@ const props = withDefaults(
     options: SelectOption[];
     field: string;
     placeholder?: string;
+    showError?: boolean;
     onCreateOption?: (
       inputValue: string
     ) => string | number | Promise<string | number>;
   }>(),
-  { defaultValue: () => [], placeholder: "", onCreateOption: undefined }
+  {
+    defaultValue: () => [],
+    placeholder: "",
+    showError: true,
+    onCreateOption: undefined,
+  }
 );
 
 const field = toRef(props, "field");
@@ -129,6 +135,7 @@ async function createOption(): Promise<void> {
     </NSelect>
 
     <slot
+      v-if="showError"
       name="error"
       :adding-error-message="addingErrorMessage"
       :adding-meta="addingMeta"

@@ -1,5 +1,5 @@
 import type { KeysHasSameValueInObject } from "@/types/utility";
-import { FieldTypes } from "@/types/fieldType";
+import { type FieldTypeMap, FieldTypes } from "@/types/fieldType";
 
 export enum SorterDirection {
   ASC = "asc",
@@ -11,37 +11,37 @@ export const SORTER_DIRECTION_TEXT_MAP = {
   [SorterDirection.DESC]: "Descending",
 };
 
-type StringSorterConfig<T, TypeMap extends Record<keyof T, FieldTypes>> = {
+type StringSorterConfig<T, TypeMap extends FieldTypeMap<T>> = {
   field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.STRING}`, keyof T>;
   type: FieldTypes.STRING;
   direction: SorterDirection;
 };
 
-type NumberSorterConfig<T, TypeMap extends Record<keyof T, FieldTypes>> = {
+type NumberSorterConfig<T, TypeMap extends FieldTypeMap<T>> = {
   field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.NUMBER}`, keyof T>;
   type: FieldTypes.NUMBER;
   direction: SorterDirection;
 };
 
-type DateSorterConfig<T, TypeMap extends Record<keyof T, FieldTypes>> = {
+type DateSorterConfig<T, TypeMap extends FieldTypeMap<T>> = {
   field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.DATE}`, keyof T>;
   type: FieldTypes.DATE;
   direction: SorterDirection;
 };
 
-type TimeSorterConfig<T, TypeMap extends Record<keyof T, FieldTypes>> = {
+type TimeSorterConfig<T, TypeMap extends FieldTypeMap<T>> = {
   field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.TIME}`, keyof T>;
   type: FieldTypes.TIME;
   direction: SorterDirection;
 };
 
-export type SorterConfig<T, TypeMap extends Record<keyof T, FieldTypes>> =
+export type SorterConfig<T, TypeMap extends FieldTypeMap<T>> =
   | StringSorterConfig<T, TypeMap>
   | NumberSorterConfig<T, TypeMap>
   | DateSorterConfig<T, TypeMap>
   | TimeSorterConfig<T, TypeMap>;
 
-export class Sorter<T, TypeMap extends Record<keyof T, FieldTypes>> {
+export class Sorter<T, TypeMap extends FieldTypeMap<T>> {
   private sorterConfig: SorterConfig<T, TypeMap>[];
 
   constructor(sorterConfig: SorterConfig<T, TypeMap>[]) {
