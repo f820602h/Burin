@@ -2,7 +2,7 @@
 import { computed, watch } from "vue";
 import { object } from "yup";
 import { useForm } from "vee-validate";
-import { type FieldTypeMap } from "@/types/fieldType";
+import { FieldTypes, type FieldTypeMap } from "@/types/fieldType";
 import { SORTER_DIRECTION_TEXT_MAP } from "@/class/Sorter";
 import {
   type SortFields,
@@ -33,7 +33,7 @@ const fieldOptions = computed(() => {
 });
 
 const directionOptions = computed(() => {
-  return Object.entries(SORTER_DIRECTION_TEXT_MAP).map(([key, value]) => ({
+  return Object.typedEntries(SORTER_DIRECTION_TEXT_MAP).map(([key, value]) => ({
     label: value,
     value: key,
   }));
@@ -42,8 +42,16 @@ const directionOptions = computed(() => {
 watch(
   () => values[SortFieldsName.FIELD],
   (val) => {
-    const a = props.targetTypeMap[val];
-    setFieldValue(SortFieldsName.TYPE, a);
+    const type = props.targetTypeMap[val];
+    if (
+      !type ||
+      type === FieldTypes.SELECT ||
+      type === FieldTypes.MULTI_SELECT
+    ) {
+      throw new Error("Invalid Field");
+    }
+    setFieldValue(SortFieldsName.TYPE, type);
+    setFieldValue(SortFieldsName.DIRECTION, directionOptions.value[0].value);
   }
 );
 </script>

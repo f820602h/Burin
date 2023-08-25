@@ -7,4 +7,4 @@ export enum FieldTypes {
   TIME = "time",
 }
 
-export type FieldTypeMap<T> = Record<keyof T, FieldTypes>;
+export type FieldTypeMap<T> = Partial<Record<keyof T, FieldTypes>>;

@@ -2,7 +2,11 @@ import { string, number, date, array, object, tuple, mixed } from "yup";
 import type { StringSchema } from "yup";
 import type { SelectOption } from "naive-ui";
 import type { KeysHasSameValueInObject } from "@/types/utility";
-import { type FilterConfig, FIELD_TYPE_OPERATORS_MAP } from "@/class/Filter";
+import {
+  type FilterConfig,
+  FIELD_TYPE_OPERATORS_MAP,
+  FilterOperator,
+} from "@/class/Filter";
 import { type FieldValidation, MultiSelectFieldsName } from "./types";
 import { FieldTypes, type FieldTypeMap } from "@/types/fieldType";
 
@@ -40,13 +44,13 @@ export function createFilterSchema<T, TypeMap extends FieldTypeMap<T>>(
   config: FilterSchemaParams<T, TypeMap>
 ): FieldValidation {
   const filterFieldSchema: StringSchema = string()
-    .oneOf(Object.keys(config.targetTextMap))
-    .required("required fields");
+    .required("required fields")
+    .oneOf(Object.keys(config.targetTextMap));
 
   const filterTypeSchema: StringSchema = string()
     .when([FilterFieldsName.FIELD], ([val], schema) => {
       if (!val) return schema;
-      const field = val as keyof typeof config.targetTextMap;
+      const field = val as keyof typeof config.targetTypeMap;
       return schema.oneOf([config.targetTypeMap[field]], "invalid type");
     })
     .required("required fields");
@@ -54,8 +58,9 @@ export function createFilterSchema<T, TypeMap extends FieldTypeMap<T>>(
   const filterConditionSchema: StringSchema = string()
     .when([FilterFieldsName.FIELD], ([val], schema) => {
       if (!val) return schema;
-      const field = val as keyof typeof config.targetTextMap;
-      const options = FIELD_TYPE_OPERATORS_MAP[config.targetTypeMap[field]];
+      const field = val as keyof typeof config.targetTypeMap;
+      const fieldType = config.targetTypeMap[field] as FieldTypes;
+      const options = FIELD_TYPE_OPERATORS_MAP[fieldType];
       return schema.oneOf(options, "invalid operator");
     })
     .required("required fields");
@@ -63,9 +68,8 @@ export function createFilterSchema<T, TypeMap extends FieldTypeMap<T>>(
   const filterValueStringSchema = string()
     .max(40, "max 40 characters allowed")
     .when([FilterFieldsName.FIELD], ([val], schema) => {
-      const field = val as keyof typeof config.targetTextMap;
-      if (!field || config.targetTypeMap[field] !== FieldTypes.STRING)
-        return schema;
+      const field = val as keyof typeof config.targetTypeMap;
+      if (config.targetTypeMap[field] !== FieldTypes.STRING) return schema;
       return schema.required("required fields");
     });
 
@@ -73,39 +77,48 @@ export function createFilterSchema<T, TypeMap extends FieldTypeMap<T>>(
     .integer("must be integer")
     .positive("must be positive")
     .when([FilterFieldsName.FIELD], ([val], schema) => {
-      const field = val as keyof typeof config.targetTextMap;
-      if (!field || config.targetTypeMap[field] !== FieldTypes.NUMBER)
-        return schema;
+      const field = val as keyof typeof config.targetTypeMap;
+      if (config.targetTypeMap[field] !== FieldTypes.NUMBER) return schema;
       return schema.required("required fields");
     });
 
   const filterValueTimeSchema = tuple([
-    number().integer().positive().min(0).max(24).label("hours"),
-    number().integer().positive().min(0).max(60).label("minutes"),
-    number().integer().positive().min(0).max(60).label("seconds"),
+    number().integer().positive().min(0).max(23).label("hours"),
+    number().integer().positive().min(0).max(59).label("minutes"),
+    number().integer().positive().min(0).max(59).label("seconds"),
   ]).when([FilterFieldsName.FIELD], ([val], schema) => {
-    const field = val as keyof typeof config.targetTextMap;
-    if (!field || config.targetTypeMap[field] !== FieldTypes.TIME)
-      return schema;
+    const field = val as keyof typeof config.targetTypeMap;
+    if (config.targetTypeMap[field] !== FieldTypes.TIME) return schema;
     return schema.required("required fields");
   });
 
-  const filterValueDateSchema = date().when(
+  const filterValueDateSchema = mixed().when(
     [FilterFieldsName.FIELD],
     ([val], schema) => {
-      const field = val as keyof typeof config.targetTextMap;
-      if (!field || config.targetTypeMap[field] !== FieldTypes.DATE)
-        return schema;
-      return schema.required("required fields");
+      const field = val as keyof typeof config.targetTypeMap;
+      if (config.targetTypeMap[field] !== FieldTypes.DATE) return schema;
+      return schema
+        .concat(tuple([date().required()]))
+        .required("required fields")
+        .when([FilterFieldsName.CONDITION], ([condition], schema) => {
+          if (condition !== FilterOperator.BETWEEN) return schema;
+          return schema
+            .concat(tuple([date().required(), date().required()]))
+            .required("required fields")
+            .test(
+              "date-range",
+              "invalid date range",
+              (value) => value[0] < value[1]
+            );
+        });
     }
   );
 
   const filterValueSelectSchema = mixed().when(
     [FilterFieldsName.FIELD],
     ([val], schema) => {
-      const field = val as keyof typeof config.targetTextMap;
-      if (!field || config.targetTypeMap[field] !== FieldTypes.SELECT)
-        return schema;
+      const field = val as keyof typeof config.targetTypeMap;
+      if (config.targetTypeMap[field] !== FieldTypes.SELECT) return schema;
       const selectField =
         field as keyof typeof config.targetSelectFieldOptionsMap;
       return schema.oneOf(
@@ -119,14 +132,14 @@ export function createFilterSchema<T, TypeMap extends FieldTypeMap<T>>(
   const filterValueMultiSelectSchema = object({
     [FilterMultiSelectFieldsName.BINDING]: array()
       .of(number())
+      .min(1, "min 1 tag required")
       .max(5, "max 5 tags allowed"),
     [FilterMultiSelectFieldsName.ADDING]: string()
       .trim()
       .max(40, "max 40 characters allowed"),
   }).when([FilterFieldsName.FIELD], ([val], schema) => {
-    const field = val as keyof typeof config.targetTextMap;
-    if (!field || config.targetTypeMap[field] !== FieldTypes.MULTI_SELECT)
-      return schema;
+    const field = val as keyof typeof config.targetTypeMap;
+    if (config.targetTypeMap[field] !== FieldTypes.MULTI_SELECT) return schema;
     return schema.required("required fields");
   });
 

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { toRef } from "vue";
 import { useField } from "vee-validate";
-import { NSelect, type SelectOption } from "naive-ui";
+import { NTimePicker } from "naive-ui";
 
 const props = withDefaults(
   defineProps<{
-    defaultValue?: SelectOption["value"];
-    options: SelectOption[];
+    defaultValue?: number;
     field: string;
     placeholder?: string;
     disabled?: boolean;
@@ -27,15 +26,14 @@ const { value, errorMessage, meta } = useField(field, undefined, {
 </script>
 
 <template>
-  <div class="vee-field relative">
-    <NSelect
+  <div class="relative">
+    <NTimePicker
       v-model:value="value"
       :placeholder="placeholder"
       :disabled="disabled"
       :status="!!errorMessage ? 'error' : undefined"
-      :options="options"
+      :input-readonly="true"
     />
-
     <slot
       v-if="showError"
       name="error"
@@ -50,7 +48,7 @@ const { value, errorMessage, meta } = useField(field, undefined, {
 </template>
 
 <style scoped lang="scss">
-select {
+input {
   @apply block w-full h-9 px-2 border border-transparent rounded outline-none leading-9 bg-gray-700 duration-150 hover:border-primary-300 focus:border-primary-300;
 }
 </style>

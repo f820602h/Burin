@@ -11,6 +11,7 @@ import {
   WorkTagsFieldsName,
   workFieldsValidation,
 } from "@/validation/workField";
+import ModelBasic from "@/components/basic/ModelBasic.vue";
 import VerifyInput from "@/components/basic/VerifyInput.vue";
 import VerifySelectMulti from "@/components/basic/VerifySelectMulti.vue";
 
@@ -58,18 +59,9 @@ const startHandler = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <form
-    class="new-work-launcher relative w-full max-w-[500px] mt-[160px] mx-2"
-    @keypress.enter.prevent
-  >
-    <fieldset class="min-w-0 border-2 border-gray-400 rounded-lg">
-      <legend
-        class="relative -top-2 px-2 text-center text-3xl text-gray-300 font-bold"
-      >
-        New Work
-      </legend>
-
-      <div class="px-3 py-4">
+  <ModelBasic :title="'New Work'" @close="emit('close')">
+    <form class="flex flex-col px-3 py-4 min-h-full" @keypress.enter.prevent>
+      <fieldset>
         <div class="mb-3">
           <label
             :for="WorkFieldsName.TITLE"
@@ -100,32 +92,19 @@ const startHandler = handleSubmit(async (values) => {
             placeholder="Select Tags or Type Text"
           />
         </div>
+      </fieldset>
 
-        <div class="mt-5 text-center">
-          <button
-            class="btn w-full h-9 rounded text-lg font-bold"
-            @click="startHandler"
-            v-text="'START'"
-          />
-        </div>
+      <div class="mt-auto pt-5 text-center">
+        <button
+          class="btn w-full h-9 rounded text-lg font-bold"
+          @click="startHandler"
+          v-text="'START'"
+        />
       </div>
-    </fieldset>
-
-    <div
-      class="absolute top-2 -right-2 w-8 h-8 rounded-full flex-center-center text-white bg-black text-lg cursor-pointer"
-      @click="emit('close')"
-    >
-      <div class="icon-cancel" />
-    </div>
-  </form>
+    </form>
+  </ModelBasic>
 </template>
 
 <style scoped lang="scss">
 @import "@/scss/animation.scss";
-.new-work-launcher {
-  &::before {
-    @apply absolute -inset-2 top-2 -z-1 rounded-xl bg-black/100;
-    content: "";
-  }
-}
 </style>
