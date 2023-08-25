@@ -6,3 +6,5 @@ export enum FieldTypes {
   DATE = "date",
   TIME = "time",
 }
+
+export type FieldTypeMap<T> = Record<keyof T, FieldTypes>;

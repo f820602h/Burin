@@ -26,6 +26,7 @@ const logStore = useLogStore();
 
       <div class="flex-shrink-0 p-1 border-l border-slate-600">
         <div
+          aria-label="toggle-sidebar-button"
           class="tool-btn flex items-center"
           @click="$emit('toggle-sidebar')"
         >

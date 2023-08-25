@@ -7,8 +7,6 @@ import ErrorPage500 from "@/views/error/ErrorPage500.vue";
 
 import { pipelineGuard } from "./middleware/index";
 import { checkDailyStampMiddleware } from "./middleware/daily";
-
-import { dateFormatter } from "@/helper/dateFormatter";
 import { timestampCalculator } from "@/helper/timestampCalculator";
 
 const router: Router = createRouter({
@@ -16,8 +14,9 @@ const router: Router = createRouter({
   routes: [
     {
       path: "/",
-      name: "Progress",
-      redirect: { name: "Daily" },
+      redirect: {
+        name: "Today",
+      },
       meta: {
         middleware: [],
       },
@@ -38,14 +37,6 @@ const router: Router = createRouter({
       name: "Daily",
       component: DailyView,
       meta: {
-        title: (route) =>
-          dateFormatter(Number(route.params.date as string), {
-            month: "short",
-            day: "2-digit",
-            hour: undefined,
-            minute: undefined,
-            second: undefined,
-          }),
         middleware: [checkDailyStampMiddleware],
       },
     },

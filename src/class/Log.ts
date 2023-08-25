@@ -1,14 +1,20 @@
 import type { Category } from "@/class/Category";
-import { FieldTypes } from "@/class/Field/FieldTypeEnum";
+import { FieldTypes } from "@/types/fieldType";
 import { computed } from "vue";
 import { dateFormatter } from "@/helper/dateFormatter";
 import { useTimestamp } from "@vueuse/core";
 
 export enum LogStatus {
-  IN_PROGRESS = "in progress",
+  IN_PROGRESS = "in_progress",
   PAUSE = "pause",
   FINISH = "finish",
 }
+
+export const LOG_STATUS_TEXT_MAP = {
+  [LogStatus.IN_PROGRESS]: "In Progress",
+  [LogStatus.PAUSE]: "Pause",
+  [LogStatus.FINISH]: "Finish",
+};
 
 export interface LogId {
   id: number;
@@ -177,18 +183,30 @@ export class CurrentLog extends Log {
 }
 
 export const LOG_FIELD_TYPE_MAP = {
-  id: FieldTypes.NUMBER,
   title: FieldTypes.STRING,
   status: FieldTypes.SELECT,
   categories: FieldTypes.MULTI_SELECT,
   startTimestamp: FieldTypes.DATE,
   finishTimestamp: FieldTypes.DATE,
-  pauseTimestamp: FieldTypes.DATE,
   pauseTimes: FieldTypes.NUMBER,
   pauseDurationTime: FieldTypes.TIME,
   durationTime: FieldTypes.TIME,
+
+  id: FieldTypes.NUMBER,
+  pauseTimestamp: FieldTypes.DATE,
   createTimestamp: FieldTypes.DATE,
   updateTimestamp: FieldTypes.DATE,
   startTimeText: FieldTypes.STRING,
   finishTimeText: FieldTypes.STRING,
+} as const;
+
+export const LOG_FIELD_TEXT_MAP: Partial<Record<keyof Log, string>> = {
+  title: "Title",
+  status: "Status",
+  categories: "Tags",
+  startTimestamp: "Start Time",
+  finishTimestamp: "Finish Time",
+  pauseTimes: "Pause Count",
+  pauseDurationTime: "Pause Duration",
+  durationTime: "Work Duration",
 } as const;

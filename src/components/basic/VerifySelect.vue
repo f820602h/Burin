@@ -1,91 +1,49 @@
 <script setup lang="ts">
 import { toRef } from "vue";
 import { useField } from "vee-validate";
-
-export type SelectOption = {
-  label: string;
-  value: string | number;
-  disabled?: boolean;
-};
+import { NSelect, type SelectOption } from "naive-ui";
 
 const props = withDefaults(
   defineProps<{
-    defaultValue?: SelectOption["value"][];
-    field?: string;
+    defaultValue?: SelectOption["value"];
+    options: SelectOption[];
+    field: string;
     placeholder?: string;
     disabled?: boolean;
-    options: SelectOption[];
-    selectClassDefault?: string;
-    selectClassInvalid?: string;
-    selectClassSuccess?: string;
-    optionClassDefault?: string;
-    optionClassActive?: string;
   }>(),
   {
     defaultValue: undefined,
-    type: "",
-    field: "",
     placeholder: "",
     disabled: false,
-    selectClassDefault: "",
-    selectClassInvalid: "",
-    selectClassSuccess: "",
-    optionClassDefault: "",
-    optionClassActive: "",
   }
 );
 
 const field = toRef(props, "field");
-const { value, errorMessage, meta, handleChange, handleBlur } = useField(
-  field,
-  undefined,
-  { initialValue: props.defaultValue || [] }
-);
-
-// const selectClass = computed<string>(() => {
-//   if (errorMessage.value && !!props.selectClassInvalid) {
-//     return props.selectClassInvalid;
-//   } else if (meta.valid && !!props.selectClassSuccess) {
-//     return props.selectClassSuccess;
-//   } else {
-//     return props.selectClassDefault;
-//   }
-// });
+const { value, errorMessage, meta } = useField(field, undefined, {
+  initialValue: props.defaultValue,
+});
 </script>
 
 <template>
   <div class="vee-field relative">
-    <div></div>
-    <div v-for="selected in value" :key="selected">{{ selected }}</div>
-    <select
-      :id="field"
-      :name="field"
-      class="block w-full bg-transparent outline-none"
+    <NSelect
+      v-model:value="value"
       :placeholder="placeholder"
-      :value="value"
       :disabled="disabled"
-      :multiple="true"
-      @change="handleChange"
-      @blur="handleBlur"
-    >
-      <option
-        v-for="option in options"
-        :key="option.value"
-        :value="option.value"
-        :disabled="option.disabled"
-      >
-        {{ option.label }}
-      </option>
-    </select>
+      :status="!!errorMessage ? 'error' : undefined"
+      :options="options"
+    />
 
     <slot name="error" :error-message="errorMessage" :meta="meta">
-      <div class="min-h-4 mt-1 text-xs text-right text-red-600">
-        <template v-if="!!errorMessage && (meta.dirty || meta.touched)">
-          {{ errorMessage }}
-        </template>
+      <div class="min-h-4 mt-1 text-xs text-right text-red-600 empty:hidden">
+        <template v-if="!!errorMessage">{{ errorMessage }}</template>
       </div>
     </slot>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+select {
+  @apply block w-full h-9 px-2 border border-transparent rounded outline-none leading-9 bg-gray-700 duration-150 hover:border-primary-300 focus:border-primary-300;
+}
+</style>
