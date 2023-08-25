@@ -4,7 +4,7 @@ export default {
 };
 </script>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T">
 import { computed } from "vue";
 import isEqual from "lodash-es/isEqual";
 
@@ -16,7 +16,7 @@ type TagProps<T> = {
   deletable?: boolean;
 };
 
-const props = withDefaults(defineProps<TagProps<any>>(), {
+const props = withDefaults(defineProps<TagProps<T>>(), {
   label: "",
   value: undefined,
   modelValue: undefined,
@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<TagProps<any>>(), {
   deletable: false,
 });
 const emit = defineEmits<{
-  (e: "update:model-value", value: typeof props.value): void;
+  (e: "update:model-value", value: T | T[]): void;
 }>();
 
 const isActive = computed<boolean>(() => {
@@ -37,7 +37,7 @@ const isActive = computed<boolean>(() => {
 });
 
 function handleClick(): void {
-  if (!props.clickable) return;
+  if (!props.clickable || !props.value) return;
   if (Array.isArray(props.modelValue)) {
     const newValue = [...props.modelValue, props.value];
     emit("update:model-value", newValue);
@@ -47,7 +47,7 @@ function handleClick(): void {
 }
 
 function handleDelete(): void {
-  if (!props.deletable) return;
+  if (!props.deletable || !props.value) return;
   if (Array.isArray(props.modelValue)) {
     const newValue = props.modelValue.filter((v) => !isEqual(v, props.value));
     emit("update:model-value", newValue);
@@ -63,11 +63,11 @@ function handleDelete(): void {
     :class="{ isActive, 'cursor-pointer': clickable }"
     @click="handleClick"
   >
-    <span>{{ label }}</span>
+    <span class="truncate">{{ label }}</span>
     <span
       v-if="deletable"
       class="icon-cancel ml-1 cursor-pointer duration-150 hover:opacity-50"
-      @click="handleDelete"
+      @click.stop="handleDelete"
     ></span>
   </div>
 </template>

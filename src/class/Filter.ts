@@ -1,40 +1,44 @@
-import type { KeysHasSameValueInObject } from "@/types";
-import { FieldTypes } from "./FieldTypeEnum";
+import type { KeysHasSameValueInObject } from "@/types/utility";
+import { FieldTypes, type FieldTypeMap } from "../types/fieldType";
 
 export enum FilterOperator {
-  IS = "IS",
-  IS_NOT = "IS NOT",
-  CONTAINS = "CONTAINS",
-  NOT_CONTAIN = "NOT CONTAIN",
-  BEFORE = "BEFORE",
-  AFTER = "AFTER",
-  BETWEEN = "BETWEEN",
-  EQUAL = "=",
-  NOT_EQUAL = "≠",
-  GREATER_THAN = ">",
-  LESS_THAN = "<",
-  GREATER_THAN_OR_EQUAL = "≥",
-  LESS_THAN_OR_EQUAL = "≤",
+  IS = "is",
+  IS_NOT = "isNot",
+  CONTAINS = "contains",
+  NOT_CONTAIN = "notContain",
+  BEFORE = "before",
+  AFTER = "after",
+  BETWEEN = "between",
+  EQUAL = "equal",
+  NOT_EQUAL = "notEqual",
+  GREATER_THAN = "greaterThan",
+  LESS_THAN = "lessThan",
+  GREATER_THAN_OR_EQUAL = "greaterThanOrEqual",
+  LESS_THAN_OR_EQUAL = "lessThanOrEqual",
 }
 
-export const FIELD_TYPE_CONDITION_OPERATORS_MAP = {
+export const FILTER_OPERATORS_TEXT_MAP = {
+  [FilterOperator.IS_NOT]: "IS NOT",
+  [FilterOperator.IS]: "IS",
+  [FilterOperator.CONTAINS]: "CONTAINS",
+  [FilterOperator.NOT_CONTAIN]: "NOT CONTAIN",
+  [FilterOperator.BEFORE]: "BEFORE",
+  [FilterOperator.AFTER]: "AFTER",
+  [FilterOperator.BETWEEN]: "BETWEEN",
+  [FilterOperator.EQUAL]: "=",
+  [FilterOperator.NOT_EQUAL]: "≠",
+  [FilterOperator.GREATER_THAN]: ">",
+  [FilterOperator.LESS_THAN]: "<",
+  [FilterOperator.GREATER_THAN_OR_EQUAL]: "≥",
+  [FilterOperator.LESS_THAN_OR_EQUAL]: "≤",
+};
+
+export const FIELD_TYPE_OPERATORS_MAP = {
   [FieldTypes.STRING]: [
     FilterOperator.IS,
     FilterOperator.IS_NOT,
     FilterOperator.CONTAINS,
     FilterOperator.NOT_CONTAIN,
-  ],
-  [FieldTypes.SELECT]: [FilterOperator.IS, FilterOperator.IS_NOT],
-  [FieldTypes.MULTI_SELECT]: [
-    FilterOperator.CONTAINS,
-    FilterOperator.NOT_CONTAIN,
-  ],
-  [FieldTypes.DATE]: [
-    FilterOperator.IS,
-    FilterOperator.IS_NOT,
-    FilterOperator.BEFORE,
-    FilterOperator.AFTER,
-    FilterOperator.BETWEEN,
   ],
   [FieldTypes.NUMBER]: [
     FilterOperator.EQUAL,
@@ -52,29 +56,41 @@ export const FIELD_TYPE_CONDITION_OPERATORS_MAP = {
     FilterOperator.GREATER_THAN_OR_EQUAL,
     FilterOperator.LESS_THAN_OR_EQUAL,
   ],
+  [FieldTypes.DATE]: [
+    FilterOperator.IS,
+    FilterOperator.IS_NOT,
+    FilterOperator.BEFORE,
+    FilterOperator.AFTER,
+    FilterOperator.BETWEEN,
+  ],
+  [FieldTypes.SELECT]: [FilterOperator.IS, FilterOperator.IS_NOT],
+  [FieldTypes.MULTI_SELECT]: [
+    FilterOperator.CONTAINS,
+    FilterOperator.NOT_CONTAIN,
+  ],
 } as const;
 
-type StringFilterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
-  field: KeysHasSameValueInObject<Map, `${FieldTypes.STRING}`, keyof T>;
+type StringFilterConfig<T, TypeMap extends FieldTypeMap<T>> = {
+  field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.STRING}`, keyof T>;
   type: FieldTypes.STRING;
-  condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.STRING][number];
+  condition: typeof FIELD_TYPE_OPERATORS_MAP[FieldTypes.STRING][number];
   value: string;
 };
 
-type NumberFilterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
-  field: KeysHasSameValueInObject<Map, `${FieldTypes.NUMBER}`, keyof T>;
+type NumberFilterConfig<T, TypeMap extends FieldTypeMap<T>> = {
+  field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.NUMBER}`, keyof T>;
   type: FieldTypes.NUMBER;
-  condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.NUMBER][number];
+  condition: typeof FIELD_TYPE_OPERATORS_MAP[FieldTypes.NUMBER][number];
   value: number;
 };
 
-type DateFilterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
-  field: KeysHasSameValueInObject<Map, `${FieldTypes.DATE}`, keyof T>;
+type DateFilterConfig<T, TypeMap extends FieldTypeMap<T>> = {
+  field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.DATE}`, keyof T>;
   type: FieldTypes.DATE;
 } & (
   | {
       condition: Exclude<
-        typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.DATE][number],
+        typeof FIELD_TYPE_OPERATORS_MAP[FieldTypes.DATE][number],
         FilterOperator.BETWEEN
       >;
       value: number;
@@ -85,55 +101,55 @@ type DateFilterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
     }
 );
 
-type TimeFilterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
-  field: KeysHasSameValueInObject<Map, `${FieldTypes.TIME}`, keyof T>;
+type TimeFilterConfig<T, TypeMap extends FieldTypeMap<T>> = {
+  field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.TIME}`, keyof T>;
   type: FieldTypes.TIME;
-  condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.TIME][number];
+  condition: typeof FIELD_TYPE_OPERATORS_MAP[FieldTypes.TIME][number];
   value: number;
 };
 
 type SelectFilterConfig<
   T,
-  Map extends Record<keyof T, FieldTypes>,
+  TypeMap extends FieldTypeMap<T>,
   K extends keyof T = KeysHasSameValueInObject<
-    Map,
+    TypeMap,
     `${FieldTypes.SELECT}`,
     keyof T
   >
 > = {
   field: K;
   type: FieldTypes.SELECT;
-  condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.SELECT][number];
+  condition: typeof FIELD_TYPE_OPERATORS_MAP[FieldTypes.SELECT][number];
   value: T[K][];
 };
 
 type MultiSelectFilterConfig<
   T,
-  Map extends Record<keyof T, FieldTypes>,
+  TypeMap extends FieldTypeMap<T>,
   K extends keyof T = KeysHasSameValueInObject<
-    Map,
+    TypeMap,
     `${FieldTypes.MULTI_SELECT}`,
     keyof T
   >
 > = {
   field: K;
   type: FieldTypes.MULTI_SELECT;
-  condition: typeof FIELD_TYPE_CONDITION_OPERATORS_MAP[FieldTypes.MULTI_SELECT][number];
+  condition: typeof FIELD_TYPE_OPERATORS_MAP[FieldTypes.MULTI_SELECT][number];
   value: T[K] extends any[] ? T[K] : T[K][];
 };
 
-export type FilterConfig<T, Map extends Record<keyof T, FieldTypes>> =
-  | StringFilterConfig<T, Map>
-  | NumberFilterConfig<T, Map>
-  | DateFilterConfig<T, Map>
-  | TimeFilterConfig<T, Map>
-  | SelectFilterConfig<T, Map>
-  | MultiSelectFilterConfig<T, Map>;
+export type FilterConfig<T, TypeMap extends FieldTypeMap<T>> =
+  | StringFilterConfig<T, TypeMap>
+  | NumberFilterConfig<T, TypeMap>
+  | DateFilterConfig<T, TypeMap>
+  | TimeFilterConfig<T, TypeMap>
+  | SelectFilterConfig<T, TypeMap>
+  | MultiSelectFilterConfig<T, TypeMap>;
 
-export class Filter<T, Map extends Record<keyof T, FieldTypes>> {
-  private filterConfig: FilterConfig<T, Map>[];
+export class Filter<T, TypeMap extends FieldTypeMap<T>> {
+  private filterConfig: FilterConfig<T, TypeMap>[];
 
-  constructor(filterConfig: FilterConfig<T, Map>[]) {
+  constructor(filterConfig: FilterConfig<T, TypeMap>[]) {
     this.filterConfig = filterConfig;
   }
 

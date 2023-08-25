@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { useRoute } from "vue-router";
+import { ref, watch } from "vue";
+import type { ViewExpose } from "@/types/viewExpose";
 import { useElementSize } from "@vueuse/core";
 import { useLoadingStore } from "./stores/loading";
 import { useBreakPoint } from "./composables/useBreakPoint";
@@ -11,90 +11,130 @@ import HeaderToolBar from "./components/global/header/HeaderToolBar.vue";
 import MenuSidebar from "@/components/global/sidebar/MenuSidebar.vue";
 import UserLogger from "@/components/global/logger/UserLogger.vue";
 import NewWorkLauncher from "./components/global/NewWorkLauncher.vue";
-import { NSpin } from "naive-ui";
+import { NConfigProvider, NSpin, darkTheme } from "naive-ui";
 
-const route = useRoute();
 const loadingStore = useLoadingStore();
 const breakpoints = useBreakPoint();
 
 const headerRef = ref<HTMLElement | null>(null);
 const { height: headerHeight } = useElementSize(headerRef);
-const titleRef = ref<HTMLElement | null>(null);
-const { height: titleHeight } = useElementSize(titleRef);
+const viewHeaderRef = ref<HTMLElement | null>(null);
+const { height: viewHeaderHeight } = useElementSize(viewHeaderRef);
+const viewBodyRef = ref<ViewExpose | null>(null);
 
 const isUserLoggerShow = ref<boolean>(false);
 const isNewWorkLauncherShow = ref<boolean>(false);
-const isSidebarShow = ref<boolean>(breakpoints.greaterOrEqual("lg").value);
+const isSidebarShow = ref<boolean>(false);
 
-const pageTitle = computed<string>(() => {
-  if (typeof route.meta?.title === "string") {
-    return route.meta.title;
-  } else if (typeof route.meta?.title === "function") {
-    return route.meta.title(route);
-  } else return "";
-});
+watch(
+  () => breakpoints.greaterOrEqual("lg").value,
+  (value) => (isSidebarShow.value = value),
+  { immediate: true }
+);
 
 function closeSidebarOnClickOutside(): void {
   if (!breakpoints.greaterOrEqual("lg").value) {
     isSidebarShow.value = false;
   }
 }
+
+const themeOverrides = {
+  Input: {
+    color: "rgb(55 65 81)",
+    colorFocus: "rgb(55 65 81)",
+    colorActive: "rgb(55 65 81)",
+    borderHover: "1px solid #866cd1",
+    borderFocus: "1px solid #866cd1",
+    borderActive: "1px solid #866cd1",
+    boxShadowActive: "0 0 8px 0 rgba(134, 108, 209, 0.4)",
+    boxShadowFocus: "0 0 8px 0 rgba(134, 108, 209, 0.4)",
+  },
+  Select: {
+    peers: {
+      InternalSelection: {
+        color: "rgb(55 65 81)",
+        colorActive: "rgb(55 65 81)",
+        borderHover: "1px solid #866cd1",
+        borderFocus: "1px solid #866cd1",
+        borderActive: "1px solid #866cd1",
+        boxShadowActive: "0 0 8px 0 rgba(134, 108, 209, 0.4)",
+        boxShadowFocus: "0 0 8px 0 rgba(134, 108, 209, 0.4)",
+      },
+    },
+  },
+  // ...
+};
 </script>
 
 <template>
-  <div class="root">
-    <header ref="headerRef">
-      <HeaderToolBar
-        @toggle-sidebar="isSidebarShow = !isSidebarShow"
-        @toggle-logger="isUserLoggerShow = !isUserLoggerShow"
-        @toggle-launcher="isNewWorkLauncherShow! = !isNewWorkLauncherShow"
-      />
-    </header>
+  <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
+    <div class="root">
+      <header ref="headerRef">
+        <HeaderToolBar
+          @toggle-sidebar="isSidebarShow = !isSidebarShow"
+          @toggle-logger="isUserLoggerShow = !isUserLoggerShow"
+          @toggle-launcher="isNewWorkLauncherShow! = !isNewWorkLauncherShow"
+        />
+      </header>
 
-    <main class="relative flex">
-      <CollapseHTransition>
-        <aside
-          v-if="isSidebarShow"
-          v-on-click-outside="closeSidebarOnClickOutside"
+      <main class="relative flex">
+        <CollapseHTransition>
+          <aside
+            v-if="isSidebarShow"
+            v-on-click-outside="[
+              closeSidebarOnClickOutside,
+              { ignore: [`[aria-label='toggle-sidebar-button']`] },
+            ]"
+          >
+            <nav><MenuSidebar /></nav>
+          </aside>
+        </CollapseHTransition>
+
+        <section>
+          <n-spin
+            :show="loadingStore._getIsLoading"
+            size="medium"
+            stroke="#7c3aed"
+          >
+            <div ref="viewHeaderRef" class="view-header">
+              <div v-if="viewBodyRef?.title" class="flex items-center">
+                <div class="view-header__deco" />
+                <h2 class="view-header__title">{{ viewBodyRef.title }}</h2>
+                <p class="view-header__subtitle">{{ viewBodyRef?.subtitle }}</p>
+              </div>
+
+              <div v-if="viewBodyRef?.extra?.length">
+                <template v-for="(node, i) in viewBodyRef.extra" :key="i">
+                  <component :is="node" />
+                </template>
+              </div>
+            </div>
+
+            <router-view v-slot="{ Component }">
+              <component :is="Component" ref="viewBodyRef" class="view-body" />
+            </router-view>
+          </n-spin>
+        </section>
+      </main>
+
+      <footer></footer>
+
+      <Transition name="fade">
+        <BlurMask v-if="isUserLoggerShow" class="justify-center items-center">
+          <UserLogger @close="isUserLoggerShow = false" />
+        </BlurMask>
+      </Transition>
+
+      <Transition name="fade">
+        <BlurMask
+          v-if="isNewWorkLauncherShow"
+          class="justify-center items-start"
         >
-          <nav><MenuSidebar /></nav>
-        </aside>
-      </CollapseHTransition>
-
-      <section>
-        <n-spin
-          :show="loadingStore._getIsLoading"
-          size="medium"
-          stroke="#7c3aed"
-        >
-          <div v-if="pageTitle" ref="titleRef" class="main__title">
-            <h2 class="pl-3 border-l-4 border-primary-400 font-bold text-lg">
-              {{ pageTitle }}
-            </h2>
-          </div>
-
-          <router-view class="main__content" />
-        </n-spin>
-      </section>
-    </main>
-
-    <footer></footer>
-
-    <Transition name="fade">
-      <BlurMask v-if="isUserLoggerShow" class="justify-center items-center">
-        <UserLogger @close="isUserLoggerShow = false" />
-      </BlurMask>
-    </Transition>
-
-    <Transition name="fade">
-      <BlurMask
-        v-if="isNewWorkLauncherShow"
-        class="justify-center items-start pt-[160px] px-3"
-      >
-        <NewWorkLauncher @close="isNewWorkLauncherShow = false" />
-      </BlurMask>
-    </Transition>
-  </div>
+          <NewWorkLauncher @close="isNewWorkLauncherShow = false" />
+        </BlurMask>
+      </Transition>
+    </div>
+  </n-config-provider>
 </template>
 
 <style lang="scss" scoped>
@@ -102,7 +142,7 @@ function closeSidebarOnClickOutside(): void {
 .root {
   --rootBackgroundColor: theme("colors.gray.900");
   --headerHeight: v-bind(headerHeight + "px");
-  --titleHeight: v-bind(titleHeight + "px");
+  --viewHeaderHeight: v-bind(viewHeaderHeight + "px");
   --asideWidth: 240px;
 
   min-width: 360px;
@@ -130,14 +170,30 @@ section {
   @apply min-w-full lg:min-w-0 flex-1;
   min-height: calc(100vh - var(--headerHeight));
 
-  .main__title {
-    @apply sticky z-10 flex items-center px-3 md:px-5 pt-3 pb-2 mb-2;
+  .view-header {
+    @apply sticky z-10 flex justify-between items-center px-3 md:px-5 pt-3 pb-2 mb-2;
     top: var(--headerHeight);
     background-color: var(--rootBackgroundColor);
+
+    &:empty {
+      display: none;
+    }
+
+    &__deco {
+      @apply border-l-4 border-primary-400 h-6;
+    }
+
+    &__title {
+      @apply pl-3 font-bold text-lg;
+    }
+
+    &__subtitle {
+      @apply ml-3 px-[6px] py-[2px] rounded-sm text-xs font-bold bg-primary-500 empty:hidden;
+    }
   }
 
-  .main__content {
-    @apply max-w-[560px] md:max-w-[768px] lg:max-w-[1024px] mx-auto px-3 md:px-5 overflow-hidden;
+  .view-body {
+    @apply max-w-[560px] md:max-w-[768px] lg:max-w-[1024px] mx-auto px-3 pt-15 md:px-5 overflow-hidden;
   }
 }
 </style>

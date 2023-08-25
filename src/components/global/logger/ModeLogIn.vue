@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { object } from "yup";
 import { useForm } from "vee-validate";
-import { userFieldsValidation } from "@/system/fieldValidation";
+import { userFieldsValidation } from "@/validation/userField";
 import { useUserStore } from "@/stores/user";
 import { useLogStore } from "@/stores/log";
 import { useCategoryStore } from "@/stores/category";

@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import { toRef } from "vue";
 import { useField } from "vee-validate";
-import { NInput } from "naive-ui";
+import { NInputNumber } from "naive-ui";
 
 const props = withDefaults(
   defineProps<{
-    defaultValue?: string;
-    type: "text" | "textarea" | "password" | undefined;
+    defaultValue?: number;
     field: string;
     placeholder?: string;
     disabled?: boolean;
   }>(),
   {
-    defaultValue: "",
+    defaultValue: 0,
     type: "text",
     placeholder: "",
     disabled: false,
@@ -27,12 +26,12 @@ const { value, errorMessage, meta } = useField(field, undefined, {
 
 <template>
   <div class="relative">
-    <NInput
+    <NInputNumber
       v-model:value="value"
       :placeholder="placeholder"
       :disabled="disabled"
-      :type="type"
       :status="!!errorMessage ? 'error' : undefined"
+      type="number"
     />
     <slot name="error" :error-message="errorMessage" :meta="meta">
       <div class="min-h-4 mt-1 text-xs text-right text-red-600 empty:hidden">

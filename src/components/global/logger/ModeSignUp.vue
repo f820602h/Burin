@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { object } from "yup";
 import { useForm } from "vee-validate";
-import { userFieldsValidation } from "@/system/fieldValidation";
+import { userFieldsValidation } from "@/validation/userField";
 import LoggerField from "./LoggerField.vue";
 import { axiosUserSignUp } from "@/api/user/index";
 import { ref } from "vue";

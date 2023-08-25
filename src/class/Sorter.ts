@@ -1,45 +1,50 @@
-import type { KeysHasSameValueInObject } from "@/types";
-import { FieldTypes } from "./FieldTypeEnum";
+import type { KeysHasSameValueInObject } from "@/types/utility";
+import { FieldTypes } from "@/types/fieldType";
 
 export enum SorterDirection {
-  ASC = "Ascending",
-  DESC = "Descending",
+  ASC = "asc",
+  DESC = "desc",
 }
 
-type StringSorterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
-  field: KeysHasSameValueInObject<Map, `${FieldTypes.STRING}`, keyof T>;
+export const SORTER_DIRECTION_TEXT_MAP = {
+  [SorterDirection.ASC]: "Ascending",
+  [SorterDirection.DESC]: "Descending",
+};
+
+type StringSorterConfig<T, TypeMap extends Record<keyof T, FieldTypes>> = {
+  field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.STRING}`, keyof T>;
   type: FieldTypes.STRING;
   direction: SorterDirection;
 };
 
-type NumberSorterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
-  field: KeysHasSameValueInObject<Map, `${FieldTypes.NUMBER}`, keyof T>;
+type NumberSorterConfig<T, TypeMap extends Record<keyof T, FieldTypes>> = {
+  field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.NUMBER}`, keyof T>;
   type: FieldTypes.NUMBER;
   direction: SorterDirection;
 };
 
-type DateSorterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
-  field: KeysHasSameValueInObject<Map, `${FieldTypes.DATE}`, keyof T>;
+type DateSorterConfig<T, TypeMap extends Record<keyof T, FieldTypes>> = {
+  field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.DATE}`, keyof T>;
   type: FieldTypes.DATE;
   direction: SorterDirection;
 };
 
-type TimeSorterConfig<T, Map extends Record<keyof T, FieldTypes>> = {
-  field: KeysHasSameValueInObject<Map, `${FieldTypes.TIME}`, keyof T>;
+type TimeSorterConfig<T, TypeMap extends Record<keyof T, FieldTypes>> = {
+  field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.TIME}`, keyof T>;
   type: FieldTypes.TIME;
   direction: SorterDirection;
 };
 
-export type SorterConfig<T, Map extends Record<keyof T, FieldTypes>> =
-  | StringSorterConfig<T, Map>
-  | NumberSorterConfig<T, Map>
-  | DateSorterConfig<T, Map>
-  | TimeSorterConfig<T, Map>;
+export type SorterConfig<T, TypeMap extends Record<keyof T, FieldTypes>> =
+  | StringSorterConfig<T, TypeMap>
+  | NumberSorterConfig<T, TypeMap>
+  | DateSorterConfig<T, TypeMap>
+  | TimeSorterConfig<T, TypeMap>;
 
-export class Sorter<T, Map extends Record<keyof T, FieldTypes>> {
-  private sorterConfig: SorterConfig<T, Map>[];
+export class Sorter<T, TypeMap extends Record<keyof T, FieldTypes>> {
+  private sorterConfig: SorterConfig<T, TypeMap>[];
 
-  constructor(sorterConfig: SorterConfig<T, Map>[]) {
+  constructor(sorterConfig: SorterConfig<T, TypeMap>[]) {
     this.sorterConfig = sorterConfig;
   }
 

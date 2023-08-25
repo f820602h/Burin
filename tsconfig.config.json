@@ -1,9 +1,10 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.node.json",
+  "extends": "@vue/tsconfig/tsconfig.json",
   "include": ["vite.config.*"],
   "compilerOptions": {
+    "downlevelIteration": true,
     "composite": true,
     "types": ["node"],
-    "lib": ["es2017", "dom"]
+    "lib": ["es2017", "dom", "dom.iterable"]
   }
 }
