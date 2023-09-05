@@ -16,33 +16,36 @@ defineProps<{
       class="flex justify-between items-end mb-1 bg-violet-900/30"
     >
       <div class="flex">
-        <button
+        <ButtonBasic
           v-if="log.status === LogStatus.IN_PROGRESS"
-          class="btn p-2 rounded-sm mr-1"
-          @click="log?.pause"
+          class="flex-shrink-0 p-2 !rounded-sm mr-1"
+          @click="log?.pause()"
         >
           <div class="icon-pause" />
-        </button>
+        </ButtonBasic>
 
-        <button
+        <ButtonBasic
           v-else-if="log.status === LogStatus.PAUSE"
-          class="btn p-2 rounded-sm mr-1"
-          @click="log?.resume"
+          class="flex-shrink-0 p-2 !rounded-sm mr-1"
+          @click="log?.resume()"
         >
           <div class="icon-play relative left-[2px]" />
-        </button>
+        </ButtonBasic>
 
-        <button class="btn p-2 rounded-sm mr-1" @click="log?.finish">
+        <ButtonBasic
+          class="flex-shrink-0 p-2 !rounded-sm mr-1"
+          @click="log?.finish()"
+        >
           <div class="icon-stop" />
-        </button>
+        </ButtonBasic>
       </div>
 
       <AlarmSetter />
     </div>
 
     <div
-      class="log-card relative p-2 rounded-sm bg-gray-700 overflow-hidden"
-      :class="{ 'bg-primary': log instanceof CurrentLog }"
+      class="log-card relative p-2 rounded-sm overflow-hidden"
+      :class="log instanceof CurrentLog ? 'bg-primary' : 'bg-gray-700'"
     >
       <div class="flex justify-between items-center">
         <div
@@ -52,30 +55,28 @@ defineProps<{
         </div>
 
         <div
-          class="flex-shrink-0 px-2 py-[2px] rounded-sm text-sm lg:text-3xl font-bold bg-white/20"
+          class="flex-shrink-0 flex-center-center px-2 py-[2px] rounded-sm text-sm lg:text-3xl font-bold bg-white/20"
         >
           <span>{{
             durationTimeFormatter(
               log instanceof CurrentLog ? log.duringTime : log.durationTime
             ).hoursText
           }}</span>
-          <span class="hidden lg:inline text-sm mx-1">hour</span>
-          <span class="inline lg:hidden mx-1">:</span>
+          <span class="text-xs lg:text-lg mx-1">:</span>
 
           <span>{{
             durationTimeFormatter(
               log instanceof CurrentLog ? log.duringTime : log.durationTime
             ).minutesText
           }}</span>
-          <span class="hidden lg:inline text-sm mx-1">min</span>
-          <span class="inline lg:hidden mx-1">:</span>
+          <span class="text-xs lg:text-lg mx-1">:</span>
 
           <span>{{
             durationTimeFormatter(
               log instanceof CurrentLog ? log.duringTime : log.durationTime
             ).secondsText
           }}</span>
-          <span class="hidden lg:inline text-sm mx-1">sec</span>
+          <!-- <span class="text-xs lg:text-xs ml-1">:</span> -->
         </div>
       </div>
 

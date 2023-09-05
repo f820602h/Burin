@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import type { ScreenConfig, ScreenConfigModesMap } from "./types";
 import ModeLogIn from "./ModeLogIn.vue";
 import ModeSignUp from "./ModeSignUp.vue";
-import ButtonNormal from "@/components/basic/ButtonNormal.vue";
+import ButtonBasic from "@/components/basic/ButtonBasic.vue";
 
 const emit = defineEmits<{ (e: "close"): void }>();
 
@@ -66,7 +66,7 @@ function changeMode(mode: keyof ScreenConfigModesMap): void {
         <div class="button-module">
           <div class="rounded-t-2xl rounded-b-md bg-zinc-600">
             <div class="flex-between-center px-5 pt-3 pb-3">
-              <ButtonNormal
+              <ButtonBasic
                 theme="cancel"
                 :text="currentScreenConfig.cancelButtonText"
                 :width="100"
@@ -74,7 +74,7 @@ function changeMode(mode: keyof ScreenConfigModesMap): void {
                 class="font-bold"
                 @click="currentScreenConfig.cancelButtonCallback"
               />
-              <ButtonNormal
+              <ButtonBasic
                 theme="confirm"
                 :text="currentScreenConfig.confirmButtonText"
                 :width="100"

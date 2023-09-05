@@ -15,9 +15,9 @@ const {
 
 <template>
   <div class="flex overflow-hidden">
-    <button class="btn btn p-2 rounded-sm" @click="toggleAlarm">
+    <ButtonBasic class="p-2 !rounded-sm" @click="toggleAlarm">
       <div :class="alarmSetting.isAlarmOn ? 'icon-bell-off' : 'icon-bell'" />
-    </button>
+    </ButtonBasic>
 
     <CollapseHTransition
       :duration="150"
@@ -30,25 +30,25 @@ const {
         </div>
 
         <div class="flex-shrink-0 flex font-bold">
-          <button
-            class="flex-shrink-0 btn p-2 rounded-sm"
+          <ButtonBasic
+            class="flex-shrink-0 p-2 !rounded-sm"
             :disabled="intervalDecreaseDisabled"
             @click="decreaseIntervalIndex"
           >
             <div class="icon-down" />
-          </button>
+          </ButtonBasic>
 
           <div class="flex-shrink-0 flex items-center px-2 text-xs">
             {{ intervalMinutes }} mins
           </div>
 
-          <button
-            class="flex-shrink-0 btn p-2 rounded-sm"
+          <ButtonBasic
+            class="flex-shrink-0 p-2 !rounded-sm"
             :disabled="intervalIncreaseDisabled"
             @click="increaseIntervalIndex"
           >
             <div class="icon-top" />
-          </button>
+          </ButtonBasic>
         </div>
       </div>
     </CollapseHTransition>

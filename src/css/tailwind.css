@@ -55,7 +55,4 @@ html, body {
     display: none;
   }
 
-  .btn {
-    @apply flex justify-center items-center cursor-pointer transition duration-200 bg-primary hover:bg-primary-400 disabled:bg-gray-300 disabled:text-slate-400 disabled:cursor-not-allowed;
-  }
 }

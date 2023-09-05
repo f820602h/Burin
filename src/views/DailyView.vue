@@ -9,8 +9,8 @@ import { useLogPanelStore } from "@/stores/logPanel";
 import { timestampCalculator } from "@/helper/timestampCalculator";
 import { dateFormatter } from "@/helper/dateFormatter";
 import LogCard from "@/components/common/LogCard.vue";
-import BlurMask from "@/components/common/BlurMask.vue";
-import PanelCreator from "@/components/common/PanelCreator.vue";
+import LogPanelCreator from "@/components/common/LogPanelCreator.vue";
+import ButtonBasic from "@/components/basic/ButtonBasic.vue";
 
 const route = useRoute();
 const logStore = useLogStore();
@@ -62,12 +62,9 @@ defineExpose<ViewExpose>({
   }),
   extra: [
     h(
-      "button",
-      {
-        class: "btn px-2 py-1 rounded text-sm font-bold",
-        onClick: () => (isPanelCreatorShow.value = true),
-      },
-      "+ View Panel"
+      ButtonBasic,
+      { size: "sm", onClick: () => (isPanelCreatorShow.value = true) },
+      () => "+ View Panel"
     ),
   ],
 });
@@ -98,15 +95,11 @@ defineExpose<ViewExpose>({
     </template>
     <template v-else> Empty </template>
 
-    <Transition name="fade">
-      <BlurMask v-if="isPanelCreatorShow" class="justify-center items-start">
-        <PanelCreator @close="isPanelCreatorShow = false" />
-      </BlurMask>
-    </Transition>
+    <LogPanelCreator
+      :show="isPanelCreatorShow"
+      @close="isPanelCreatorShow = false"
+    />
   </div>
 </template>
 
-<style lang="scss" scoped>
-@import "@/scss/animation.scss";
-</style>
-@/stores/logPanel
+<style lang="scss" scoped></style>

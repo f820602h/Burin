@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { toRef } from "vue";
+import { toRef, computed } from "vue";
 import { useField } from "vee-validate";
 import { NTimePicker } from "naive-ui";
 
 const props = withDefaults(
   defineProps<{
-    defaultValue?: number;
+    defaultValue?: [number, number];
     field: string;
     placeholder?: string;
     disabled?: boolean;
     showError?: boolean;
   }>(),
   {
-    defaultValue: undefined,
+    defaultValue: () => [0, 0],
     placeholder: "",
     disabled: false,
     showError: true,
@@ -20,28 +20,67 @@ const props = withDefaults(
 );
 
 const field = toRef(props, "field");
-const { value, errorMessage, meta } = useField(field, undefined, {
-  initialValue: props.defaultValue,
+const {
+  value: hour,
+  errorMessage: hourErrorMessage,
+  meta: hourMeta,
+  handleChange: hourHandleChange,
+} = useField(`${field.value}[0]`, undefined, {
+  initialValue: props.defaultValue?.[0],
 });
+const {
+  value: minute,
+  errorMessage: minuteErrorMessage,
+  meta: minuteMeta,
+  handleChange: minuteHandleChange,
+} = useField(`${field.value}[1]`, undefined, {
+  initialValue: props.defaultValue?.[1],
+});
+
+const anyError = computed<boolean>(() => {
+  return !!hourErrorMessage.value || !!minuteErrorMessage.value;
+});
+
+const formattedValue = computed<string>(() => {
+  const hourText = String(hour.value).padStart(2, "0");
+  const minuteText = String(minute.value).padStart(2, "0");
+  return `${hourText}:${minuteText}`;
+});
+
+function onUpdate(value: number | null, formattedValue: string | null): void {
+  hourHandleChange(Number(formattedValue?.split(":")[0]));
+  minuteHandleChange(Number(formattedValue?.split(":")[1]));
+}
 </script>
 
 <template>
   <div class="relative">
     <NTimePicker
-      v-model:value="value"
+      :formatted-value="formattedValue"
       :placeholder="placeholder"
       :disabled="disabled"
-      :status="!!errorMessage ? 'error' : undefined"
+      :status="!!anyError ? 'error' : undefined"
       :input-readonly="true"
+      :format="'HH:mm'"
+      :value-format="'HH:mm'"
+      :time-zone="Intl.DateTimeFormat().resolvedOptions().timeZone"
+      :on-update:value="onUpdate"
     />
     <slot
       v-if="showError"
       name="error"
-      :error-message="errorMessage"
-      :meta="meta"
+      :hour-error-message="hourErrorMessage"
+      :hour-meta="hourMeta"
+      :minute-error-message="minuteErrorMessage"
+      :minute-meta="minuteMeta"
     >
       <div class="min-h-4 mt-1 text-xs text-right text-red-600 empty:hidden">
-        <template v-if="!!errorMessage">{{ errorMessage }}</template>
+        <template v-if="!!hourErrorMessage">
+          {{ hourErrorMessage }}
+        </template>
+        <template v-else-if="!!minuteErrorMessage">
+          {{ minuteErrorMessage }}
+        </template>
       </div>
     </slot>
   </div>

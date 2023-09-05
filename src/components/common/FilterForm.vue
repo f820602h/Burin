@@ -19,10 +19,20 @@ import VerifyInputNumber from "@/components/basic/VerifyInputNumber.vue";
 import VerifyInputTime from "@/components/basic/VerifyInputTime.vue";
 import VerifySelect from "@/components/basic/VerifySelect.vue";
 import VerifySelectMulti from "@/components/basic/VerifySelectMulti.vue";
+import { Filter } from "@/class/Filter";
 
-const props = defineProps<FilterSchemaParams<T, TypeMap>>();
+const emit = defineEmits<{
+  (e: "close"): void;
+  (e: "update:filters", filters: Filter<T, TypeMap>[]): void;
+}>();
 
-const { values, setFieldValue, errors } = useForm<FilterFields<T, TypeMap>>({
+const props = defineProps<
+  { filters: Filter<T, TypeMap>[] } & FilterSchemaParams<T, TypeMap>
+>();
+
+const { handleSubmit, values, setFieldValue, errors } = useForm<
+  FilterFields<T, TypeMap>
+>({
   validationSchema: object({
     ...createFilterSchema<T, TypeMap>({
       targetTypeMap: props.targetTypeMap,
@@ -31,6 +41,19 @@ const { values, setFieldValue, errors } = useForm<FilterFields<T, TypeMap>>({
       targetMultiSelectFieldOptionsMap: props.targetMultiSelectFieldOptionsMap,
     }),
   }),
+});
+
+const addFilterHandler = handleSubmit((values) => {
+  emit("update:filters", [...(props.filters || []), new Filter(values)]);
+  emit("close");
+});
+
+const durationValueError = computed(() => {
+  const error = Object.entries(errors.value).find(
+    ([key]) =>
+      key.indexOf(`${FilterFieldsName.VALUE}.${FieldTypes.DURATION}`) > -1
+  );
+  return error?.[1];
 });
 
 const timeValueError = computed(() => {
@@ -84,7 +107,7 @@ watch(
 </script>
 
 <template>
-  <form class="pt-2 pb-3 px-2 rounded bg-gray-800" @keypress.enter.prevent>
+  <form @keypress.enter.prevent>
     <div class="mb-2">
       <label class="block mb-1 text-gray-500 text-xs font-bold">
         <div class="first-letter:text-base uppercase">
@@ -127,7 +150,9 @@ watch(
           placeholder="Type a Value"
         />
       </template>
-      <template v-else-if="values[FilterFieldsName.TYPE] === FieldTypes.TIME">
+      <template
+        v-else-if="values[FilterFieldsName.TYPE] === FieldTypes.DURATION"
+      >
         <div class="flex items-end mt-2 mb-1">
           <label class="w-full text-gray-500 text-xs font-bold">
             <div class="first-letter:text-base uppercase">hours</div>
@@ -142,7 +167,7 @@ watch(
 
         <div class="flex items-end">
           <VerifyInputNumber
-            :field="`${FilterFieldsName.VALUE}.${FieldTypes.TIME}[0]`"
+            :field="`${FilterFieldsName.VALUE}.${FieldTypes.DURATION}[0]`"
             :max="23"
             :min="0"
             :show-error="false"
@@ -151,7 +176,7 @@ watch(
           />
           <VerifyInputNumber
             class="mx-2"
-            :field="`${FilterFieldsName.VALUE}.${FieldTypes.TIME}[1]`"
+            :field="`${FilterFieldsName.VALUE}.${FieldTypes.DURATION}[1]`"
             :max="59"
             :min="0"
             :show-error="false"
@@ -159,7 +184,7 @@ watch(
             placeholder="0"
           />
           <VerifyInputNumber
-            :field="`${FilterFieldsName.VALUE}.${FieldTypes.TIME}[2]`"
+            :field="`${FilterFieldsName.VALUE}.${FieldTypes.DURATION}[2]`"
             :max="59"
             :min="0"
             :show-error="false"
@@ -169,27 +194,39 @@ watch(
         </div>
 
         <div class="mt-1 text-xs text-right text-red-600 empty:hidden">
-          {{ timeValueError }}
+          {{ durationValueError }}
         </div>
       </template>
 
-      <template v-else-if="values[FilterFieldsName.TYPE] === FieldTypes.DATE">
-        <VerifyInputTime
-          class="mt-2"
-          :field="`${FilterFieldsName.VALUE}.${FieldTypes.DATE}[0]`"
-          placeholder="Designate a Time"
-        />
-
+      <template v-else-if="values[FilterFieldsName.TYPE] === FieldTypes.TIME">
         <template
           v-if="values[FilterFieldsName.CONDITION] === FilterOperator.BETWEEN"
         >
           <VerifyInputTime
             class="mt-2"
-            :field="`${FilterFieldsName.VALUE}.${FieldTypes.DATE}[1]`"
+            :field="`${FilterFieldsName.VALUE}.${FieldTypes.TIME}.${FilterOperator.BETWEEN}[0]`"
+            placeholder="Designate a Time"
+          />
+          <VerifyInputTime
+            class="mt-2"
+            :field="`${FilterFieldsName.VALUE}.${FieldTypes.TIME}.${FilterOperator.BETWEEN}[1]`"
             placeholder="Designate a Time"
           />
         </template>
-        {{ errors }}
+
+        <template v-else>
+          <VerifyInputTime
+            class="mt-2"
+            :field="`${FilterFieldsName.VALUE}.${FieldTypes.TIME}.${
+              values[FilterFieldsName.CONDITION]
+            }`"
+            placeholder="Designate a Time"
+          />
+        </template>
+
+        <div class="mt-1 text-xs text-right text-red-600 empty:hidden">
+          {{ timeValueError }}
+        </div>
       </template>
 
       <template v-else-if="values[FilterFieldsName.TYPE] === FieldTypes.SELECT">
@@ -212,8 +249,17 @@ watch(
         />
       </template>
     </div>
+
+    <div class="flex mt-3">
+      <ButtonBasic
+        class="w-full mr-2"
+        :theme="'primary-outline'"
+        :text="'CANCEL'"
+        @click="emit('close')"
+      />
+      <ButtonBasic class="w-full" :text="'ADD'" @click="addFilterHandler" />
+    </div>
   </form>
 </template>
 
 <style scoped></style>
-@/types/fieldType

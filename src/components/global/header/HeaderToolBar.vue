@@ -81,25 +81,28 @@ const logStore = useLogStore();
       </router-link>
 
       <div v-if="logStore.currentLog" class="hidden md:flex text-gray-300">
-        <button
+        <ButtonBasic
           v-if="logStore.currentLog.status === LogStatus.IN_PROGRESS"
-          class="btn p-2 rounded-sm mx-1"
-          @click="logStore.currentLog?.pause"
+          class="p-2 !rounded-sm mx-1"
+          @click="logStore.currentLog?.pause()"
         >
           <div class="icon-pause" />
-        </button>
+        </ButtonBasic>
 
-        <button
+        <ButtonBasic
           v-else-if="logStore.currentLog.status === LogStatus.PAUSE"
-          class="btn p-2 rounded-sm mx-1"
-          @click="logStore.currentLog?.resume"
+          class="p-2 !rounded-sm mx-1"
+          @click="logStore.currentLog?.resume()"
         >
           <div class="icon-play relative left-[2px]" />
-        </button>
+        </ButtonBasic>
 
-        <button class="btn p-2 rounded-sm" @click="logStore.currentLog?.finish">
+        <ButtonBasic
+          class="p-2 !rounded-sm"
+          @click="logStore.currentLog?.finish()"
+        >
           <div class="icon-stop" />
-        </button>
+        </ButtonBasic>
       </div>
     </div>
 

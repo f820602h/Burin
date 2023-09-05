@@ -3,8 +3,8 @@ export enum FieldTypes {
   NUMBER = "number",
   SELECT = "select",
   MULTI_SELECT = "multi-select",
-  DATE = "date",
   TIME = "time",
+  DURATION = "duration",
 }
 
 export type FieldTypeMap<T> = Partial<Record<keyof T, FieldTypes>>;

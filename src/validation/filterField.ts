@@ -1,4 +1,4 @@
-import { string, number, date, array, object, tuple, mixed } from "yup";
+import { string, number, object, tuple, mixed, array } from "yup";
 import type { StringSchema } from "yup";
 import type { SelectOption } from "naive-ui";
 import type { KeysHasSameValueInObject } from "@/types/utility";
@@ -65,95 +65,108 @@ export function createFilterSchema<T, TypeMap extends FieldTypeMap<T>>(
     })
     .required("required fields");
 
-  const filterValueStringSchema = string()
-    .max(40, "max 40 characters allowed")
-    .when([FilterFieldsName.FIELD], ([val], schema) => {
-      const field = val as keyof typeof config.targetTypeMap;
-      if (config.targetTypeMap[field] !== FieldTypes.STRING) return schema;
-      return schema.required("required fields");
-    });
-
-  const filterValueNumberSchema = number()
-    .integer("must be integer")
-    .positive("must be positive")
-    .when([FilterFieldsName.FIELD], ([val], schema) => {
-      const field = val as keyof typeof config.targetTypeMap;
-      if (config.targetTypeMap[field] !== FieldTypes.NUMBER) return schema;
-      return schema.required("required fields");
-    });
-
-  const filterValueTimeSchema = tuple([
-    number().integer().positive().min(0).max(23).label("hours"),
-    number().integer().positive().min(0).max(59).label("minutes"),
-    number().integer().positive().min(0).max(59).label("seconds"),
-  ]).when([FilterFieldsName.FIELD], ([val], schema) => {
-    const field = val as keyof typeof config.targetTypeMap;
-    if (config.targetTypeMap[field] !== FieldTypes.TIME) return schema;
-    return schema.required("required fields");
-  });
-
-  const filterValueDateSchema = mixed().when(
-    [FilterFieldsName.FIELD],
-    ([val], schema) => {
-      const field = val as keyof typeof config.targetTypeMap;
-      if (config.targetTypeMap[field] !== FieldTypes.DATE) return schema;
-      return schema
-        .concat(tuple([date().required()]))
+  const filterValueSchema = object().when(
+    [FilterFieldsName.FIELD, FilterFieldsName.CONDITION],
+    ([fieldVal, conditionVal], schema) => {
+      if (!fieldVal || !conditionVal) return schema;
+      const field = fieldVal as keyof typeof config.targetTypeMap;
+      const condition = conditionVal as FilterOperator;
+      const positiveIntegerSchema = number()
         .required("required fields")
-        .when([FilterFieldsName.CONDITION], ([condition], schema) => {
-          if (condition !== FilterOperator.BETWEEN) return schema;
-          return schema
-            .concat(tuple([date().required(), date().required()]))
+        .integer("must be integer")
+        .positive("must be positive");
+
+      if (config.targetTypeMap[field] === FieldTypes.STRING) {
+        return schema.shape({
+          [FieldTypes.STRING]: string()
             .required("required fields")
-            .test(
-              "date-range",
-              "invalid date range",
-              (value) => value[0] < value[1]
-            );
+            .max(40, "max 40 characters allowed"),
         });
-    }
-  );
+      } else if (config.targetTypeMap[field] === FieldTypes.NUMBER) {
+        return schema.shape({
+          [FieldTypes.NUMBER]: positiveIntegerSchema,
+        });
+      } else if (config.targetTypeMap[field] === FieldTypes.DURATION) {
+        return schema.shape({
+          [FieldTypes.DURATION]: tuple([
+            positiveIntegerSchema.min(0).max(23).label("hours"),
+            positiveIntegerSchema.min(0).max(59).label("minutes"),
+            positiveIntegerSchema.min(0).max(59).label("seconds"),
+          ]).required("required fields"),
+        });
+      } else if (config.targetTypeMap[field] === FieldTypes.TIME) {
+        const timeSetSchema = tuple([
+          positiveIntegerSchema
+            .min(0)
+            .max(23)
+            .label("hour")
+            .required("required fields"),
+          positiveIntegerSchema
+            .min(0)
+            .max(59)
+            .label("minute")
+            .required("required fields"),
+        ]).required("required fields");
 
-  const filterValueSelectSchema = mixed().when(
-    [FilterFieldsName.FIELD],
-    ([val], schema) => {
-      const field = val as keyof typeof config.targetTypeMap;
-      if (config.targetTypeMap[field] !== FieldTypes.SELECT) return schema;
-      const selectField =
-        field as keyof typeof config.targetSelectFieldOptionsMap;
-      return schema.oneOf(
-        config.targetSelectFieldOptionsMap[selectField].map(
+        if (condition === FilterOperator.BETWEEN) {
+          return schema.shape({
+            [FieldTypes.TIME]: object({
+              [FilterOperator.BETWEEN]: tuple([
+                timeSetSchema.label("start"),
+                timeSetSchema.label("end"),
+              ])
+                .required("required fields")
+                .test(
+                  "range",
+                  "invalid date range",
+                  ([[sh, sm], [eh, em]]) => sh < eh || (sh === eh && sm < em)
+                ),
+            }),
+          });
+        } else {
+          return schema.shape({
+            [FieldTypes.TIME]: object({
+              [condition]: timeSetSchema,
+            }),
+          });
+        }
+      } else if (config.targetTypeMap[field] === FieldTypes.SELECT) {
+        const selectField =
+          field as keyof typeof config.targetSelectFieldOptionsMap;
+        const options = config.targetSelectFieldOptionsMap[selectField].map(
           (option) => option.value
-        )
-      );
+        );
+
+        return schema.shape({
+          [FieldTypes.SELECT]: mixed().oneOf(options),
+        });
+      } else if (config.targetTypeMap[field] === FieldTypes.MULTI_SELECT) {
+        const multiSelectField =
+          field as keyof typeof config.targetMultiSelectFieldOptionsMap;
+        const options = config.targetMultiSelectFieldOptionsMap[
+          multiSelectField
+        ].map((option) => option.value);
+
+        return schema.shape({
+          [FieldTypes.MULTI_SELECT]: object({
+            [FilterMultiSelectFieldsName.BINDING]: array()
+              .of(mixed().oneOf(options))
+              .min(1, "min 1 tag required")
+              .max(5, "max 5 tags allowed"),
+            [FilterMultiSelectFieldsName.ADDING]: string()
+              .trim()
+              .max(40, "max 40 characters allowed"),
+          }),
+        });
+      }
+      return schema;
     }
   );
-
-  const filterValueMultiSelectSchema = object({
-    [FilterMultiSelectFieldsName.BINDING]: array()
-      .of(number())
-      .min(1, "min 1 tag required")
-      .max(5, "max 5 tags allowed"),
-    [FilterMultiSelectFieldsName.ADDING]: string()
-      .trim()
-      .max(40, "max 40 characters allowed"),
-  }).when([FilterFieldsName.FIELD], ([val], schema) => {
-    const field = val as keyof typeof config.targetTypeMap;
-    if (config.targetTypeMap[field] !== FieldTypes.MULTI_SELECT) return schema;
-    return schema.required("required fields");
-  });
 
   return {
     [FilterFieldsName.FIELD]: filterFieldSchema,
     [FilterFieldsName.TYPE]: filterTypeSchema,
     [FilterFieldsName.CONDITION]: filterConditionSchema,
-    [FilterFieldsName.VALUE]: object({
-      [FieldTypes.STRING]: filterValueStringSchema,
-      [FieldTypes.NUMBER]: filterValueNumberSchema,
-      [FieldTypes.TIME]: filterValueTimeSchema,
-      [FieldTypes.DATE]: filterValueDateSchema,
-      [FieldTypes.SELECT]: filterValueSelectSchema,
-      [FieldTypes.MULTI_SELECT]: filterValueMultiSelectSchema,
-    }),
+    [FilterFieldsName.VALUE]: filterValueSchema,
   };
 }

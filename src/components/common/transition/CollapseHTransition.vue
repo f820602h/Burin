@@ -26,28 +26,29 @@ type KeyframeObject = {
 
 type AnimateOptions = { duration: number; easing: string };
 
-const props = defineProps({
-  duration: {
-    type: Number,
-    default: 250,
-  },
-  easingEnter: {
-    type: String,
-    default: "ease-in-out",
-  },
-  easingLeave: {
-    type: String,
-    default: "ease-in-out",
-  },
-  opacityClosed: {
-    type: Number,
-    default: 0,
-  },
-  opacityOpened: {
-    type: Number,
-    default: 1,
-  },
-});
+const emit = defineEmits<{
+  (e: "before-enter"): void;
+  (e: "before-leave"): void;
+  (e: "after-enter"): void;
+  (e: "after-leave"): void;
+}>();
+
+const props = withDefaults(
+  defineProps<{
+    duration?: number;
+    easingEnter?: string;
+    easingLeave?: string;
+    opacityClosed?: number;
+    opacityOpened?: number;
+  }>(),
+  {
+    duration: 250,
+    easingEnter: "ease-in-out",
+    easingLeave: "ease-in-out",
+    opacityClosed: 0,
+    opacityOpened: 0,
+  }
+);
 
 const closed = "0px";
 
@@ -152,7 +153,15 @@ function leaveTransition(element: Element, done: () => void): void {
 </script>
 
 <template>
-  <Transition :css="false" @enter="enterTransition" @leave="leaveTransition">
+  <Transition
+    :css="false"
+    @enter="enterTransition"
+    @leave="leaveTransition"
+    @before-enter="emit('before-enter')"
+    @before-leave="emit('before-leave')"
+    @after-enter="emit('after-enter')"
+    @after-leave="emit('after-leave')"
+  >
     <slot />
   </Transition>
 </template>
