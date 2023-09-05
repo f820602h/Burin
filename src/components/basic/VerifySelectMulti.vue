@@ -122,13 +122,13 @@ async function createOption(): Promise<void> {
               <div class="text-sm truncate">{{ adding }}</div>
             </div>
 
-            <button
+            <ButtonBasic
+              class="flex-shrink-0 ml-1"
+              :size="'sm'"
+              :text="'+ Add'"
               :disabled="anyError"
-              class="btn flex-shrink-0 ml-1 px-3 py-1 rounded text-sm font-bold"
               @click="createOption"
-            >
-              + Add
-            </button>
+            />
           </div>
         </template>
       </template>

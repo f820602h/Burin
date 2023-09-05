@@ -6,7 +6,7 @@ import { NInput } from "naive-ui";
 const props = withDefaults(
   defineProps<{
     defaultValue?: string;
-    type: "text" | "textarea" | "password" | undefined;
+    type?: "text" | "textarea" | "password";
     field: string;
     placeholder?: string;
     disabled?: boolean;

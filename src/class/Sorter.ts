@@ -23,9 +23,9 @@ type NumberSorterConfig<T, TypeMap extends FieldTypeMap<T>> = {
   direction: SorterDirection;
 };
 
-type DateSorterConfig<T, TypeMap extends FieldTypeMap<T>> = {
-  field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.DATE}`, keyof T>;
-  type: FieldTypes.DATE;
+type DurationSorterConfig<T, TypeMap extends FieldTypeMap<T>> = {
+  field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.DURATION}`, keyof T>;
+  type: FieldTypes.DURATION;
   direction: SorterDirection;
 };
 
@@ -38,59 +38,43 @@ type TimeSorterConfig<T, TypeMap extends FieldTypeMap<T>> = {
 export type SorterConfig<T, TypeMap extends FieldTypeMap<T>> =
   | StringSorterConfig<T, TypeMap>
   | NumberSorterConfig<T, TypeMap>
-  | DateSorterConfig<T, TypeMap>
+  | DurationSorterConfig<T, TypeMap>
   | TimeSorterConfig<T, TypeMap>;
 
 export class Sorter<T, TypeMap extends FieldTypeMap<T>> {
-  private sorterConfig: SorterConfig<T, TypeMap>[];
+  private sorterConfig: SorterConfig<T, TypeMap>;
+  cb: (memberA: T, memberB: T) => number;
 
-  constructor(sorterConfig: SorterConfig<T, TypeMap>[]) {
+  constructor(sorterConfig: SorterConfig<T, TypeMap>) {
     this.sorterConfig = sorterConfig;
-  }
+    this.cb = (memberA, memberB) => {
+      const { field, type, direction } = this.sorterConfig;
 
-  execute(list: T[]): T[] {
-    if (!this.sorterConfig.length || !list.length) return list;
-
-    const listShallowCopy = [...list];
-    const sorterFn: ((memberA: T, memberB: T) => number)[] = [];
-
-    this.sorterConfig.forEach((config) => {
-      const { field, type, direction } = config;
       switch (type) {
-        case FieldTypes.STRING:
-          sorterFn.push((memberA: T, memberB: T) => {
-            const aValue = memberA[field];
-            const bValue = memberB[field];
-            if (typeof aValue !== "string" || typeof bValue !== "string") {
-              return 0;
-            }
-            return direction === SorterDirection.ASC
-              ? aValue.localeCompare(bValue)
-              : bValue.localeCompare(aValue);
-          });
-          break;
+        case FieldTypes.STRING: {
+          const aValue = memberA[field];
+          const bValue = memberB[field];
+          if (typeof aValue !== "string" || typeof bValue !== "string") {
+            return 0;
+          }
+          return direction === SorterDirection.ASC
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        }
+
         case FieldTypes.NUMBER:
-        case FieldTypes.TIME:
-        case FieldTypes.DATE:
-          sorterFn.push((memberA: T, memberB: T) => {
-            const aValue = memberA[field];
-            const bValue = memberB[field];
-            if (typeof aValue !== "number" || typeof bValue !== "number") {
-              return 0;
-            }
-            return direction === SorterDirection.ASC
-              ? aValue - bValue
-              : bValue - aValue;
-          });
-          break;
+        case FieldTypes.DURATION:
+        case FieldTypes.TIME: {
+          const aValue = memberA[field];
+          const bValue = memberB[field];
+          if (typeof aValue !== "number" || typeof bValue !== "number") {
+            return 0;
+          }
+          return direction === SorterDirection.ASC
+            ? aValue - bValue
+            : bValue - aValue;
+        }
       }
-    });
-
-    listShallowCopy.sort((a, b) => {
-      const compareFn = sorterFn.find((fn) => fn(a, b));
-      return compareFn ? compareFn(a, b) : 0;
-    });
-
-    return listShallowCopy;
+    };
   }
 }

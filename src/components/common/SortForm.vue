@@ -12,6 +12,8 @@ import {
 } from "@/validation/sortField";
 import VerifySelect from "@/components/basic/VerifySelect.vue";
 
+const emit = defineEmits<{ (e: "close"): void }>();
+
 const props = defineProps<SortSchemaParams<T, TypeMap>>();
 
 const { values, setFieldValue } = useForm<
@@ -57,7 +59,7 @@ watch(
 </script>
 
 <template>
-  <div class="pt-2 pb-3 px-2 rounded bg-gray-800">
+  <form @keypress.enter.prevent>
     <div class="mb-2">
       <label class="block mb-1 text-gray-500 text-xs font-bold">
         <div class="first-letter:text-base uppercase">
@@ -84,7 +86,17 @@ watch(
         placeholder="Choose Sort Direction"
       />
     </div>
-  </div>
+
+    <div class="flex mt-3">
+      <ButtonBasic
+        class="w-full mr-2"
+        :theme="'primary-outline'"
+        :text="'CANCEL'"
+        @click="emit('close')"
+      />
+      <ButtonBasic class="w-full" :text="'ADD'" />
+    </div>
+  </form>
 </template>
 
 <style scoped></style>

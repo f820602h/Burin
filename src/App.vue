@@ -125,20 +125,15 @@ const themeOverrides = {
         </BlurMask>
       </Transition>
 
-      <Transition name="fade">
-        <BlurMask
-          v-if="isNewWorkLauncherShow"
-          class="justify-center items-start"
-        >
-          <NewWorkLauncher @close="isNewWorkLauncherShow = false" />
-        </BlurMask>
-      </Transition>
+      <NewWorkLauncher
+        :show="isNewWorkLauncherShow"
+        @close="isNewWorkLauncherShow = false"
+      />
     </div>
   </n-config-provider>
 </template>
 
 <style lang="scss" scoped>
-@import "@/scss/animation.scss";
 .root {
   --rootBackgroundColor: theme("colors.gray.900");
   --headerHeight: v-bind(headerHeight + "px");

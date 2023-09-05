@@ -1,6 +1,6 @@
 import type { FieldTypeMap } from "@/types/fieldType";
-import { Filter, type FilterConfig } from "./Filter";
-import { Sorter, type SorterConfig } from "./Sorter";
+import { Filter } from "./Filter";
+import { Sorter } from "./Sorter";
 import type { Log, CurrentLog, LOG_FIELD_TYPE_MAP } from "./Log";
 
 interface PanelId {
@@ -10,8 +10,8 @@ interface PanelId {
 interface PanelInfo<T, TypeMap extends FieldTypeMap<T>> extends PanelId {
   title: string;
   order: number;
-  filterConfig: FilterConfig<T, TypeMap>[];
-  sorterConfig: SorterConfig<T, TypeMap>[];
+  filters: Filter<T, TypeMap>[];
+  sorters: Sorter<T, TypeMap>[];
 }
 
 export interface PanelCompleteInfo<T, TypeMap extends FieldTypeMap<T>>
@@ -24,27 +24,37 @@ export class Panel<T, TypeMap extends FieldTypeMap<T>> {
   id: number;
   title: string;
   order: number;
-  filterConfig: FilterConfig<T, TypeMap>[];
-  sorterConfig: SorterConfig<T, TypeMap>[];
+  filters: Filter<T, TypeMap>[];
+  sorters: Sorter<T, TypeMap>[];
   createTimestamp: number;
   updateTimestamp: number;
-  Filter: Filter<T, TypeMap>;
-  Sorter: Sorter<T, TypeMap>;
 
   constructor(panel: PanelCompleteInfo<T, TypeMap>) {
     this.id = panel.id;
     this.title = panel.title;
     this.order = panel.order;
-    this.filterConfig = panel.filterConfig;
-    this.sorterConfig = panel.sorterConfig;
+    this.filters = panel.filters;
+    this.sorters = panel.sorters;
     this.createTimestamp = panel.createTimestamp;
     this.updateTimestamp = panel.updateTimestamp;
-    this.Filter = new Filter(this.filterConfig);
-    this.Sorter = new Sorter(this.sorterConfig);
   }
 
   calculator(list: T[]): T[] {
-    return this.Sorter.execute(this.Filter.execute(list));
+    if (!list.length) return list;
+
+    return list
+      .filter((member) => {
+        if (!this.filters.length) return true;
+        return this.filters.every((filter) => {
+          return filter.cb(member);
+        });
+      })
+      .sort((memberA, memberB) => {
+        if (!this.sorters.length) return 0;
+        return this.sorters.reduce((result, sorter) => {
+          return result || sorter.cb(memberA, memberB);
+        }, 0);
+      });
   }
 }
 

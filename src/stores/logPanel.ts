@@ -4,20 +4,22 @@ import { FilterOperator } from "@/class/Filter";
 import { SorterDirection } from "@/class/Sorter";
 import { LogPanel } from "@/class/Panel";
 import { LogStatus } from "@/class/Log";
+import { Filter } from "@/class/Filter";
+import { Sorter } from "@/class/Sorter";
 
 const inProgressPanel: LogPanel = new LogPanel({
   id: -2,
   order: -2,
   title: "IN PROGRESS",
-  filterConfig: [
-    {
+  filters: [
+    new Filter({
       field: "status",
       type: FieldTypes.SELECT,
-      condition: FilterOperator.IS,
-      value: [LogStatus.FINISH],
-    },
+      condition: FilterOperator.IS_NOT,
+      value: { [FieldTypes.SELECT]: [LogStatus.FINISH] },
+    }),
   ],
-  sorterConfig: [],
+  sorters: [],
   updateTimestamp: 0,
   createTimestamp: 0,
 });
@@ -25,20 +27,22 @@ const historyPanel: LogPanel = new LogPanel({
   id: -1,
   order: -1,
   title: "HISTORY",
-  filterConfig: [
-    {
+  filters: [
+    new Filter({
       field: "status",
       type: FieldTypes.SELECT,
       condition: FilterOperator.IS,
-      value: [LogStatus.FINISH],
-    },
+      value: {
+        [FieldTypes.SELECT]: [LogStatus.FINISH],
+      },
+    }),
   ],
-  sorterConfig: [
-    {
+  sorters: [
+    new Sorter({
       field: "startTimestamp",
-      type: FieldTypes.DATE,
+      type: FieldTypes.TIME,
       direction: SorterDirection.DESC,
-    },
+    }),
   ],
   updateTimestamp: 0,
   createTimestamp: 0,
