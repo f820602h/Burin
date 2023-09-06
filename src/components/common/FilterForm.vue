@@ -51,14 +51,14 @@ const addFilterHandler = handleSubmit((values) => {
 const durationValueError = computed(() => {
   const error = Object.entries(errors.value).find(
     ([key]) =>
-      key.indexOf(`${FilterFieldsName.VALUE}.${FieldTypes.DURATION}`) > -1
+      key.indexOf(`${FilterFieldsName.VALUE}.${FieldTypes.DURATION}`) > -1,
   );
   return error?.[1];
 });
 
 const timeValueError = computed(() => {
   const error = Object.entries(errors.value).find(
-    ([key]) => key.indexOf(`${FilterFieldsName.VALUE}.${FieldTypes.TIME}`) > -1
+    ([key]) => key.indexOf(`${FilterFieldsName.VALUE}.${FieldTypes.TIME}`) > -1,
   );
   return error?.[1];
 });
@@ -102,7 +102,7 @@ watch(
     if (!type) throw new Error("Invalid Field");
     setFieldValue(FilterFieldsName.TYPE, type);
     setFieldValue(FilterFieldsName.CONDITION, operatorOptions.value[0].value);
-  }
+  },
 );
 </script>
 

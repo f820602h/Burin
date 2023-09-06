@@ -59,21 +59,21 @@ defineProps<{
         >
           <span>{{
             durationTimeFormatter(
-              log instanceof CurrentLog ? log.duringTime : log.durationTime
+              log instanceof CurrentLog ? log.duringTime : log.durationTime,
             ).hoursText
           }}</span>
           <span class="text-xs lg:text-lg mx-1">:</span>
 
           <span>{{
             durationTimeFormatter(
-              log instanceof CurrentLog ? log.duringTime : log.durationTime
+              log instanceof CurrentLog ? log.duringTime : log.durationTime,
             ).minutesText
           }}</span>
           <span class="text-xs lg:text-lg mx-1">:</span>
 
           <span>{{
             durationTimeFormatter(
-              log instanceof CurrentLog ? log.duringTime : log.durationTime
+              log instanceof CurrentLog ? log.duringTime : log.durationTime,
             ).secondsText
           }}</span>
           <!-- <span class="text-xs lg:text-xs ml-1">:</span> -->

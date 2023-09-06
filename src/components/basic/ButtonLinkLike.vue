@@ -11,7 +11,7 @@ const props = withDefaults(
     text: "click me",
     theme: "primary",
     disabled: false,
-  }
+  },
 );
 </script>
 

@@ -29,11 +29,13 @@ const historyPanel: LogPanel = new LogPanel({
   title: "HISTORY",
   filters: [
     new Filter({
-      field: "status",
-      type: FieldTypes.SELECT,
-      condition: FilterOperator.IS,
+      field: "startTimestamp",
+      type: FieldTypes.TIME,
+      condition: FilterOperator.BEFORE,
       value: {
-        [FieldTypes.SELECT]: [LogStatus.FINISH],
+        [FieldTypes.TIME]: {
+          [FilterOperator.BEFORE]: [3, 4],
+        },
       },
     }),
   ],

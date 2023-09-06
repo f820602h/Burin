@@ -12,7 +12,7 @@ const props = withDefaults(
     placeholder?: string;
     showError?: boolean;
     onCreateOption?: (
-      inputValue: string
+      inputValue: string,
     ) => string | number | Promise<string | number>;
   }>(),
   {
@@ -20,7 +20,7 @@ const props = withDefaults(
     placeholder: "",
     showError: true,
     onCreateOption: undefined,
-  }
+  },
 );
 
 const field = toRef(props, "field");
@@ -64,7 +64,7 @@ function createLabel(option: SelectOption): VNodeChild {
   const newLabel = h(
     "div",
     { class: "flex mr-2 px-1 py-[2px] rounded bg-green-600" },
-    [h("span", { class: "text-xs font-bold text-white" }, "NEW")]
+    [h("span", { class: "text-xs font-bold text-white" }, "NEW")],
   );
   return h("div", { class: "flex items-center" }, [
     isNew ? newLabel : undefined,

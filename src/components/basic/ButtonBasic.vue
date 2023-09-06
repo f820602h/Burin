@@ -14,7 +14,7 @@ const props = withDefaults(
     theme: "primary",
     size: "md",
     disabled: false,
-  }
+  },
 );
 </script>
 

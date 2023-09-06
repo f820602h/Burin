@@ -31,7 +31,7 @@ export const FILTER_OPERATORS_TEXT_MAP = {
   [FilterOperator.LESS_THAN]: "<",
   [FilterOperator.GREATER_THAN_OR_EQUAL]: "≥",
   [FilterOperator.LESS_THAN_OR_EQUAL]: "≤",
-};
+} satisfies Record<FilterOperator, string>;
 
 export const FIELD_TYPE_OPERATORS_MAP = {
   [FieldTypes.STRING]: [
@@ -62,12 +62,12 @@ export const FIELD_TYPE_OPERATORS_MAP = {
     FilterOperator.CONTAINS,
     FilterOperator.NOT_CONTAIN,
   ],
-};
+} satisfies Record<FieldTypes, FilterOperator[]>;
 
 type StringFilterConfig<T, TypeMap extends FieldTypeMap<T>> = {
   field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.STRING}`, keyof T>;
   type: `${FieldTypes.STRING}`;
-  condition: typeof FIELD_TYPE_OPERATORS_MAP[FieldTypes.STRING][number];
+  condition: (typeof FIELD_TYPE_OPERATORS_MAP)[FieldTypes.STRING][number];
   value: {
     [FieldTypes.STRING]: string;
   };
@@ -76,7 +76,7 @@ type StringFilterConfig<T, TypeMap extends FieldTypeMap<T>> = {
 type NumberFilterConfig<T, TypeMap extends FieldTypeMap<T>> = {
   field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.NUMBER}`, keyof T>;
   type: `${FieldTypes.NUMBER}`;
-  condition: typeof FIELD_TYPE_OPERATORS_MAP[FieldTypes.NUMBER][number];
+  condition: (typeof FIELD_TYPE_OPERATORS_MAP)[FieldTypes.NUMBER][number];
   value: {
     [FieldTypes.NUMBER]: number;
   };
@@ -85,7 +85,7 @@ type NumberFilterConfig<T, TypeMap extends FieldTypeMap<T>> = {
 type DurationFilterConfig<T, TypeMap extends FieldTypeMap<T>> = {
   field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.DURATION}`, keyof T>;
   type: `${FieldTypes.DURATION}`;
-  condition: typeof FIELD_TYPE_OPERATORS_MAP[FieldTypes.DURATION][number];
+  condition: (typeof FIELD_TYPE_OPERATORS_MAP)[FieldTypes.DURATION][number];
   value: {
     [FieldTypes.DURATION]: [number, number, number];
   };
@@ -128,11 +128,11 @@ type SelectFilterConfig<
     TypeMap,
     `${FieldTypes.SELECT}`,
     keyof T
-  >
+  >,
 > = {
   field: K;
   type: `${FieldTypes.SELECT}`;
-  condition: typeof FIELD_TYPE_OPERATORS_MAP[FieldTypes.SELECT][number];
+  condition: (typeof FIELD_TYPE_OPERATORS_MAP)[FieldTypes.SELECT][number];
   value: {
     [FieldTypes.SELECT]: T[K][];
   };
@@ -145,11 +145,11 @@ type MultiSelectFilterConfig<
     TypeMap,
     `${FieldTypes.MULTI_SELECT}`,
     keyof T
-  >
+  >,
 > = {
   field: K;
   type: `${FieldTypes.MULTI_SELECT}`;
-  condition: typeof FIELD_TYPE_OPERATORS_MAP[FieldTypes.MULTI_SELECT][number];
+  condition: (typeof FIELD_TYPE_OPERATORS_MAP)[FieldTypes.MULTI_SELECT][number];
   value: {
     [FieldTypes.MULTI_SELECT]: T[K] extends any[] ? T[K] : T[K][];
   };
@@ -306,14 +306,14 @@ export class Filter<T, TypeMap extends FieldTypeMap<T>> {
               const options = member[field];
               if (!Array.isArray(options)) return false;
               return options.some(
-                (option) => value[FieldTypes.MULTI_SELECT].indexOf(option) >= 0
+                (option) => value[FieldTypes.MULTI_SELECT].indexOf(option) >= 0,
               );
             }
             case FilterOperator.NOT_CONTAIN: {
               const options = member[field];
               if (!Array.isArray(options)) return false;
               return options.every(
-                (option) => value[FieldTypes.MULTI_SELECT].indexOf(option) < 0
+                (option) => value[FieldTypes.MULTI_SELECT].indexOf(option) < 0,
               );
             }
             default:

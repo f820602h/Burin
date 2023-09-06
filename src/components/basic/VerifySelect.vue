@@ -17,7 +17,7 @@ const props = withDefaults(
     placeholder: "",
     disabled: false,
     showError: true,
-  }
+  },
 );
 
 const field = toRef(props, "field");

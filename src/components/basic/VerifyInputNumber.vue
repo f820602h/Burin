@@ -21,7 +21,7 @@ const props = withDefaults(
     max: undefined,
     min: undefined,
     showError: true,
-  }
+  },
 );
 
 const field = toRef(props, "field");

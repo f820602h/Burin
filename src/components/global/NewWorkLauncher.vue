@@ -59,7 +59,7 @@ const startHandler = handleSubmit(async (values) => {
 
 watch(
   () => props.show,
-  () => resetForm()
+  () => resetForm(),
 );
 </script>
 

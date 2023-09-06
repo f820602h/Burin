@@ -42,7 +42,7 @@ onBeforeRouteUpdate(async (to, from, next) => {
 
 watch(
   () => logStore.currentLog,
-  () => fetchDailyLogs(Number(route.params.date as string))
+  () => fetchDailyLogs(Number(route.params.date as string)),
 );
 
 defineExpose<ViewExpose>({
@@ -64,7 +64,7 @@ defineExpose<ViewExpose>({
     h(
       ButtonBasic,
       { size: "sm", onClick: () => (isPanelCreatorShow.value = true) },
-      () => "+ View Panel"
+      () => "+ View Panel",
     ),
   ],
 });
