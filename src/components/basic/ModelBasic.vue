@@ -25,7 +25,7 @@ const props = withDefaults(
     leftButtonHandler: undefined,
     rightButtonHandler: undefined,
     showBodyMask: false,
-  }
+  },
 );
 </script>
 

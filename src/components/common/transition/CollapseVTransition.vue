@@ -47,7 +47,7 @@ const props = withDefaults(
     easingLeave: "ease-in-out",
     opacityClosed: 0,
     opacityOpened: 0,
-  }
+  },
 );
 
 const closed = "0px";
@@ -70,7 +70,7 @@ function getElementStyle(element: HTMLElement): ElementStyle {
 
 function prepareElement(
   element: HTMLElement,
-  initialStyle: ElementStyle
+  initialStyle: ElementStyle,
 ): string {
   const { width } = getComputedStyle(element);
   element.style.width = width;
@@ -93,7 +93,7 @@ function animateTransition(
   initialStyle: ElementStyle,
   done: () => void,
   keyframes: KeyframeObject[],
-  options: AnimateOptions
+  options: AnimateOptions,
 ): void {
   const animation = element.animate(keyframes, options);
   element.style.height = initialStyle.height;
@@ -105,7 +105,7 @@ function animateTransition(
 
 function getEnterKeyframes(
   height: string,
-  initialStyle: ElementStyle
+  initialStyle: ElementStyle,
 ): KeyframeObject[] {
   return [
     {

@@ -60,7 +60,7 @@ const startHandler = () => {
 
 watch(
   () => props.show,
-  () => resetForm()
+  () => resetForm(),
 );
 </script>
 
@@ -160,7 +160,7 @@ watch(
                                   .map((time) =>
                                     time
                                       .map((n) => String(n).padStart(2, "0"))
-                                      .join(":")
+                                      .join(":"),
                                   )
                                   .join(" ~ ")
                               }}

@@ -54,7 +54,7 @@ watch(
     }
     setFieldValue(SortFieldsName.TYPE, type);
     setFieldValue(SortFieldsName.DIRECTION, directionOptions.value[0].value);
-  }
+  },
 );
 </script>
 

@@ -29,7 +29,7 @@ export type FilterFields<T, TypeMap extends FieldTypeMap<T>> = FilterConfig<
 
 export type FilterSchemaParams<T, TypeMap extends FieldTypeMap<T>> = {
   targetTypeMap: TypeMap;
-  targetTextMap: Partial<Record<keyof T, string>>;
+  targetTextMap: Partial<Record<keyof TypeMap, string>>;
   targetSelectFieldOptionsMap: Record<
     KeysHasSameValueInObject<TypeMap, `${FieldTypes.SELECT}`, keyof T>,
     SelectOption[]
@@ -41,7 +41,7 @@ export type FilterSchemaParams<T, TypeMap extends FieldTypeMap<T>> = {
 };
 
 export function createFilterSchema<T, TypeMap extends FieldTypeMap<T>>(
-  config: FilterSchemaParams<T, TypeMap>
+  config: FilterSchemaParams<T, TypeMap>,
 ): FieldValidation {
   const filterFieldSchema: StringSchema = string()
     .required("required fields")
@@ -119,7 +119,7 @@ export function createFilterSchema<T, TypeMap extends FieldTypeMap<T>>(
                 .test(
                   "range",
                   "invalid date range",
-                  ([[sh, sm], [eh, em]]) => sh < eh || (sh === eh && sm < em)
+                  ([[sh, sm], [eh, em]]) => sh < eh || (sh === eh && sm < em),
                 ),
             }),
           });
@@ -134,7 +134,7 @@ export function createFilterSchema<T, TypeMap extends FieldTypeMap<T>>(
         const selectField =
           field as keyof typeof config.targetSelectFieldOptionsMap;
         const options = config.targetSelectFieldOptionsMap[selectField].map(
-          (option) => option.value
+          (option) => option.value,
         );
 
         return schema.shape({
@@ -160,7 +160,7 @@ export function createFilterSchema<T, TypeMap extends FieldTypeMap<T>>(
         });
       }
       return schema;
-    }
+    },
   );
 
   return {

@@ -1,5 +1,5 @@
 import type { Category } from "@/class/Category";
-import { FieldTypes } from "@/types/fieldType";
+import { FieldTypes, type FieldTypeMap } from "@/types/fieldType";
 import { computed } from "vue";
 import { dateFormatter } from "@/helper/dateFormatter";
 import { useTimestamp } from "@vueuse/core";
@@ -191,7 +191,14 @@ export const LOG_FIELD_TYPE_MAP = {
   pauseTimes: FieldTypes.NUMBER,
   pauseDurationTime: FieldTypes.DURATION,
   durationTime: FieldTypes.DURATION,
-} as const;
+
+  id: FieldTypes.NUMBER,
+  pauseTimestamp: FieldTypes.TIME,
+  createTimestamp: FieldTypes.TIME,
+  updateTimestamp: FieldTypes.TIME,
+  startTimeText: FieldTypes.STRING,
+  finishTimeText: FieldTypes.STRING,
+} satisfies FieldTypeMap<Log | CurrentLog>;
 
 export const LOG_FILTERABLE_FIELD_TEXT_MAP: Partial<
   Record<keyof typeof LOG_FIELD_TYPE_MAP, string>
@@ -204,7 +211,7 @@ export const LOG_FILTERABLE_FIELD_TEXT_MAP: Partial<
   pauseTimes: "Pause Count",
   pauseDurationTime: "Pause Duration",
   durationTime: "Work Duration",
-} as const;
+};
 
 export const LOG_SORTABLE_FIELD_TEXT_MAP: Partial<
   Record<keyof typeof LOG_FIELD_TYPE_MAP, string>
@@ -215,4 +222,4 @@ export const LOG_SORTABLE_FIELD_TEXT_MAP: Partial<
   pauseTimes: "Pause Count",
   pauseDurationTime: "Pause Duration",
   durationTime: "Work Duration",
-} as const;
+};

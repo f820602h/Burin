@@ -9,7 +9,7 @@ const props = withDefaults(
   defineProps<{
     name: TransitionName;
   }>(),
-  { name: "fade" }
+  { name: "fade" },
 );
 </script>
 

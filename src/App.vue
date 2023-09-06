@@ -29,7 +29,7 @@ const isSidebarShow = ref<boolean>(false);
 watch(
   () => breakpoints.greaterOrEqual("lg").value,
   (value) => (isSidebarShow.value = value),
-  { immediate: true }
+  { immediate: true },
 );
 
 function closeSidebarOnClickOutside(): void {

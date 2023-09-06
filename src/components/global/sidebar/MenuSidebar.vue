@@ -51,14 +51,14 @@ const calendarMenuItems = computed<MenuItemToggleType[]>(() =>
     }
 
     return acc;
-  }, [])
+  }, []),
 );
 
 const tagMenuItems = computed(() =>
   categoryStore.categories.map((cate) => ({
     name: cate.category,
     icon: "icon-hash",
-  }))
+  })),
 );
 </script>
 

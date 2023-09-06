@@ -63,7 +63,7 @@ export class LogPanel extends Panel<
   typeof LOG_FIELD_TYPE_MAP
 > {
   constructor(
-    panel: PanelCompleteInfo<Log | CurrentLog, typeof LOG_FIELD_TYPE_MAP>
+    panel: PanelCompleteInfo<Log | CurrentLog, typeof LOG_FIELD_TYPE_MAP>,
   ) {
     super(panel);
   }
