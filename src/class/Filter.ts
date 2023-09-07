@@ -6,6 +6,8 @@ export enum FilterOperator {
   IS_NOT = "isNot",
   CONTAINS = "contains",
   NOT_CONTAIN = "notContain",
+  INCLUDES = "includes",
+  NOT_INCLUDES = "notIncludes",
   BEFORE = "before",
   AFTER = "after",
   BETWEEN = "between",
@@ -15,6 +17,8 @@ export enum FilterOperator {
   LESS_THAN = "lessThan",
   GREATER_THAN_OR_EQUAL = "greaterThanOrEqual",
   LESS_THAN_OR_EQUAL = "lessThanOrEqual",
+  LONGER_THAN = "longerThan",
+  SHORTER_THAN = "shorterThan",
 }
 
 export const FILTER_OPERATORS_TEXT_MAP = {
@@ -22,6 +26,8 @@ export const FILTER_OPERATORS_TEXT_MAP = {
   [FilterOperator.IS]: "is",
   [FilterOperator.CONTAINS]: "contains",
   [FilterOperator.NOT_CONTAIN]: "does not contains",
+  [FilterOperator.INCLUDES]: "includes",
+  [FilterOperator.NOT_INCLUDES]: "does not includes",
   [FilterOperator.BEFORE]: "is before",
   [FilterOperator.AFTER]: "is after",
   [FilterOperator.BETWEEN]: "is between",
@@ -31,6 +37,8 @@ export const FILTER_OPERATORS_TEXT_MAP = {
   [FilterOperator.LESS_THAN]: "<",
   [FilterOperator.GREATER_THAN_OR_EQUAL]: "≥",
   [FilterOperator.LESS_THAN_OR_EQUAL]: "≤",
+  [FilterOperator.LONGER_THAN]: "longer than",
+  [FilterOperator.SHORTER_THAN]: "shorter than",
 } satisfies Record<FilterOperator, string>;
 
 export const FIELD_TYPE_OPERATORS_MAP = {
@@ -49,8 +57,8 @@ export const FIELD_TYPE_OPERATORS_MAP = {
     FilterOperator.LESS_THAN_OR_EQUAL,
   ],
   [FieldTypes.DURATION]: [
-    FilterOperator.GREATER_THAN_OR_EQUAL,
-    FilterOperator.LESS_THAN_OR_EQUAL,
+    FilterOperator.LONGER_THAN,
+    FilterOperator.SHORTER_THAN,
   ],
   [FieldTypes.TIME]: [
     FilterOperator.BEFORE,
@@ -60,7 +68,8 @@ export const FIELD_TYPE_OPERATORS_MAP = {
   [FieldTypes.SELECT]: [FilterOperator.IS, FilterOperator.IS_NOT],
   [FieldTypes.MULTI_SELECT]: [
     FilterOperator.CONTAINS,
-    FilterOperator.NOT_CONTAIN,
+    FilterOperator.INCLUDES,
+    FilterOperator.NOT_INCLUDES,
   ],
 } satisfies Record<FieldTypes, FilterOperator[]>;
 
@@ -134,7 +143,7 @@ type SelectFilterConfig<
   type: `${FieldTypes.SELECT}`;
   condition: (typeof FIELD_TYPE_OPERATORS_MAP)[FieldTypes.SELECT][number];
   value: {
-    [FieldTypes.SELECT]: T[K][];
+    [FieldTypes.SELECT]: T[K];
   };
 };
 
@@ -231,7 +240,7 @@ export class Filter<T, TypeMap extends FieldTypeMap<T>> {
 
         case FieldTypes.DURATION:
           switch (condition) {
-            case FilterOperator.GREATER_THAN_OR_EQUAL: {
+            case FilterOperator.LONGER_THAN: {
               const duration = member[field];
               if (typeof duration !== "number") return false;
               const [hour, min, sec] = value[FieldTypes.DURATION];
@@ -239,7 +248,7 @@ export class Filter<T, TypeMap extends FieldTypeMap<T>> {
                 (hour * (60 * 60) + min * 60 + sec) * 1000;
               return duration >= valueDurationMillisecond;
             }
-            case FilterOperator.LESS_THAN_OR_EQUAL: {
+            case FilterOperator.SHORTER_THAN: {
               const duration = member[field];
               if (typeof duration !== "number") return false;
               const [hour, min, sec] = value[FieldTypes.DURATION];
@@ -291,10 +300,10 @@ export class Filter<T, TypeMap extends FieldTypeMap<T>> {
         case FieldTypes.SELECT:
           switch (condition) {
             case FilterOperator.IS:
-              return value[FieldTypes.SELECT].includes(member[field]);
+              return value[FieldTypes.SELECT] === member[field];
 
             case FilterOperator.IS_NOT:
-              return !value[FieldTypes.SELECT].includes(member[field]);
+              return !value[FieldTypes.SELECT] !== member[field];
             default:
               return false;
           }
@@ -305,15 +314,24 @@ export class Filter<T, TypeMap extends FieldTypeMap<T>> {
             case FilterOperator.CONTAINS: {
               const options = member[field];
               if (!Array.isArray(options)) return false;
-              return options.some(
-                (option) => value[FieldTypes.MULTI_SELECT].indexOf(option) >= 0,
+              return value[FieldTypes.MULTI_SELECT].every((val) =>
+                options.includes(val),
               );
             }
-            case FilterOperator.NOT_CONTAIN: {
+
+            case FilterOperator.INCLUDES: {
               const options = member[field];
               if (!Array.isArray(options)) return false;
-              return options.every(
-                (option) => value[FieldTypes.MULTI_SELECT].indexOf(option) < 0,
+              return value[FieldTypes.MULTI_SELECT].some((val) =>
+                options.includes(val),
+              );
+            }
+
+            case FilterOperator.NOT_INCLUDES: {
+              const options = member[field];
+              if (!Array.isArray(options)) return false;
+              return value[FieldTypes.MULTI_SELECT].every(
+                (val) => !options.includes(val),
               );
             }
             default:

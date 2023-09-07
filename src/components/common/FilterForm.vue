@@ -4,6 +4,7 @@ import { object } from "yup";
 import { useForm } from "vee-validate";
 import { type FieldTypeMap, FieldTypes } from "@/types/fieldType";
 import {
+  Filter,
   FilterOperator,
   FIELD_TYPE_OPERATORS_MAP,
   FILTER_OPERATORS_TEXT_MAP,
@@ -19,7 +20,6 @@ import VerifyInputNumber from "@/components/basic/VerifyInputNumber.vue";
 import VerifyInputTime from "@/components/basic/VerifyInputTime.vue";
 import VerifySelect from "@/components/basic/VerifySelect.vue";
 import VerifySelectMulti from "@/components/basic/VerifySelectMulti.vue";
-import { Filter } from "@/class/Filter";
 
 const emit = defineEmits<{
   (e: "close"): void;
@@ -245,6 +245,7 @@ watch(
           class="mt-2"
           :field="`${FilterFieldsName.VALUE}.${FieldTypes.MULTI_SELECT}`"
           :options="multiSelectTypeFieldOptions"
+          :option-prefix="'#'"
           placeholder="Select One or More Options"
         />
       </template>

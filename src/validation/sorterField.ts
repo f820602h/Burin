@@ -3,27 +3,27 @@ import type { FieldValidation } from "./types";
 import type { FieldTypeMap } from "@/types/fieldType";
 import { type SorterConfig, SorterDirection } from "@/class/Sorter";
 
-export enum SortFieldsName {
+export enum SorterFieldsName {
   FIELD = "field",
   TYPE = "type",
   DIRECTION = "direction",
 }
 
-export type SortFields<T, TypeMap extends FieldTypeMap<T>> = SorterConfig<
+export type SorterFields<T, TypeMap extends FieldTypeMap<T>> = SorterConfig<
   T,
   TypeMap
 >;
 
-export type SortSchemaParams<T, TypeMap extends FieldTypeMap<T>> = {
+export type SorterSchemaParams<T, TypeMap extends FieldTypeMap<T>> = {
   targetTypeMap: TypeMap;
   targetTextMap: Partial<Record<keyof T, string>>;
 };
 
-export function createSortSchema<T, TypeMap extends FieldTypeMap<T>>(
-  config: SortSchemaParams<T, TypeMap>
+export function createSorterSchema<T, TypeMap extends FieldTypeMap<T>>(
+  config: SorterSchemaParams<T, TypeMap>,
 ): FieldValidation {
   const sortTypeSchema: StringSchema = string()
-    .when([SortFieldsName.FIELD], ([val], schema) => {
+    .when([SorterFieldsName.FIELD], ([val], schema) => {
       if (!val) return schema;
       const field = val as keyof typeof config.targetTextMap;
       return schema.oneOf([config.targetTypeMap[field]], "invalid type");
@@ -31,11 +31,11 @@ export function createSortSchema<T, TypeMap extends FieldTypeMap<T>>(
     .required("required fields");
 
   return {
-    [SortFieldsName.FIELD]: string()
+    [SorterFieldsName.FIELD]: string()
       .oneOf(Object.keys(config.targetTextMap))
       .required("required fields"),
-    [SortFieldsName.TYPE]: sortTypeSchema,
-    [SortFieldsName.DIRECTION]: string()
+    [SorterFieldsName.TYPE]: sortTypeSchema,
+    [SorterFieldsName.DIRECTION]: string()
       .oneOf(Object.values(SorterDirection))
       .required("required fields"),
   };

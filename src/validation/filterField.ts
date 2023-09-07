@@ -148,15 +148,10 @@ export function createFilterSchema<T, TypeMap extends FieldTypeMap<T>>(
         ].map((option) => option.value);
 
         return schema.shape({
-          [FieldTypes.MULTI_SELECT]: object({
-            [FilterMultiSelectFieldsName.BINDING]: array()
-              .of(mixed().oneOf(options))
-              .min(1, "min 1 tag required")
-              .max(5, "max 5 tags allowed"),
-            [FilterMultiSelectFieldsName.ADDING]: string()
-              .trim()
-              .max(40, "max 40 characters allowed"),
-          }),
+          [FieldTypes.MULTI_SELECT]: array()
+            .of(mixed().oneOf(options))
+            .min(1, "min 1 tag required")
+            .max(5, "max 5 tags allowed"),
         });
       }
       return schema;

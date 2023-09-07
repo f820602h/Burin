@@ -15,8 +15,8 @@ const inProgressPanel: LogPanel = new LogPanel({
     new Filter({
       field: "status",
       type: FieldTypes.SELECT,
-      condition: FilterOperator.IS_NOT,
-      value: { [FieldTypes.SELECT]: [LogStatus.FINISH] },
+      condition: FilterOperator.IS,
+      value: { [FieldTypes.SELECT]: LogStatus.IN_PROGRESS },
     }),
   ],
   sorters: [],
@@ -29,14 +29,10 @@ const historyPanel: LogPanel = new LogPanel({
   title: "HISTORY",
   filters: [
     new Filter({
-      field: "startTimestamp",
-      type: FieldTypes.TIME,
-      condition: FilterOperator.BEFORE,
-      value: {
-        [FieldTypes.TIME]: {
-          [FilterOperator.BEFORE]: [3, 4],
-        },
-      },
+      field: "status",
+      type: FieldTypes.SELECT,
+      condition: FilterOperator.IS_NOT,
+      value: { [FieldTypes.SELECT]: LogStatus.IN_PROGRESS },
     }),
   ],
   sorters: [

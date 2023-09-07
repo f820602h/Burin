@@ -29,7 +29,7 @@ button {
   &.primary {
     @apply text-sm text-primary-400;
     @apply hover:text-primary-200;
-    @apply disabled:text-gray-400/75 disabled:cursor-not-allowed;
+    @apply disabled:text-gray-600/75 disabled:cursor-not-allowed;
   }
 }
 </style>

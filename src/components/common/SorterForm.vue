@@ -2,29 +2,39 @@
 import { computed, watch } from "vue";
 import { object } from "yup";
 import { useForm } from "vee-validate";
-import { FieldTypes, type FieldTypeMap } from "@/types/fieldType";
-import { SORTER_DIRECTION_TEXT_MAP } from "@/class/Sorter";
+import { type FieldTypeMap, FieldTypes } from "@/types/fieldType";
+import { Sorter, SORTER_DIRECTION_TEXT_MAP } from "@/class/Sorter";
 import {
-  type SortFields,
-  type SortSchemaParams,
-  SortFieldsName,
-  createSortSchema,
-} from "@/validation/sortField";
+  type SorterFields,
+  type SorterSchemaParams,
+  SorterFieldsName,
+  createSorterSchema,
+} from "@/validation/sorterField";
 import VerifySelect from "@/components/basic/VerifySelect.vue";
 
-const emit = defineEmits<{ (e: "close"): void }>();
+const emit = defineEmits<{
+  (e: "close"): void;
+  (e: "update:sorters", sorters: Sorter<T, TypeMap>[]): void;
+}>();
 
-const props = defineProps<SortSchemaParams<T, TypeMap>>();
+const props = defineProps<
+  { sorters: Sorter<T, TypeMap>[] } & SorterSchemaParams<T, TypeMap>
+>();
 
-const { values, setFieldValue } = useForm<
-  SortFields<T, typeof props.targetTypeMap>
+const { handleSubmit, values, setFieldValue } = useForm<
+  SorterFields<T, TypeMap>
 >({
   validationSchema: object({
-    ...createSortSchema<T, TypeMap>({
+    ...createSorterSchema<T, TypeMap>({
       targetTypeMap: props.targetTypeMap,
       targetTextMap: props.targetTextMap,
     }),
   }),
+});
+
+const addSorterHandler = handleSubmit((values) => {
+  emit("update:sorters", [...(props.sorters || []), new Sorter(values)]);
+  emit("close");
 });
 
 const fieldOptions = computed(() => {
@@ -42,7 +52,7 @@ const directionOptions = computed(() => {
 });
 
 watch(
-  () => values[SortFieldsName.FIELD],
+  () => values[SorterFieldsName.FIELD],
   (val) => {
     const type = props.targetTypeMap[val];
     if (
@@ -52,8 +62,8 @@ watch(
     ) {
       throw new Error("Invalid Field");
     }
-    setFieldValue(SortFieldsName.TYPE, type);
-    setFieldValue(SortFieldsName.DIRECTION, directionOptions.value[0].value);
+    setFieldValue(SorterFieldsName.TYPE, type);
+    setFieldValue(SorterFieldsName.DIRECTION, directionOptions.value[0].value);
   },
 );
 </script>
@@ -63,26 +73,27 @@ watch(
     <div class="mb-2">
       <label class="block mb-1 text-gray-500 text-xs font-bold">
         <div class="first-letter:text-base uppercase">
-          {{ SortFieldsName.FIELD }}
+          {{ SorterFieldsName.FIELD }}
         </div>
       </label>
       <VerifySelect
-        :field="SortFieldsName.FIELD"
+        :field="SorterFieldsName.FIELD"
         :options="fieldOptions"
         :default-value="fieldOptions[0].value"
         placeholder="Choose Field to Filter"
       />
     </div>
 
-    <div v-if="values[SortFieldsName.TYPE]">
+    <div v-if="values[SorterFieldsName.TYPE]">
       <label class="block mb-1 text-gray-500 text-xs font-bold">
         <div class="first-letter:text-base uppercase">
-          {{ SortFieldsName.DIRECTION }}
+          {{ SorterFieldsName.DIRECTION }}
         </div>
       </label>
       <VerifySelect
-        :field="SortFieldsName.DIRECTION"
+        :field="SorterFieldsName.DIRECTION"
         :options="directionOptions"
+        :default-value="directionOptions[0].value"
         placeholder="Choose Sort Direction"
       />
     </div>
@@ -94,7 +105,7 @@ watch(
         :text="'CANCEL'"
         @click="emit('close')"
       />
-      <ButtonBasic class="w-full" :text="'ADD'" />
+      <ButtonBasic class="w-full" :text="'ADD'" @click="addSorterHandler" />
     </div>
   </form>
 </template>

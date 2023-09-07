@@ -11,16 +11,17 @@ import {
 import {
   type LogPanelFields,
   LogPanelFieldsName,
-  logPanelFieldsValidation,
+  createLogPanelSchema,
 } from "@/validation/logPanelField";
 import { FieldTypes } from "@/types/fieldType";
-import { FILTER_OPERATORS_TEXT_MAP, FilterOperator } from "@/class/Filter";
 import { useCategoryStore } from "@/stores/category";
 import ModelBasic from "@/components/basic/ModelBasic.vue";
 import VerifyInput from "@/components/basic/VerifyInput.vue";
 import FilterForm from "@/components/common/FilterForm.vue";
-import SortForm from "@/components/common/SortForm.vue";
+import SorterForm from "@/components/common/SorterForm.vue";
 import CollapseVTransition from "@/components/common/transition/CollapseVTransition.vue";
+import FilterCard from "@/components/common/FilterCard.vue";
+import SorterCard from "@/components/common/SorterCard.vue";
 
 const emit = defineEmits<{ (e: "close"): void }>();
 const props = defineProps<{ show?: boolean }>();
@@ -29,8 +30,13 @@ const categoryStore = useCategoryStore();
 const isFilterFormShow = ref<boolean>(false);
 const isSortFormShow = ref<boolean>(false);
 
+const filterMaxLength = ref(5);
+const sorterMaxLength = ref(2);
+
 const { values, resetForm } = useForm<LogPanelFields>({
-  validationSchema: object({ ...logPanelFieldsValidation }),
+  validationSchema: object({
+    ...createLogPanelSchema(filterMaxLength.value, sorterMaxLength.value),
+  }),
   initialValues: {
     [LogPanelFieldsName.TITLE]: "",
     [LogPanelFieldsName.FILTERS]: [],
@@ -54,13 +60,49 @@ const LOG_MULTI_SELECT_FIELD_OPTIONS_MAP = computed(() => {
   };
 });
 
+function filterCardFieldFormatter(
+  config: LogPanelFields[LogPanelFieldsName.FILTERS][number]["config"],
+) {
+  return LOG_FILTERABLE_FIELD_TEXT_MAP[config.field] || "";
+}
+
+function filterCardSelectValueFormatter(
+  config: LogPanelFields[LogPanelFieldsName.FILTERS][number]["config"],
+): string {
+  const { field, type, value } = config;
+  if (type !== FieldTypes.SELECT) return "";
+  return (
+    LOG_SELECT_FIELD_OPTIONS_MAP.value[field].find(
+      (option) => option.value === value[type],
+    )?.label || ""
+  );
+}
+
+function filterCardMultiSelectValueFormatter(
+  config: LogPanelFields[LogPanelFieldsName.FILTERS][number]["config"],
+): string[] {
+  const { field, type, value } = config;
+  if (type !== FieldTypes.MULTI_SELECT) return [];
+  return value[type].map((val) => {
+    return (
+      LOG_MULTI_SELECT_FIELD_OPTIONS_MAP.value[field].find(
+        (option) => option.value === val,
+      )?.label || ""
+    );
+  });
+}
+
 const startHandler = () => {
   console.log("start");
 };
 
 watch(
   () => props.show,
-  () => resetForm(),
+  () => {
+    resetForm();
+    isFilterFormShow.value = false;
+    isSortFormShow.value = false;
+  },
 );
 </script>
 
@@ -79,14 +121,13 @@ watch(
           <div class="mb-3">
             <label
               :for="LogPanelFieldsName.TITLE"
-              class="mb-1 text-gray-500 text-xs font-bold"
+              class="block mb-1 text-gray-500 text-xs font-bold"
             >
               <div class="first-letter:text-base uppercase">
                 {{ LogPanelFieldsName.TITLE }}
               </div>
             </label>
             <VerifyInput
-              v-model="values.title"
               :field="LogPanelFieldsName.TITLE"
               type="text"
               placeholder="Type Panel Title"
@@ -98,12 +139,20 @@ watch(
               <label class="block mb-1 text-gray-500 text-xs font-bold">
                 <div class="first-letter:text-base uppercase">
                   {{ LogPanelFieldsName.FILTERS }}
+
+                  <span class="ml-1">
+                    {{ values[LogPanelFieldsName.FILTERS].length }} /
+                    {{ filterMaxLength }}
+                  </span>
                 </div>
               </label>
 
               <ButtonLinkLike
                 size="sm"
                 text="+ Add Filter"
+                :disabled="
+                  values[LogPanelFieldsName.FILTERS].length === filterMaxLength
+                "
                 @click="isFilterFormShow = !isFilterFormShow"
               />
             </div>
@@ -119,74 +168,16 @@ watch(
                   </div>
 
                   <div v-else>
-                    <div
-                      v-for="({ config }, i) in values[
-                        LogPanelFieldsName.FILTERS
-                      ]"
+                    <FilterCard
+                      v-for="(filter, i) in values[LogPanelFieldsName.FILTERS]"
                       :key="i"
-                      class="flex flex-col mt-2 first:mt-0 p-1 rounded text-sm bg-gray-600"
-                    >
-                      <div class="flex mb-1 px-1">
-                        <div class="font-bold">
-                          {{ LOG_FILTERABLE_FIELD_TEXT_MAP[config.field] }}
-                        </div>
-
-                        <div class="ml-2 text-gray-400">
-                          {{ FILTER_OPERATORS_TEXT_MAP[config.condition] }}
-                        </div>
-                      </div>
-
-                      <div class="flex-center-center p-2 rounded bg-black/30">
-                        <div class="px-1 border-b text-center truncate">
-                          <template v-if="config.type === FieldTypes.STRING">
-                            {{ config.value[config.type] }}
-                          </template>
-                          <template v-if="config.type === FieldTypes.NUMBER">
-                            {{ config.value[config.type] }}
-                          </template>
-                          <template v-if="config.type === FieldTypes.DURATION">
-                            {{
-                              config.value[config.type]
-                                .map((n) => String(n).padStart(2, "0"))
-                                .join(":")
-                            }}
-                          </template>
-                          <template v-if="config.type === FieldTypes.TIME">
-                            <template
-                              v-if="config.condition === FilterOperator.BETWEEN"
-                            >
-                              {{
-                                config.value[config.type][config.condition]
-                                  .map((time) =>
-                                    time
-                                      .map((n) => String(n).padStart(2, "0"))
-                                      .join(":"),
-                                  )
-                                  .join(" ~ ")
-                              }}
-                            </template>
-                            <template
-                              v-if="config.condition === FilterOperator.AFTER"
-                            >
-                              {{
-                                config.value[config.type][config.condition]
-                                  .map((n) => String(n).padStart(2, "0"))
-                                  .join(":")
-                              }}
-                            </template>
-                            <template
-                              v-if="config.condition === FilterOperator.BEFORE"
-                            >
-                              {{
-                                config.value[config.type][config.condition]
-                                  .map((n) => String(n).padStart(2, "0"))
-                                  .join(":")
-                              }}
-                            </template>
-                          </template>
-                        </div>
-                      </div>
-                    </div>
+                      :filter="filter"
+                      :format-field="filterCardFieldFormatter"
+                      :format-select-value="filterCardSelectValueFormatter"
+                      :format-multi-select-value="
+                        filterCardMultiSelectValueFormatter
+                      "
+                    />
                   </div>
                 </template>
 
@@ -205,6 +196,9 @@ watch(
                 />
               </CollapseVTransition>
             </div>
+            <p class="mt-1 text-xs text-right text-gray-600">
+              filters will filter in order
+            </p>
           </div>
 
           <div class="relative mb-3" :class="{ 'z-10': !isFilterFormShow }">
@@ -212,33 +206,55 @@ watch(
               <label class="block mb-1 text-gray-500 text-xs font-bold">
                 <div class="first-letter:text-base uppercase">
                   {{ LogPanelFieldsName.SORTERS }}
+
+                  <span class="ml-1">
+                    {{ values[LogPanelFieldsName.SORTERS].length }} /
+                    {{ sorterMaxLength }}
+                  </span>
                 </div>
               </label>
 
               <ButtonLinkLike
                 size="sm"
                 text="+ Add Sorter"
+                :disabled="
+                  values[LogPanelFieldsName.SORTERS].length === sorterMaxLength
+                "
                 @click="isSortFormShow = !isSortFormShow"
               />
             </div>
 
             <div class="py-2 px-2 rounded bg-gray-800">
               <CollapseVTransition>
-                <div
-                  v-if="!isSortFormShow"
-                  class="py-1 rounded border-2 border-dashed border-gray-500 text-sm text-center text-gray-500"
-                >
-                  No Sorter
-                </div>
+                <template v-if="!isSortFormShow">
+                  <div
+                    v-if="!values[LogPanelFieldsName.SORTERS].length"
+                    class="py-1 rounded border-2 border-dashed border-gray-500 text-sm text-center text-gray-500"
+                  >
+                    No Sorter
+                  </div>
 
-                <SortForm
+                  <div v-else>
+                    <SorterCard
+                      v-for="(sorter, i) in values[LogPanelFieldsName.SORTERS]"
+                      :key="i"
+                      :sorter="sorter"
+                    />
+                  </div>
+                </template>
+
+                <SorterForm
                   v-else-if="isSortFormShow"
+                  v-model:sorters="values[LogPanelFieldsName.SORTERS]"
                   :target-type-map="LOG_FIELD_TYPE_MAP"
                   :target-text-map="LOG_SORTABLE_FIELD_TEXT_MAP"
                   @close="isSortFormShow = false"
                 />
               </CollapseVTransition>
             </div>
+            <p class="mt-1 text-xs text-right text-gray-600">
+              sorters will sort in order
+            </p>
           </div>
         </fieldset>
       </form>
