@@ -13,25 +13,25 @@ export const SORTER_DIRECTION_TEXT_MAP = {
 
 type StringSorterConfig<T, TypeMap extends FieldTypeMap<T>> = {
   field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.STRING}`, keyof T>;
-  type: FieldTypes.STRING;
+  type: `${FieldTypes.STRING}`;
   direction: SorterDirection;
 };
 
 type NumberSorterConfig<T, TypeMap extends FieldTypeMap<T>> = {
   field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.NUMBER}`, keyof T>;
-  type: FieldTypes.NUMBER;
+  type: `${FieldTypes.NUMBER}`;
   direction: SorterDirection;
 };
 
 type DurationSorterConfig<T, TypeMap extends FieldTypeMap<T>> = {
   field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.DURATION}`, keyof T>;
-  type: FieldTypes.DURATION;
+  type: `${FieldTypes.DURATION}`;
   direction: SorterDirection;
 };
 
 type TimeSorterConfig<T, TypeMap extends FieldTypeMap<T>> = {
   field: KeysHasSameValueInObject<TypeMap, `${FieldTypes.TIME}`, keyof T>;
-  type: FieldTypes.TIME;
+  type: `${FieldTypes.TIME}`;
   direction: SorterDirection;
 };
 
@@ -42,13 +42,13 @@ export type SorterConfig<T, TypeMap extends FieldTypeMap<T>> =
   | TimeSorterConfig<T, TypeMap>;
 
 export class Sorter<T, TypeMap extends FieldTypeMap<T>> {
-  private sorterConfig: SorterConfig<T, TypeMap>;
+  config: SorterConfig<T, TypeMap>;
   cb: (memberA: T, memberB: T) => number;
 
-  constructor(sorterConfig: SorterConfig<T, TypeMap>) {
-    this.sorterConfig = sorterConfig;
+  constructor(config: SorterConfig<T, TypeMap>) {
+    this.config = config;
     this.cb = (memberA, memberB) => {
-      const { field, type, direction } = this.sorterConfig;
+      const { field, type, direction } = this.config;
 
       switch (type) {
         case FieldTypes.STRING: {
@@ -74,6 +74,8 @@ export class Sorter<T, TypeMap extends FieldTypeMap<T>> {
             ? aValue - bValue
             : bValue - aValue;
         }
+        default:
+          return 0;
       }
     };
   }

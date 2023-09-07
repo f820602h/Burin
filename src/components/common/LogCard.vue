@@ -1,12 +1,23 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import { useCategoryStore } from "@/stores/category";
+import type { Category } from "@/class/Category";
 import { type Log, CurrentLog, LogStatus } from "@/class/Log";
 import { durationTimeFormatter } from "@/helper/durationTimeFormatter";
-import CategoryTag from "@/components/common/CategoryTag.vue";
+import TagPill from "@/components/basic/TagPill.vue";
 import AlarmSetter from "@/components/common/AlarmSetter.vue";
 
-defineProps<{
+const props = defineProps<{
   log: Log | CurrentLog;
 }>();
+
+const categoryStore = useCategoryStore();
+
+const category = computed<Category[]>(() => {
+  return categoryStore.categories.filter((cate) =>
+    props.log.categories.includes(cate.id),
+  );
+});
 </script>
 
 <template>
@@ -81,10 +92,12 @@ defineProps<{
       </div>
 
       <div class="min-h-[30px] flex flex-wrap mt-1 px-1">
-        <CategoryTag
-          v-for="(cate, index) in log.categories"
+        <TagPill
+          v-for="(cate, index) in category"
           :key="index"
-          :category-id="cate"
+          :prefix="'#'"
+          :label="cate.category"
+          :value="cate.id"
           class="flex-shrink-0 mr-2 my-1"
         />
       </div>

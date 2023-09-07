@@ -7,8 +7,9 @@ import TagPill from "@/components/basic/TagPill.vue";
 const props = withDefaults(
   defineProps<{
     defaultValue?: string[] | number[];
-    options: SelectOption[];
     field: string;
+    options: SelectOption[];
+    optionPrefix?: string;
     placeholder?: string;
     showError?: boolean;
     onCreateOption?: (
@@ -17,6 +18,7 @@ const props = withDefaults(
   }>(),
   {
     defaultValue: () => [],
+    optionPrefix: "",
     placeholder: "",
     showError: true,
     onCreateOption: undefined,
@@ -24,13 +26,16 @@ const props = withDefaults(
 );
 
 const field = toRef(props, "field");
+const bindingFieldName = computed<string>(() => {
+  return props.onCreateOption ? `${field.value}.binding` : `${field.value}`;
+});
 
 const {
   value: binding,
   errorMessage: bindingErrorMessage,
   meta: bindingMeta,
   handleChange: bindingHandleChange,
-} = useField(`${field.value}.binding`, undefined, {
+} = useField(bindingFieldName.value, undefined, {
   initialValue: props.defaultValue,
 });
 const {
@@ -53,6 +58,7 @@ function createTag({ option }: { option: SelectOption }): VNodeChild {
       modelValue: binding.value,
       label: option.label,
       value: option.value,
+      prefix: props.optionPrefix,
       deletable: true,
       "onUpdate:modelValue": bindingHandleChange,
     }),

@@ -1,28 +1,25 @@
-<script lang="ts">
-export default {
-  inheritAttrs: false,
-};
-</script>
-
 <script setup lang="ts" generic="T">
 import { computed } from "vue";
 import isEqual from "lodash-es/isEqual";
 
-type TagProps<T> = {
-  label: string;
-  value?: T;
-  modelValue?: T | T[];
-  clickable?: boolean;
-  deletable?: boolean;
-};
-
-const props = withDefaults(defineProps<TagProps<T>>(), {
-  label: "",
-  value: undefined,
-  modelValue: undefined,
-  clickable: false,
-  deletable: false,
-});
+const props = withDefaults(
+  defineProps<{
+    label: string;
+    value?: T;
+    modelValue?: T | T[];
+    prefix?: string;
+    clickable?: boolean;
+    deletable?: boolean;
+  }>(),
+  {
+    label: "",
+    value: undefined,
+    modelValue: undefined,
+    prefix: "",
+    clickable: false,
+    deletable: false,
+  },
+);
 const emit = defineEmits<{
   (e: "update:model-value", value: T | T[]): void;
 }>();
@@ -63,7 +60,7 @@ function handleDelete(): void {
     :class="{ isActive, 'cursor-pointer': clickable }"
     @click="handleClick"
   >
-    <span class="truncate">{{ label }}</span>
+    <span class="truncate">{{ prefix + label }}</span>
     <span
       v-if="deletable"
       class="icon-cancel ml-1 cursor-pointer duration-150 hover:opacity-50"
@@ -74,8 +71,7 @@ function handleDelete(): void {
 
 <style scoped lang="scss">
 .tag-pill {
-  font-size: 12px;
-  color: white;
+  @apply text-xs text-white;
   background: #64748b;
 }
 </style>

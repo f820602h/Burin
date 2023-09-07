@@ -39,6 +39,13 @@ async function createCategory(inputValue: string): Promise<number> {
 
 const { handleSubmit, values, resetForm } = useForm<WorkFields>({
   validationSchema: object({ ...workFieldsValidation }),
+  initialValues: {
+    [WorkFieldsName.TITLE]: "",
+    [WorkFieldsName.TAGS]: {
+      [WorkTagsFieldsName.BINDING]: [],
+      [WorkTagsFieldsName.ADDING]: "",
+    },
+  },
 });
 const bindingTags = computed(() => {
   return values[WorkFieldsName.TAGS][WorkTagsFieldsName.BINDING];
@@ -77,10 +84,11 @@ watch(
           <div class="mb-3">
             <label
               :for="WorkFieldsName.TITLE"
-              class="flex mb-1 text-gray-500 text-xs font-bold"
+              class="block mb-1 text-gray-500 text-xs font-bold"
             >
-              <div class="first-letter:text-base">WORK</div>
-              <div class="ml-1 first-letter:text-base">TITLE</div>
+              <div class="first-letter:text-base uppercase">
+                {{ WorkFieldsName.TITLE }}
+              </div>
             </label>
             <VerifyInput
               :field="WorkFieldsName.TITLE"
@@ -94,12 +102,16 @@ watch(
               :for="WorkFieldsName.TAGS"
               class="flex-between-center mb-1 text-gray-500 text-xs font-bold"
             >
-              <div class="first-letter:text-base">TAGS</div>
-              <div v-if="values.tags">{{ bindingTags.length }} / 5</div>
+              <div class="first-letter:text-base uppercase">
+                {{ WorkFieldsName.TAGS }}
+
+                <span class="ml-1">{{ bindingTags.length }} / 5</span>
+              </div>
             </label>
             <VerifySelectMulti
               :field="WorkFieldsName.TAGS"
               :options="categoryOptions"
+              :option-prefix="'#'"
               :on-create-option="createCategory"
               placeholder="Select Tags or Type Text"
             />
