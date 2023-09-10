@@ -108,7 +108,7 @@ watch(
 
 <template>
   <form @keypress.enter.prevent>
-    <div class="mb-2">
+    <div class="mb-3">
       <label class="block mb-1 text-gray-500 text-xs font-bold">
         <div class="first-letter:text-base uppercase">
           {{ FilterFieldsName.FIELD }}
@@ -122,7 +122,7 @@ watch(
       />
     </div>
 
-    <div v-if="values[FilterFieldsName.TYPE]">
+    <div v-if="values[FilterFieldsName.TYPE]" class="mb-3">
       <label class="block mb-1 text-gray-500 text-xs font-bold">
         <div class="first-letter:text-base uppercase">
           {{ FilterFieldsName.CONDITION }}

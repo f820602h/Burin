@@ -148,7 +148,7 @@ watch(
               </label>
 
               <ButtonLinkLike
-                size="sm"
+                class="text-sm"
                 text="+ Add Filter"
                 :disabled="
                   values[LogPanelFieldsName.FILTERS].length === filterMaxLength
@@ -157,7 +157,7 @@ watch(
               />
             </div>
 
-            <div class="w-full py-2 px-2 rounded bg-gray-800">
+            <div class="p-2 rounded bg-gray-800">
               <CollapseVTransition :duration="500">
                 <template v-if="!isFilterFormShow">
                   <div
@@ -201,7 +201,7 @@ watch(
             </p>
           </div>
 
-          <div class="relative mb-3" :class="{ 'z-10': !isFilterFormShow }">
+          <div class="relative" :class="{ 'z-10': !isFilterFormShow }">
             <div class="flex-between-center">
               <label class="block mb-1 text-gray-500 text-xs font-bold">
                 <div class="first-letter:text-base uppercase">
@@ -215,7 +215,7 @@ watch(
               </label>
 
               <ButtonLinkLike
-                size="sm"
+                class="text-sm"
                 text="+ Add Sorter"
                 :disabled="
                   values[LogPanelFieldsName.SORTERS].length === sorterMaxLength
@@ -224,7 +224,7 @@ watch(
               />
             </div>
 
-            <div class="py-2 px-2 rounded bg-gray-800">
+            <div class="p-2 rounded bg-gray-800">
               <CollapseVTransition>
                 <template v-if="!isSortFormShow">
                   <div
