@@ -1,19 +1,18 @@
 import type { Component } from "vue";
 
-const enum Modes {
-  LogIn,
-  SignUp,
+export enum Modes {
+  LOGIN = "login",
+  SIGN_UP = "signUp",
   // Forget,
 }
 
 export type ScreenConfig = {
   component: Component;
+  title: string;
   confirmButtonText: string;
   confirmButtonCallback: () => void;
   cancelButtonText: string;
   cancelButtonCallback: () => void;
 };
 
-export type ScreenConfigModesMap = {
-  [key in keyof typeof Modes]: ScreenConfig;
-};
+export type ScreenConfigModesMap = Record<Modes, ScreenConfig>;

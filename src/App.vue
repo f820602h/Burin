@@ -6,7 +6,6 @@ import { useLoadingStore } from "./stores/loading";
 import { useBreakPoint } from "./composables/useBreakPoint";
 import { vOnClickOutside } from "@vueuse/components";
 import CollapseHTransition from "./components/common/transition/CollapseHTransition.vue";
-import BlurMask from "@/components/common/BlurMask.vue";
 import HeaderToolBar from "./components/global/header/HeaderToolBar.vue";
 import MenuSidebar from "@/components/global/sidebar/MenuSidebar.vue";
 import UserLogger from "@/components/global/logger/UserLogger.vue";
@@ -62,7 +61,6 @@ const themeOverrides = {
       },
     },
   },
-  // ...
 };
 </script>
 
@@ -119,11 +117,7 @@ const themeOverrides = {
 
       <footer></footer>
 
-      <Transition name="fade">
-        <BlurMask v-if="isUserLoggerShow" class="justify-center items-center">
-          <UserLogger @close="isUserLoggerShow = false" />
-        </BlurMask>
-      </Transition>
+      <UserLogger :show="isUserLoggerShow" @close="isUserLoggerShow = false" />
 
       <NewWorkLauncher
         :show="isNewWorkLauncherShow"

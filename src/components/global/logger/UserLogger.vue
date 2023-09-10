@@ -1,37 +1,40 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import type { ScreenConfig, ScreenConfigModesMap } from "./types";
+import { Modes, type ScreenConfig, type ScreenConfigModesMap } from "./types";
 import ModeLogIn from "./ModeLogIn.vue";
 import ModeSignUp from "./ModeSignUp.vue";
-import ButtonBasic from "@/components/basic/ButtonBasic.vue";
+import ModelBasic from "@/components/basic/ModelBasic.vue";
 
 const emit = defineEmits<{ (e: "close"): void }>();
+const props = defineProps<{ show?: boolean }>();
 
 type ModeInstance = InstanceType<typeof ModeLogIn | typeof ModeSignUp>;
-const currentMode = ref<keyof ScreenConfigModesMap>("LogIn");
+const currentMode = ref<keyof ScreenConfigModesMap>(Modes.LOGIN);
 const currentModeInstance = ref<ModeInstance | null>(null);
 
 const screenConfigModesMap: ScreenConfigModesMap = {
-  LogIn: {
+  [Modes.LOGIN]: {
     component: ModeLogIn,
-    confirmButtonText: "登入",
+    title: "Welcome Back",
+    confirmButtonText: "LOGIN",
     confirmButtonCallback: () => {
       currentModeInstance.value
         ?.confirmHandler()
         .then(() => emit("close"))
         .catch((err) => err);
     },
-    cancelButtonText: "取消",
+    cancelButtonText: "CANCEL",
     cancelButtonCallback: () => emit("close"),
   },
-  SignUp: {
+  [Modes.SIGN_UP]: {
     component: ModeSignUp,
-    confirmButtonText: "註冊",
+    title: "Join Us",
+    confirmButtonText: "SIGN UP",
     confirmButtonCallback: () => {
       currentModeInstance.value?.confirmHandler();
     },
-    cancelButtonText: "返回",
-    cancelButtonCallback: () => changeMode("LogIn"),
+    cancelButtonText: "BACK",
+    cancelButtonCallback: () => changeMode(Modes.LOGIN),
   },
 };
 
@@ -45,101 +48,27 @@ function changeMode(mode: keyof ScreenConfigModesMap): void {
 </script>
 
 <template>
-  <div class="logger pb-8 rounded-2xl bg-zinc-700">
-    <div class="flex-center-center pb-5 rounded-2xl bg-zinc-600">
-      <div class="monitor-fixture">
-        <div v-for="i in 5" :key="i" class="groove" />
-      </div>
-
-      <div class="relative">
-        <div class="monitor-frame">
-          <div class="monitor-screen">
-            <div class="stripe" />
-            <component
-              :is="currentScreenConfig.component"
-              ref="currentModeInstance"
-              @change-mode="changeMode"
-            />
-          </div>
-        </div>
-
-        <div class="button-module">
-          <div class="rounded-t-2xl rounded-b-md bg-zinc-600">
-            <div class="flex-between-center px-5 pt-3 pb-3">
-              <ButtonBasic
-                theme="cancel"
-                :text="currentScreenConfig.cancelButtonText"
-                :width="100"
-                :height="35"
-                class="font-bold"
-                @click="currentScreenConfig.cancelButtonCallback"
-              />
-              <ButtonBasic
-                theme="confirm"
-                :text="currentScreenConfig.confirmButtonText"
-                :width="100"
-                :height="35"
-                class="font-bold"
-                @click="currentScreenConfig.confirmButtonCallback"
-              />
-            </div>
-            <div class="flex-center-center">
-              <div
-                v-for="i in 7"
-                :key="i"
-                class="w-[10px] h-5 mx-2 -mb-2 rounded-t-full bg-black/20 shadow-inner-md"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="monitor-fixture">
-        <div v-for="i in 5" :key="i" class="groove" />
-      </div>
-    </div>
-  </div>
+  <ModelBasic
+    :show="props.show"
+    :title="currentScreenConfig.title"
+    :left-button-text="currentScreenConfig.cancelButtonText"
+    :right-button-text="currentScreenConfig.confirmButtonText"
+    :left-button-handler="currentScreenConfig.cancelButtonCallback"
+    :right-button-handler="currentScreenConfig.confirmButtonCallback"
+    @close="emit('close')"
+  >
+    <template #body>
+      <form @keypress.enter.prevent>
+        <fieldset>
+          <component
+            :is="currentScreenConfig.component"
+            ref="currentModeInstance"
+            @change-mode="changeMode"
+          />
+        </fieldset>
+      </form>
+    </template>
+  </ModelBasic>
 </template>
 
-<style scoped lang="scss">
-.monitor-frame {
-  @apply -mt-6 p-5 border-8 border-zinc-600 rounded-xl bg-zinc-700 shadow-light;
-  box-shadow: theme("boxShadow.inner-lg"), theme("boxShadow.md");
-}
-
-.monitor-screen {
-  @apply relative w-[300px] h-[300px] p-3 rounded-xl bg-[#213821] text-[#13fc5c] overflow-hidden;
-
-  .stripe {
-    background-image: repeating-linear-gradient(
-      transparent,
-      transparent 8px,
-      rgba(0, 0, 0, 0.08) 8px,
-      rgba(0, 0, 0, 0.08) 11px
-    );
-    animation: a infinite 10s linear;
-    @apply absolute-default w-full h-[200%] shadow-inner-sm pointer-events-none;
-  }
-}
-
-.monitor-fixture {
-  @apply flex justify-between flex-col w-8 h-[100px] -mx-1 py-4 px-1 rounded-md bg-zinc-700 shadow-md;
-
-  .groove {
-    @apply h-1 rounded-full shadow-inner-md;
-  }
-}
-
-.button-module {
-  @apply relative w-[260px] mx-auto -mt-10 pb-2 rounded-t-2xl rounded-b-md bg-zinc-700 shadow-sm shadow-dark;
-}
-
-@keyframes a {
-  0% {
-    top: 0;
-  }
-  100% {
-    top: -100%;
-  }
-}
-</style>
+<style scoped lang="scss"></style>

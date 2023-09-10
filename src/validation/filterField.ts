@@ -7,7 +7,7 @@ import {
   FIELD_TYPE_OPERATORS_MAP,
   FilterOperator,
 } from "@/class/Filter";
-import { type FieldValidation, MultiSelectFieldsName } from "./types";
+import { type FieldValidation } from "./types";
 import { FieldTypes, type FieldTypeMap } from "@/types/fieldType";
 
 export enum FilterFieldsName {
@@ -15,11 +15,6 @@ export enum FilterFieldsName {
   TYPE = "type",
   CONDITION = "condition",
   VALUE = "value",
-}
-
-export enum FilterMultiSelectFieldsName {
-  BINDING = MultiSelectFieldsName.BINDING,
-  ADDING = MultiSelectFieldsName.ADDING,
 }
 
 export type FilterFields<T, TypeMap extends FieldTypeMap<T>> = FilterConfig<

@@ -70,7 +70,7 @@ watch(
 
 <template>
   <form @keypress.enter.prevent>
-    <div class="mb-2">
+    <div class="mb-3">
       <label class="block mb-1 text-gray-500 text-xs font-bold">
         <div class="first-letter:text-base uppercase">
           {{ SorterFieldsName.FIELD }}
@@ -84,7 +84,7 @@ watch(
       />
     </div>
 
-    <div v-if="values[SorterFieldsName.TYPE]">
+    <div v-if="values[SorterFieldsName.TYPE]" class="mb-3">
       <label class="block mb-1 text-gray-500 text-xs font-bold">
         <div class="first-letter:text-base uppercase">
           {{ SorterFieldsName.DIRECTION }}
@@ -98,7 +98,7 @@ watch(
       />
     </div>
 
-    <div class="flex mt-3">
+    <div class="flex">
       <ButtonBasic
         class="w-full mr-2"
         :theme="'primary-outline'"

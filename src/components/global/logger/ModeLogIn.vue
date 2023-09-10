@@ -2,16 +2,17 @@
 import { ref } from "vue";
 import { object } from "yup";
 import { useForm } from "vee-validate";
-import { userFieldsValidation } from "@/validation/userField";
+import type { UserInfo } from "@/class/User";
+import { UserFieldsName, userFieldsValidation } from "@/validation/userField";
 import { useUserStore } from "@/stores/user";
 import { useLogStore } from "@/stores/log";
 import { useCategoryStore } from "@/stores/category";
 import { useStampStore } from "@/stores/stamp";
 import { axiosUserLogin } from "@/api/user/index";
-import type { ScreenConfigModesMap } from "./types";
-import LoggerField from "./LoggerField.vue";
+import { Modes } from "./types";
+import VerifyInput from "@/components/basic/VerifyInput.vue";
 
-defineEmits<{ (e: "change-mode", mode: keyof ScreenConfigModesMap): void }>();
+defineEmits<{ (e: "change-mode", mode: Modes): void }>();
 
 const userStore = useUserStore();
 const logStore = useLogStore();
@@ -19,15 +20,18 @@ const categoryStore = useCategoryStore();
 const stampStore = useStampStore();
 const isAccountWrong = ref<boolean>(false);
 
-const validationSchema = object({
-  email: userFieldsValidation.email,
-  password: userFieldsValidation.password,
+const { handleSubmit, setErrors } = useForm<
+  Pick<UserInfo, "email" | "password">
+>({
+  validationSchema: object({
+    [UserFieldsName.EMAIL]: userFieldsValidation.email,
+    [UserFieldsName.PASSWORD]: userFieldsValidation.password,
+  }),
 });
-const { handleSubmit } = useForm({ validationSchema });
+
 const confirmHandler = handleSubmit(async (values) => {
   isAccountWrong.value = false;
-  const { email, password } = values;
-  return await axiosUserLogin({ email, password })
+  return await axiosUserLogin(values)
     .then(async () => {
       await userStore._actFetchUserInfo();
       await categoryStore._actFetchCategories();
@@ -36,7 +40,10 @@ const confirmHandler = handleSubmit(async (values) => {
       return Promise.resolve();
     })
     .catch(() => {
-      isAccountWrong.value = true;
+      setErrors({
+        [UserFieldsName.EMAIL]: "incorrect email or password",
+        [UserFieldsName.PASSWORD]: "incorrect email or password",
+      });
       return Promise.reject();
     });
 });
@@ -46,18 +53,46 @@ defineExpose({ confirmHandler });
 
 <template>
   <div>
-    <div class="font-bold italic text-2xl text-center">WELCOME</div>
-    <div class="min-h-5 text-sm text-center text-red-500 my-2">
-      {{ isAccountWrong ? "!! 錯誤的帳號或密碼 !!" : "" }}
+    <div class="mb-3">
+      <label
+        :for="UserFieldsName.EMAIL"
+        class="block mb-1 text-gray-500 text-xs font-bold"
+      >
+        <div class="first-letter:text-base uppercase">
+          {{ UserFieldsName.EMAIL }}
+        </div>
+      </label>
+      <VerifyInput
+        :field="UserFieldsName.EMAIL"
+        type="text"
+        placeholder="Type Your Email"
+      />
     </div>
-    <div class="w-[250px] mx-auto">
-      <LoggerField label="電子信箱" field="email" type="text" />
-      <LoggerField label="密碼" field="password" type="password" />
 
-      <div class="flex-center-center text-sm mt-3">
-        <div class="link">忘記密碼</div>
-        <div class="link" @click="$emit('change-mode', 'SignUp')">註冊</div>
-      </div>
+    <div>
+      <label
+        :for="UserFieldsName.PASSWORD"
+        class="flex-between-end mb-1 text-gray-500 text-xs font-bold"
+      >
+        <div class="first-letter:text-base uppercase">
+          {{ UserFieldsName.PASSWORD }}
+        </div>
+        <ButtonLinkLike text="Forget Your Password?" class="font-normal" />
+      </label>
+      <VerifyInput
+        :field="UserFieldsName.PASSWORD"
+        type="password"
+        placeholder="Type Your Password"
+      />
+    </div>
+
+    <div class="mt-10 text-center text-xs">
+      <span class="mr-2 text-gray-400">New to Burin?</span>
+      <ButtonLinkLike
+        text="Sign Up"
+        class="font-bold"
+        @click="$emit('change-mode', Modes.SIGN_UP)"
+      />
     </div>
   </div>
 </template>

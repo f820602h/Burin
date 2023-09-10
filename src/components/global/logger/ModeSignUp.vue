@@ -1,23 +1,22 @@
 <script setup lang="ts">
 import { object } from "yup";
 import { useForm } from "vee-validate";
-import { userFieldsValidation } from "@/validation/userField";
-import LoggerField from "./LoggerField.vue";
+import type { UserInfo } from "@/class/User";
+import { UserFieldsName, userFieldsValidation } from "@/validation/userField";
 import { axiosUserSignUp } from "@/api/user/index";
-import { ref } from "vue";
+import VerifyInput from "@/components/basic/VerifyInput.vue";
 
-const isEmailUsed = ref<boolean>(false);
-
-const validationSchema = object({
-  name: userFieldsValidation.name,
-  email: userFieldsValidation.email,
-  password: userFieldsValidation.password,
+const { handleSubmit, setFieldError } = useForm<Omit<UserInfo, "id">>({
+  validationSchema: object({
+    [UserFieldsName.NAME]: userFieldsValidation.name,
+    [UserFieldsName.EMAIL]: userFieldsValidation.email,
+    [UserFieldsName.PASSWORD]: userFieldsValidation.password,
+  }),
 });
-const { handleSubmit } = useForm({ validationSchema });
+
 const confirmHandler = handleSubmit(async (values) => {
-  const { name, email, password } = values;
-  await axiosUserSignUp({ name, email, password }).catch(() => {
-    isEmailUsed.value = true;
+  await axiosUserSignUp(values).catch(() => {
+    setFieldError(UserFieldsName.EMAIL, "email is already used");
   });
 });
 
@@ -26,13 +25,52 @@ defineExpose({ confirmHandler });
 
 <template>
   <div>
-    <div class="min-h-5 text-sm text-center mb-3">
-      {{ isEmailUsed ? "!! 電子信箱已被註冊 !!" : "填入資料完成註冊" }}
+    <div class="mb-3">
+      <label
+        :for="UserFieldsName.NAME"
+        class="block mb-1 text-gray-500 text-xs font-bold"
+      >
+        <div class="first-letter:text-base uppercase">
+          {{ UserFieldsName.NAME }}
+        </div>
+      </label>
+      <VerifyInput
+        :field="UserFieldsName.NAME"
+        type="text"
+        placeholder="Type Your Name"
+      />
     </div>
-    <div class="w-[250px] mx-auto">
-      <LoggerField label="使用者" field="name" type="text" />
-      <LoggerField label="電子信箱" field="email" type="text" />
-      <LoggerField label="密碼" field="password" type="password" />
+
+    <div class="mb-3">
+      <label
+        :for="UserFieldsName.EMAIL"
+        class="block mb-1 text-gray-500 text-xs font-bold"
+      >
+        <div class="first-letter:text-base uppercase">
+          {{ UserFieldsName.EMAIL }}
+        </div>
+      </label>
+      <VerifyInput
+        :field="UserFieldsName.EMAIL"
+        type="text"
+        placeholder="Type Your Email"
+      />
+    </div>
+
+    <div>
+      <label
+        :for="UserFieldsName.PASSWORD"
+        class="flex-between-end mb-1 text-gray-500 text-xs font-bold"
+      >
+        <div class="first-letter:text-base uppercase">
+          {{ UserFieldsName.PASSWORD }}
+        </div>
+      </label>
+      <VerifyInput
+        :field="UserFieldsName.PASSWORD"
+        type="password"
+        placeholder="Type Your Password"
+      />
     </div>
   </div>
 </template>
