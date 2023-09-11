@@ -29,7 +29,7 @@ self.addEventListener("activate", function (event) {
 self.addEventListener("message", function (event) {
   if (event.origin !== self.location.origin) return;
   serviceWorkerMethods[event.data.method as ServiceWorkerMethods](
-    event.data.data
+    event.data.data,
   );
 });
 

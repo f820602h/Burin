@@ -9,16 +9,16 @@ export const axiosCategoryGetList: () => Promise<
   CategoryCompleteInfo[]
 > = () => {
   return BaseAxiosRequestor.get({
-    url: "/category/list",
+    url: "/category",
     showLoading: true,
   });
 };
 
 export const axiosCategoryCreate: (
-  payload: Omit<CategoryInfo, "id">
+  payload: Omit<CategoryInfo, "id">,
 ) => Promise<CategoryId> = (payload) => {
   return BaseAxiosRequestor.post({
-    url: "/category/create",
+    url: "/category",
     data: payload,
   });
 };

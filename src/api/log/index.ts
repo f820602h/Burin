@@ -2,7 +2,7 @@ import { BaseAxiosRequestor } from "../axios/index";
 import type { CurrentLog, LogCompleteInfo, LogId, LogInfo } from "@/class/Log";
 
 export function axiosLogPostPush(
-  payload: Pick<LogInfo, "title" | "startTimestamp" | "categories">
+  payload: Pick<LogInfo, "title" | "startTimestamp" | "categories">,
 ): Promise<LogId> {
   return BaseAxiosRequestor.post({
     url: `/log/push`,

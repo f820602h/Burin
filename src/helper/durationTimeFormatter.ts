@@ -10,7 +10,7 @@ export type DurationTimeObject = {
 };
 
 export function durationTimeFormatter(
-  milliseconds: number
+  milliseconds: number,
 ): DurationTimeObject {
   const hour = 60 * 60 * 1000;
   const minute = 60 * 1000;
@@ -20,7 +20,7 @@ export function durationTimeFormatter(
   const minutes = Math.max(Math.floor((milliseconds % hour) / minute), 0);
   const seconds = Math.max(
     Math.floor(((milliseconds % hour) % minute) / second),
-    0
+    0,
   );
 
   const hoursText = String(hours).padStart(2, "0");

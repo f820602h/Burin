@@ -4,9 +4,12 @@ import { Modes, type ScreenConfig, type ScreenConfigModesMap } from "./types";
 import ModeLogIn from "./ModeLogIn.vue";
 import ModeSignUp from "./ModeSignUp.vue";
 import ModelBasic from "@/components/basic/ModelBasic.vue";
+import { useRouter } from "vue-router";
 
 const emit = defineEmits<{ (e: "close"): void }>();
 const props = defineProps<{ show?: boolean }>();
+
+const router = useRouter();
 
 type ModeInstance = InstanceType<typeof ModeLogIn | typeof ModeSignUp>;
 const currentMode = ref<keyof ScreenConfigModesMap>(Modes.LOGIN);
@@ -20,7 +23,10 @@ const screenConfigModesMap: ScreenConfigModesMap = {
     confirmButtonCallback: () => {
       currentModeInstance.value
         ?.confirmHandler()
-        .then(() => emit("close"))
+        .then(() => {
+          emit("close");
+          router.push({ name: "Today" });
+        })
         .catch((err) => err);
     },
     cancelButtonText: "CANCEL",

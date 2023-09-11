@@ -19,11 +19,11 @@ const logPanelStore = useLogPanelStore();
 const logs = ref<(Log | CurrentLog)[]>();
 const isPanelCreatorShow = ref<boolean>(false);
 
-const panels = computed(() => {
-  return logPanelStore.daily.userPanels.length
-    ? logPanelStore.daily.userPanels
-    : logPanelStore.daily.defaultPanels;
-});
+// const panels = computed(() => {
+//   return logPanelStore.daily.userPanels.length
+//     ? logPanelStore.daily.userPanels
+//     : logPanelStore.daily.defaultPanels;
+// });
 
 async function fetchDailyLogs(stamp: number): Promise<void> {
   if (stamp === timestampCalculator("today") || !logStore.dailyLogs[stamp]) {
@@ -73,7 +73,7 @@ defineExpose<ViewExpose>({
 <template>
   <div class="daily-view">
     <template v-if="logs && logs.length">
-      <div v-for="panel in panels" :key="panel.id">
+      <div v-for="panel in logPanelStore._getDailyPanels" :key="panel.id">
         <div v-if="panel.calculator(logs).length">
           <div class="flex justify-between items-center">
             <div class="flex text-gray-500 mb-2 px-1 text-base font-bold">

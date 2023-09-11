@@ -16,7 +16,7 @@ export function axiosUserGetInfo(): Promise<UserCompleteInfo> {
 }
 
 export function axiosUserSignUp(
-  payload: Omit<UserInfo, "id">
+  payload: Omit<UserInfo, "id">,
 ): Promise<UserId> {
   return BaseAxiosRequestor.post({
     url: "/user/sign-up",
@@ -26,7 +26,7 @@ export function axiosUserSignUp(
 }
 
 export function axiosUserLogin(
-  payload: Omit<UserInfo, "id" | "name">
+  payload: Omit<UserInfo, "id" | "name">,
 ): Promise<never> {
   return BaseAxiosRequestor.post({
     url: "/user/login",

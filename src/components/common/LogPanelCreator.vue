@@ -15,6 +15,7 @@ import {
 } from "@/validation/logPanelField";
 import { FieldTypes } from "@/types/fieldType";
 import { useCategoryStore } from "@/stores/category";
+import { useLogPanelStore } from "@/stores/logPanel";
 import ModelBasic from "@/components/basic/ModelBasic.vue";
 import VerifyInput from "@/components/basic/VerifyInput.vue";
 import FilterForm from "@/components/common/FilterForm.vue";
@@ -27,13 +28,15 @@ const emit = defineEmits<{ (e: "close"): void }>();
 const props = defineProps<{ show?: boolean }>();
 
 const categoryStore = useCategoryStore();
+const logPanelStore = useLogPanelStore();
+
 const isFilterFormShow = ref<boolean>(false);
 const isSortFormShow = ref<boolean>(false);
 
 const filterMaxLength = ref(5);
 const sorterMaxLength = ref(2);
 
-const { values, resetForm } = useForm<LogPanelFields>({
+const { handleSubmit, values, resetForm } = useForm<LogPanelFields>({
   validationSchema: object({
     ...createLogPanelSchema(filterMaxLength.value, sorterMaxLength.value),
   }),
@@ -92,9 +95,10 @@ function filterCardMultiSelectValueFormatter(
   });
 }
 
-const startHandler = () => {
-  console.log("start");
-};
+const addLogPanelHandler = handleSubmit(async (values) => {
+  await logPanelStore._actCreateDailyPanel(values);
+  emit("close");
+});
 
 watch(
   () => props.show,
@@ -111,7 +115,7 @@ watch(
     :show="props.show"
     :title="'New Panel'"
     :right-button-text="'ADD'"
-    :right-button-handler="startHandler"
+    :right-button-handler="addLogPanelHandler"
     :show-body-mask="isFilterFormShow || isSortFormShow"
     @close="emit('close')"
   >

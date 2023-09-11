@@ -17,7 +17,7 @@ export const useCategoryStore = defineStore({
       this.categories = date.map((cate) => new Category(cate));
     },
     async _actCreateCategory(
-      payload: Omit<CategoryInfo, "id">
+      payload: Omit<CategoryInfo, "id">,
     ): Promise<CategoryInfo["id"]> {
       const now = new Date().getTime();
       const { id } = await axiosCategoryCreate(payload);

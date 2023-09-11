@@ -9,7 +9,7 @@ export const checkUserStatusMiddleware: Middleware = async (
   to,
   from,
   next,
-  done
+  done,
 ) => {
   if (from.name) return done();
 

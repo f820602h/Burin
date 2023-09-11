@@ -29,6 +29,9 @@ const field = toRef(props, "field");
 const bindingFieldName = computed<string>(() => {
   return props.onCreateOption ? `${field.value}.binding` : `${field.value}`;
 });
+const addingFieldName = computed<string>(() => {
+  return props.onCreateOption ? `${field.value}.adding` : "";
+});
 
 const {
   value: binding,
@@ -44,7 +47,7 @@ const {
   meta: addingMeta,
   handleChange: addingHandleChange,
   handleReset: addingHandleReset,
-} = useField(`${field.value}.adding`, undefined, {
+} = useField(addingFieldName.value, undefined, {
   initialValue: "",
 });
 

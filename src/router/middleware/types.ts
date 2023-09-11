@@ -5,6 +5,6 @@ export interface Middleware {
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
     next: NavigationGuardNext,
-    done: () => void
+    done: () => void,
   ): void;
 }

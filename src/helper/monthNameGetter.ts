@@ -30,7 +30,7 @@ enum MonthShortName {
 
 export const monthNameGetter: (
   month: number,
-  option?: { mode: "full" | "short" }
+  option?: { mode: "full" | "short" },
 ) => string = (month, option = { mode: "full" }) => {
   if (option?.mode === "full") return MonthFullName[month];
   else if (option?.mode === "short") return MonthShortName[month];
