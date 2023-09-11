@@ -20,7 +20,7 @@ type DateFormatterOptions = {
 export function dateFormatter(
   timeStamp: number,
   mixinOptions: Partial<DateFormatterOptions> = {},
-  locales = "en-us"
+  locales = "en-us",
 ): string {
   const defaultOptions: DateFormatterOptions = {
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,

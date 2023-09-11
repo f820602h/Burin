@@ -3,13 +3,13 @@ import { Filter } from "./Filter";
 import { Sorter } from "./Sorter";
 import type { Log, CurrentLog, LOG_FIELD_TYPE_MAP } from "./Log";
 
-interface PanelId {
+export interface PanelId {
   id: number;
 }
 
-interface PanelInfo<T, TypeMap extends FieldTypeMap<T>> extends PanelId {
+export interface PanelInfo<T, TypeMap extends FieldTypeMap<T>> extends PanelId {
   title: string;
-  order: number;
+  next: PanelId["id"];
   filters: Filter<T, TypeMap>[];
   sorters: Sorter<T, TypeMap>[];
 }
@@ -23,7 +23,7 @@ export interface PanelCompleteInfo<T, TypeMap extends FieldTypeMap<T>>
 export class Panel<T, TypeMap extends FieldTypeMap<T>> {
   id: number;
   title: string;
-  order: number;
+  next: PanelId["id"];
   filters: Filter<T, TypeMap>[];
   sorters: Sorter<T, TypeMap>[];
   createTimestamp: number;
@@ -32,7 +32,7 @@ export class Panel<T, TypeMap extends FieldTypeMap<T>> {
   constructor(panel: PanelCompleteInfo<T, TypeMap>) {
     this.id = panel.id;
     this.title = panel.title;
-    this.order = panel.order;
+    this.next = panel.next;
     this.filters = panel.filters;
     this.sorters = panel.sorters;
     this.createTimestamp = panel.createTimestamp;
@@ -57,6 +57,16 @@ export class Panel<T, TypeMap extends FieldTypeMap<T>> {
       });
   }
 }
+
+export type LogPanelInfo = PanelInfo<
+  Log | CurrentLog,
+  typeof LOG_FIELD_TYPE_MAP
+>;
+
+export type LogPanelCompleteInfo = PanelCompleteInfo<
+  Log | CurrentLog,
+  typeof LOG_FIELD_TYPE_MAP
+>;
 
 export class LogPanel extends Panel<
   Log | CurrentLog,

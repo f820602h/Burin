@@ -1,24 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import { object } from "yup";
 import { useForm } from "vee-validate";
 import type { UserInfo } from "@/class/User";
 import { UserFieldsName, userFieldsValidation } from "@/validation/userField";
-import { useUserStore } from "@/stores/user";
-import { useLogStore } from "@/stores/log";
-import { useCategoryStore } from "@/stores/category";
-import { useStampStore } from "@/stores/stamp";
 import { axiosUserLogin } from "@/api/user/index";
 import { Modes } from "./types";
 import VerifyInput from "@/components/basic/VerifyInput.vue";
 
 defineEmits<{ (e: "change-mode", mode: Modes): void }>();
-
-const userStore = useUserStore();
-const logStore = useLogStore();
-const categoryStore = useCategoryStore();
-const stampStore = useStampStore();
-const isAccountWrong = ref<boolean>(false);
 
 const { handleSubmit, setErrors } = useForm<
   Pick<UserInfo, "email" | "password">
@@ -30,13 +19,8 @@ const { handleSubmit, setErrors } = useForm<
 });
 
 const confirmHandler = handleSubmit(async (values) => {
-  isAccountWrong.value = false;
   return await axiosUserLogin(values)
     .then(async () => {
-      await userStore._actFetchUserInfo();
-      await categoryStore._actFetchCategories();
-      await logStore._actFetchCurrentLog();
-      await stampStore._actFetchStamps();
       return Promise.resolve();
     })
     .catch(() => {

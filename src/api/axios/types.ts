@@ -38,13 +38,13 @@ export class AxiosRequestor {
     this.reqInterceptors?.forEach(
       ({ onFulfilled = (res) => res, onRejected = (err) => err }) => {
         this.instance.interceptors.request.use(onFulfilled, onRejected);
-      }
+      },
     );
 
     this.resInterceptors?.forEach(
       ({ onFulfilled = (res) => res, onRejected = (err) => err }) => {
         this.instance.interceptors.response.use(onFulfilled, onRejected);
-      }
+      },
     );
   }
 

@@ -36,15 +36,13 @@ export const useLogStore = defineStore({
       });
     },
     async _actPushLog(
-      payload: Pick<LogInfo, "title" | "startTimestamp" | "categories">
+      payload: Pick<LogInfo, "title" | "startTimestamp" | "categories">,
     ): Promise<void> {
       if (this.currentLog) await this.currentLog.finish();
       const { id } = await axiosLogPostPush(payload);
       this._actUpdateCurrentLog({
+        ...payload,
         id,
-        title: payload.title,
-        categories: payload.categories,
-        startTimestamp: payload.startTimestamp,
         finishTimestamp: 0,
         pauseTimestamp: 0,
         pauseTimes: 0,
@@ -66,7 +64,7 @@ export const useLogStore = defineStore({
         end: endTimestamp,
       });
       this.dailyLogs[payload.stamp] = data.map((logData) =>
-        logData.id === this.currentLog?.id ? this.currentLog : new Log(logData)
+        logData.id === this.currentLog?.id ? this.currentLog : new Log(logData),
       );
     },
   },

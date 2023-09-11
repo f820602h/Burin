@@ -16,7 +16,7 @@ function calcAfterTimes(data: CurrentLogNotificationData): number {
   const now = new Date().getTime();
   return Math.floor(
     (now - data.startTimestamp - data.pauseDurationTime) /
-      (data.intervalMinutes * 1000)
+      (data.intervalMinutes * 1000),
   );
 }
 
@@ -39,7 +39,7 @@ function sendNotification(data: CurrentLogNotificationData): void {
 }
 
 export function subscribeCurrentLogNotification(
-  data: CurrentLogNotificationData
+  data: CurrentLogNotificationData,
 ): void {
   initAfterTimes(data);
   sendNotification(data);
