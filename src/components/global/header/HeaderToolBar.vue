@@ -25,21 +25,21 @@ const logStore = useLogStore();
       </div>
 
       <div class="flex-shrink-0 p-1 border-l border-slate-600">
-        <div
+        <ButtonBasic
+          theme="gray-transparent"
           aria-label="toggle-sidebar-button"
-          class="tool-btn flex items-center"
           @click="$emit('toggle-sidebar')"
         >
           <div class="icon-side" />
-        </div>
+        </ButtonBasic>
       </div>
     </div>
 
     <div class="flex-shrink-0 flex p-1 border-r border-slate-600">
-      <div class="tool-btn flex items-center" @click="$emit('toggle-launcher')">
+      <ButtonBasic theme="gray-transparent" @click="$emit('toggle-launcher')">
         <div class="icon-task" />
         <span class="hidden lg:block ml-2 text-sm">New Work</span>
-      </div>
+      </ButtonBasic>
     </div>
 
     <div class="flex-grow flex items-center p-1 overflow-hidden">
@@ -107,9 +107,9 @@ const logStore = useLogStore();
     </div>
 
     <div class="flex-shrink-0 flex p-1 border-l border-slate-600">
-      <div class="tool-btn flex items-center" @click="$emit('toggle-logger')">
+      <ButtonBasic theme="gray-transparent" @click="$emit('toggle-logger')">
         <div class="icon-config" />
-      </div>
+      </ButtonBasic>
     </div>
   </div>
 </template>
@@ -154,9 +154,5 @@ const logStore = useLogStore();
       }
     }
   }
-}
-
-.tool-btn {
-  @apply p-2 rounded-sm cursor-pointer transition duration-200 hover:bg-gray-600;
 }
 </style>

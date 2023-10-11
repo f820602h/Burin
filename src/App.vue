@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import type { ViewExpose } from "@/types/viewExpose";
 import { useElementSize } from "@vueuse/core";
 import { useLoadingStore } from "./stores/loading";
 import { useBreakPoint } from "./composables/useBreakPoint";
@@ -19,7 +18,6 @@ const headerRef = ref<HTMLElement | null>(null);
 const { height: headerHeight } = useElementSize(headerRef);
 const viewHeaderRef = ref<HTMLElement | null>(null);
 const { height: viewHeaderHeight } = useElementSize(viewHeaderRef);
-const viewBodyRef = ref<ViewExpose | null>(null);
 
 const isUserLoggerShow = ref<boolean>(false);
 const isNewWorkLauncherShow = ref<boolean>(false);
@@ -95,21 +93,23 @@ const themeOverrides = {
             stroke="#7c3aed"
           >
             <div ref="viewHeaderRef" class="view-header">
-              <div v-if="viewBodyRef?.title" class="flex items-center">
+              <div class="flex items-center">
                 <div class="view-header__deco" />
-                <h2 class="view-header__title">{{ viewBodyRef.title }}</h2>
-                <p class="view-header__subtitle">{{ viewBodyRef?.subtitle }}</p>
+                <h2 id="view-header__title"></h2>
+                <p id="view-header__subtitle"></p>
               </div>
 
-              <div v-if="viewBodyRef?.extra?.length">
-                <template v-for="(node, i) in viewBodyRef.extra" :key="i">
-                  <component :is="node" />
-                </template>
-              </div>
+              <div id="view-header__extra" class="ml-auto"></div>
             </div>
 
             <router-view v-slot="{ Component }">
-              <component :is="Component" ref="viewBodyRef" class="view-body" />
+              <component
+                :is="Component"
+                class="view-body"
+                @toggle-launcher="
+                  isNewWorkLauncherShow! = !isNewWorkLauncherShow
+                "
+              />
             </router-view>
           </n-spin>
         </section>
@@ -160,23 +160,23 @@ section {
   min-height: calc(100vh - var(--headerHeight));
 
   .view-header {
-    @apply sticky z-10 flex justify-between items-center px-3 md:px-5 pt-3 pb-2 mb-2;
+    @apply sticky z-10 flex justify-between items-center min-h-14 px-3 md:px-5 py-3 empty:hidden;
     top: var(--headerHeight);
     background-color: var(--rootBackgroundColor);
 
-    &:empty {
-      display: none;
+    &:has(#view-header__title:empty) {
+      @apply hidden;
     }
 
     &__deco {
       @apply border-l-4 border-primary-400 h-6;
     }
 
-    &__title {
-      @apply pl-3 font-bold text-lg;
+    #view-header__title {
+      @apply pl-3 font-bold text-lg empty:hidden;
     }
 
-    &__subtitle {
+    #view-header__subtitle {
       @apply ml-3 px-[6px] py-[2px] rounded-sm text-xs font-bold bg-primary-500 empty:hidden;
     }
   }

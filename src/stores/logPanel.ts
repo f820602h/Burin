@@ -10,6 +10,8 @@ import { Sorter } from "@/class/Sorter";
 import {
   axiosDailyPanelGetList,
   axiosDailyPanelCreate,
+  axiosDailyPanelUpdate,
+  axiosDailyPanelDelete,
 } from "@/api/dailyPanel/index";
 
 const inProgressPanel: LogPanel = new LogPanel({
@@ -68,9 +70,11 @@ export const useLogPanelStore = defineStore({
   }),
   getters: {
     _getDailyPanels(): LogPanel[] {
-      return this.daily.userPanels.length
-        ? this.daily.userPanels
-        : this.daily.defaultPanels;
+      return [...this.daily.defaultPanels, ...this.daily.userPanels];
+
+      // this.daily.userPanels.length
+      //   ? this.daily.userPanels
+      //   : this.daily.defaultPanels;
     },
   },
   actions: {
@@ -90,6 +94,30 @@ export const useLogPanelStore = defineStore({
           createTimestamp: Date.now(),
         }),
       );
+    },
+    async _actUpdateDailyPanel(
+      id: LogPanel["id"],
+      payload: LogPanelFields,
+    ): Promise<void> {
+      const panel = this.daily.userPanels.find((panel) => panel.id === id);
+      if (!panel) return;
+
+      const isSuccess = await axiosDailyPanelUpdate({
+        id: id,
+        title: payload.title,
+        next: panel.next,
+        filters: payload.filters.map((filter) => filter.config),
+        sorters: payload.sorters.map((sorter) => sorter.config),
+      });
+
+      if (isSuccess) await this._actFetchDailyPanels();
+    },
+    async _actDeleteDailyPanel(id: LogPanel["id"]): Promise<void> {
+      const isSuccess = await axiosDailyPanelDelete({
+        id: id,
+      });
+
+      if (isSuccess) await this._actFetchDailyPanels();
     },
     async _actFetchDailyPanels(): Promise<void> {
       const data = await axiosDailyPanelGetList();

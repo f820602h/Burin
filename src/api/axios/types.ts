@@ -83,4 +83,8 @@ export class AxiosRequestor {
   patch<T>(config: RequestConfig): Promise<T> {
     return this.request<T>({ ...config, method: "PATCH" });
   }
+
+  put<T>(config: RequestConfig): Promise<T> {
+    return this.request<T>({ ...config, method: "PUT" });
+  }
 }

@@ -46,7 +46,7 @@ const props = withDefaults(
             <div class="model__body__buttons">
               <ButtonBasic
                 v-if="leftButtonText && leftButtonHandler"
-                class="w-full"
+                class="w-full uppercase"
                 :size="'lg'"
                 :theme="'primary-outline'"
                 :text="leftButtonText"
@@ -55,7 +55,7 @@ const props = withDefaults(
               />
               <ButtonBasic
                 v-if="rightButtonText && rightButtonHandler"
-                class="w-full"
+                class="w-full uppercase"
                 :size="'lg'"
                 :text="rightButtonText"
                 :disabled="rightButtonDisabled"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type ButtonTheme = "primary" | "primary-outline";
+type ButtonTheme = "primary" | "primary-outline" | "gray-transparent";
 type ButtonSize = "sm" | "md" | "lg";
 
 const props = withDefaults(
@@ -56,6 +56,11 @@ button {
     @apply border-primary-400 bg-transparent text-primary-400;
     @apply hover:border-primary-300 hover:bg-primary-200/20 hover:text-primary-300;
     @apply disabled:border-gray-500/0 disabled:text-gray-400/75 disabled:cursor-not-allowed;
+  }
+
+  &.gray-transparent {
+    @apply border-none bg-transparent text-gray-400 transition duration-200;
+    @apply hover:bg-white/20;
   }
 }
 </style>

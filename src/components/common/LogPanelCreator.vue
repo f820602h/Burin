@@ -8,6 +8,7 @@ import {
   LOG_FILTERABLE_FIELD_TEXT_MAP,
   LOG_SORTABLE_FIELD_TEXT_MAP,
 } from "@/class/Log";
+import { LogPanel } from "@/class/Panel";
 import {
   type LogPanelFields,
   LogPanelFieldsName,
@@ -25,7 +26,7 @@ import FilterCard from "@/components/common/FilterCard.vue";
 import SorterCard from "@/components/common/SorterCard.vue";
 
 const emit = defineEmits<{ (e: "close"): void }>();
-const props = defineProps<{ show?: boolean }>();
+const props = defineProps<{ show?: boolean; initialValues?: LogPanel }>();
 
 const categoryStore = useCategoryStore();
 const logPanelStore = useLogPanelStore();
@@ -36,15 +37,37 @@ const isSortFormShow = ref<boolean>(false);
 const filterMaxLength = ref(5);
 const sorterMaxLength = ref(2);
 
-const { handleSubmit, values, resetForm } = useForm<LogPanelFields>({
-  validationSchema: object({
-    ...createLogPanelSchema(filterMaxLength.value, sorterMaxLength.value),
-  }),
-  initialValues: {
-    [LogPanelFieldsName.TITLE]: "",
-    [LogPanelFieldsName.FILTERS]: [],
-    [LogPanelFieldsName.SORTERS]: [],
+const { handleSubmit, values, resetForm, setValues, setFieldValue } =
+  useForm<LogPanelFields>({
+    validationSchema: object({
+      ...createLogPanelSchema(filterMaxLength.value, sorterMaxLength.value),
+    }),
+    initialValues: {
+      [LogPanelFieldsName.TITLE]: "",
+      [LogPanelFieldsName.FILTERS]: [],
+      [LogPanelFieldsName.SORTERS]: [],
+    },
+  });
+
+watch(
+  () => props.initialValues,
+  (val) => {
+    setValues({
+      [LogPanelFieldsName.TITLE]: val ? val.title : "",
+      [LogPanelFieldsName.FILTERS]: val ? Array.from(val.filters) : [],
+      [LogPanelFieldsName.SORTERS]: val ? Array.from(val.sorters) : [],
+    });
   },
+  { immediate: true, deep: true },
+);
+
+const addLogPanelHandler = handleSubmit(async (values) => {
+  if (props.initialValues?.id) {
+    await logPanelStore._actUpdateDailyPanel(props.initialValues.id, values);
+  } else {
+    await logPanelStore._actCreateDailyPanel(values);
+  }
+  emit("close");
 });
 
 const LOG_SELECT_FIELD_OPTIONS_MAP = computed(() => {
@@ -95,11 +118,6 @@ function filterCardMultiSelectValueFormatter(
   });
 }
 
-const addLogPanelHandler = handleSubmit(async (values) => {
-  await logPanelStore._actCreateDailyPanel(values);
-  emit("close");
-});
-
 watch(
   () => props.show,
   () => {
@@ -108,13 +126,27 @@ watch(
     isSortFormShow.value = false;
   },
 );
+
+function deleteFilterHandler(index: number) {
+  setFieldValue(
+    LogPanelFieldsName.FILTERS,
+    values[LogPanelFieldsName.FILTERS].filter((_, i) => i !== index),
+  );
+}
+
+function deleteSorterHandler(index: number) {
+  setFieldValue(
+    LogPanelFieldsName.SORTERS,
+    values[LogPanelFieldsName.SORTERS].filter((_, i) => i !== index),
+  );
+}
 </script>
 
 <template>
   <ModelBasic
     :show="props.show"
     :title="'New Panel'"
-    :right-button-text="'ADD'"
+    :right-button-text="props.initialValues?.id ? 'UPDATE' : 'ADD'"
     :right-button-handler="addLogPanelHandler"
     :show-body-mask="isFilterFormShow || isSortFormShow"
     @close="emit('close')"
@@ -135,6 +167,7 @@ watch(
               :field="LogPanelFieldsName.TITLE"
               type="text"
               placeholder="Type Panel Title"
+              :default-value="values[LogPanelFieldsName.TITLE]"
             />
           </div>
 
@@ -181,13 +214,14 @@ watch(
                       :format-multi-select-value="
                         filterCardMultiSelectValueFormatter
                       "
+                      @delete="deleteFilterHandler(i)"
                     />
                   </div>
                 </template>
 
                 <FilterForm
                   v-else-if="isFilterFormShow"
-                  v-model:filters="values[LogPanelFieldsName.FILTERS]"
+                  :filters="values[LogPanelFieldsName.FILTERS]"
                   :target-type-map="LOG_FIELD_TYPE_MAP"
                   :target-text-map="LOG_FILTERABLE_FIELD_TEXT_MAP"
                   :target-select-field-options-map="
@@ -195,6 +229,10 @@ watch(
                   "
                   :target-multi-select-field-options-map="
                     LOG_MULTI_SELECT_FIELD_OPTIONS_MAP
+                  "
+                  @update:filters="
+                    (filters) =>
+                      setFieldValue(LogPanelFieldsName.FILTERS, filters)
                   "
                   @close="isFilterFormShow = false"
                 />
@@ -243,15 +281,20 @@ watch(
                       v-for="(sorter, i) in values[LogPanelFieldsName.SORTERS]"
                       :key="i"
                       :sorter="sorter"
+                      @delete="deleteSorterHandler(i)"
                     />
                   </div>
                 </template>
 
                 <SorterForm
                   v-else-if="isSortFormShow"
-                  v-model:sorters="values[LogPanelFieldsName.SORTERS]"
+                  :sorters="values[LogPanelFieldsName.SORTERS]"
                   :target-type-map="LOG_FIELD_TYPE_MAP"
                   :target-text-map="LOG_SORTABLE_FIELD_TEXT_MAP"
+                  @update:sorters="
+                    (sorters) =>
+                      setFieldValue(LogPanelFieldsName.SORTERS, sorters)
+                  "
                   @close="isSortFormShow = false"
                 />
               </CollapseVTransition>

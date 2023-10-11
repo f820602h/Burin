@@ -185,20 +185,26 @@ export class Filter<T, TypeMap extends FieldTypeMap<T>> {
         case FieldTypes.STRING:
           switch (condition) {
             case FilterOperator.IS:
-              return member[field] === value[FieldTypes.STRING];
+              return (
+                String(member[field]).toLowerCase() ===
+                value[FieldTypes.STRING].toLowerCase()
+              );
 
             case FilterOperator.IS_NOT:
-              return member[field] !== value[FieldTypes.STRING];
+              return (
+                String(member[field]).toLowerCase() !==
+                value[FieldTypes.STRING].toLowerCase()
+              );
 
             case FilterOperator.CONTAINS: {
-              const str = member[field];
+              const str = String(member[field]).toLowerCase();
               if (typeof str !== "string") return false;
-              return str.includes(value[FieldTypes.STRING]);
+              return str.includes(value[FieldTypes.STRING].toLowerCase());
             }
             case FilterOperator.NOT_CONTAIN: {
-              const str = member[field];
+              const str = String(member[field]).toLowerCase();
               if (typeof str !== "string") return false;
-              return !str.includes(value[FieldTypes.STRING]);
+              return !str.includes(value[FieldTypes.STRING].toLowerCase());
             }
             default:
               return false;
@@ -303,7 +309,7 @@ export class Filter<T, TypeMap extends FieldTypeMap<T>> {
               return value[FieldTypes.SELECT] === member[field];
 
             case FilterOperator.IS_NOT:
-              return !value[FieldTypes.SELECT] !== member[field];
+              return value[FieldTypes.SELECT] !== member[field];
             default:
               return false;
           }
