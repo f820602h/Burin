@@ -61,7 +61,10 @@ defineExpose({ confirmHandler });
         <div class="first-letter:text-base uppercase">
           {{ UserFieldsName.PASSWORD }}
         </div>
-        <ButtonLinkLike text="Forget Your Password?" class="font-normal" />
+        <ButtonLinkLike
+          text="Forget Your Password?"
+          class="!text-xs font-normal"
+        />
       </label>
       <VerifyInput
         :field="UserFieldsName.PASSWORD"

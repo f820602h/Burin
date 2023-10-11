@@ -23,7 +23,7 @@ const props = withDefaults(
 
 <style lang="scss" scoped>
 button {
-  @apply border-none outline-none default:text-sm bg-transparent cursor-pointer transition duration-200;
+  @apply border-none outline-none text-sm bg-transparent cursor-pointer transition duration-200;
   @apply hover:underline hover:decoration-1;
 
   &.primary {

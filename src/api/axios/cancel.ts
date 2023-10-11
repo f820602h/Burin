@@ -13,6 +13,7 @@ export function addPending(config: AxiosRequestConfig): void {
 }
 
 export function removePending(config: AxiosRequestConfig): void {
+  if (!config) return;
   const url: string = [config.method, config.url].join("&");
   const cancel: Canceler | undefined = pending.get(url);
   if (cancel) {

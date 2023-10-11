@@ -33,3 +33,25 @@ export const axiosDailyPanelCreate: (payload: {
     data: payload,
   });
 };
+
+export const axiosDailyPanelUpdate: (payload: {
+  id: LogPanelCompleteInfo["id"];
+  title: LogPanelInfo["title"];
+  next: LogPanelInfo["id"];
+  filters: LogPanelInfo["filters"][number]["config"][];
+  sorters: LogPanelInfo["sorters"][number]["config"][];
+}) => Promise<boolean> = (payload) => {
+  return BaseAxiosRequestor.patch({
+    url: "/daily-panel",
+    data: payload,
+  });
+};
+
+export const axiosDailyPanelDelete: (payload: {
+  id: LogPanelCompleteInfo["id"];
+}) => Promise<boolean> = (payload) => {
+  return BaseAxiosRequestor.delete({
+    url: "/daily-panel",
+    params: payload,
+  });
+};
