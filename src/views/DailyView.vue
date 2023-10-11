@@ -10,6 +10,7 @@ import { dateFormatter } from "@/helper/dateFormatter";
 import LogCard from "@/components/common/LogCard.vue";
 import LogPanelCreator from "@/components/common/LogPanelCreator.vue";
 import ModelBasic from "@/components/basic/ModelBasic.vue";
+import CollapseVTransition from "@/components/common/transition/CollapseVTransition.vue";
 import { NPopover } from "naive-ui";
 import { LogPanel } from "@/class/Panel";
 
@@ -24,6 +25,7 @@ const isPanelManagerShow = ref<boolean>(false);
 const isPanelDeleteConfirmShow = ref<boolean>(false);
 const isPanelCreatorShow = ref<boolean>(false);
 const initPanelCreatorValues = ref<LogPanel>();
+const inActionPanelId = ref<LogPanel["id"]>();
 const deletingPanel = ref<LogPanel>();
 
 const viewTitle = computed(() => {
@@ -66,6 +68,7 @@ function closePanelManager(e: MouseEvent): void {
 
 function openPanelDeleteConfirm(panel: LogPanel): void {
   deletingPanel.value = panel;
+  isPanelManagerShow.value = false;
   isPanelDeleteConfirmShow.value = true;
 }
 
@@ -91,6 +94,14 @@ function closePanelCreator(): void {
   isPanelCreatorShow.value = false;
   initPanelCreatorValues.value = undefined;
 }
+
+// function showPanelActionButtons(panel: LogPanel): void {
+//   inActionPanelId.value = panel.id;
+// }
+
+// function hidePanelActionButtons(): void {
+//   inActionPanelId.value = undefined;
+// }
 
 watch(
   () => logStore.currentLog,
@@ -198,29 +209,58 @@ watch(
             <div
               v-for="panel in logPanelStore._getDailyPanels"
               :key="panel.id"
-              class="flex justify-between items-center mb-2 last:mb-0 p-[6px] rounded bg-white/20"
+              class="mb-2 last:mb-0 rounded"
             >
-              <div class="flex items-center truncate">
-                <span class="icon-order mr-1 cursor-move" />
+              <div class="flex items-center p-1 rounded bg-white/20">
+                <span class="icon-order py-2 pl-1 pr-3 cursor-move" />
                 <span class="font-bold uppercase truncate">
                   {{ panel.title }}
                 </span>
+                <ButtonBasic
+                  class="ml-auto"
+                  theme="gray-transparent"
+                  @click="
+                    inActionPanelId =
+                      inActionPanelId === panel.id ? undefined : panel.id
+                  "
+                >
+                  <span class="icon-more text-white"></span>
+                </ButtonBasic>
               </div>
 
-              <div class="flex items-center shrink-0">
-                <ButtonBasic
-                  theme="gray-transparent"
-                  @click="openPanelCreator(panel)"
+              <CollapseVTransition>
+                <div
+                  v-if="inActionPanelId === panel.id"
+                  class="flex justify-end items-center shrink-0 gap-2 px-2"
                 >
-                  <span class="icon-edit text-white"></span>
-                </ButtonBasic>
-                <ButtonBasic
-                  theme="gray-transparent"
-                  @click="openPanelDeleteConfirm(panel)"
-                >
-                  <span class="icon-delete text-white"></span>
-                </ButtonBasic>
-              </div>
+                  <div class="rounded-b bg-black/40">
+                    <ButtonBasic
+                      class="!px-5 !py-1 !rounded-b !rounded-t-none"
+                      theme="gray-transparent"
+                    >
+                      <span class="icon-hidden"></span>
+                    </ButtonBasic>
+                  </div>
+                  <div class="rounded-b bg-black/40">
+                    <ButtonBasic
+                      class="!px-5 !py-1 !rounded-b !rounded-t-none"
+                      theme="gray-transparent"
+                      @click="openPanelCreator(panel)"
+                    >
+                      <span class="icon-edit"></span>
+                    </ButtonBasic>
+                  </div>
+                  <div class="rounded-b bg-black/40">
+                    <ButtonBasic
+                      class="!px-5 !py-1 !rounded-b !rounded-t-none"
+                      theme="gray-transparent"
+                      @click="openPanelDeleteConfirm(panel)"
+                    >
+                      <span class="icon-delete"></span>
+                    </ButtonBasic>
+                  </div>
+                </div>
+              </CollapseVTransition>
             </div>
           </div>
         </template>

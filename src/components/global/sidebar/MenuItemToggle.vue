@@ -3,6 +3,7 @@ import { ref } from "vue";
 import type { MenuItemToggle as MenuItemToggleType } from "./types";
 import MenuItem from "./MenuItem.vue";
 import MenuItemToggle from "./MenuItemToggle.vue";
+import CollapseVTransition from "@/components/common/transition/CollapseVTransition.vue";
 
 withDefaults(defineProps<{ item: MenuItemToggleType; layer?: number }>(), {
   layer: 1,
@@ -33,16 +34,18 @@ function onItemClick(): void {
       <span>{{ item.name }}</span>
     </div>
 
-    <ul v-show="isOpen">
-      <template v-for="(child, index) in item.children" :key="index">
-        <template v-if="'children' in child">
-          <MenuItemToggle :key="index" :item="child" :layer="layer + 1" />
+    <CollapseVTransition>
+      <ul v-show="isOpen">
+        <template v-for="(child, index) in item.children" :key="index">
+          <template v-if="'children' in child">
+            <MenuItemToggle :key="index" :item="child" :layer="layer + 1" />
+          </template>
+          <template v-else>
+            <MenuItem :item="child" :layer="layer + 1" />
+          </template>
         </template>
-        <template v-else>
-          <MenuItem :item="child" :layer="layer + 1" />
-        </template>
-      </template>
-    </ul>
+      </ul>
+    </CollapseVTransition>
   </li>
 </template>
 
