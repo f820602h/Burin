@@ -46,7 +46,7 @@ const props = withDefaults(
     easingEnter: "ease-in-out",
     easingLeave: "ease-in-out",
     opacityClosed: 0,
-    opacityOpened: 0,
+    opacityOpened: 1,
   },
 );
 

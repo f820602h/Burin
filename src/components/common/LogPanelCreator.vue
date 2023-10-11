@@ -147,7 +147,9 @@ function deleteSorterHandler(index: number) {
     :show="props.show"
     :title="'New Panel'"
     :right-button-text="props.initialValues?.id ? 'UPDATE' : 'ADD'"
+    :left-button-text="'CANCEL'"
     :right-button-handler="addLogPanelHandler"
+    :left-button-handler="() => emit('close')"
     :show-body-mask="isFilterFormShow || isSortFormShow"
     @close="emit('close')"
   >
@@ -195,7 +197,7 @@ function deleteSorterHandler(index: number) {
             </div>
 
             <div class="p-2 rounded bg-gray-800">
-              <CollapseVTransition :duration="500">
+              <CollapseVTransition>
                 <template v-if="!isFilterFormShow">
                   <div
                     v-if="!values[LogPanelFieldsName.FILTERS].length"

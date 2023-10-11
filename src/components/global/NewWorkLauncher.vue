@@ -75,7 +75,9 @@ watch(
     :show="props.show"
     :title="'New Work'"
     :right-button-text="'START'"
+    :left-button-text="'CANCEL'"
     :right-button-handler="startHandler"
+    :left-button-handler="() => emit('close')"
     @close="emit('close')"
   >
     <template #body>

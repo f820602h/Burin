@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useElementSize } from "@vueuse/core";
-import { useLoadingStore } from "./stores/loading";
-import { useBreakPoint } from "./composables/useBreakPoint";
+import { useLoadingStore } from "@/stores/loading";
+import { useBreakPoint } from "@/composables/useBreakPoint";
 import { vOnClickOutside } from "@vueuse/components";
-import CollapseHTransition from "./components/common/transition/CollapseHTransition.vue";
-import HeaderToolBar from "./components/global/header/HeaderToolBar.vue";
+import CollapseHTransition from "@/components/common/transition/CollapseHTransition.vue";
+import HeaderToolBar from "@/components/global/header/HeaderToolBar.vue";
 import MenuSidebar from "@/components/global/sidebar/MenuSidebar.vue";
 import UserLogger from "@/components/global/logger/UserLogger.vue";
-import NewWorkLauncher from "./components/global/NewWorkLauncher.vue";
+import NewWorkLauncher from "@/components/global/NewWorkLauncher.vue";
 import { NConfigProvider, NSpin, darkTheme } from "naive-ui";
 
 const loadingStore = useLoadingStore();

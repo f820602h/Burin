@@ -82,7 +82,7 @@ const props = withDefaults(
   @apply relative w-full h-full md:h-auto md:max-w-[500px] md:mt-[10vh] p-2 rounded-xl bg-black;
 
   &__title {
-    @apply absolute top-0 md:-top-3 left-1/2 text-center text-3xl text-gray-300 font-bold -translate-x-1/2;
+    @apply absolute top-0 md:-top-3 left-1/2 text-center text-3xl text-gray-300 font-bold -translate-x-1/2 whitespace-nowrap;
 
     &::before {
       @apply absolute top-0 md:top-auto md:bottom-0 -left-3 -z-1 h-1/2 bg-black;
@@ -95,11 +95,7 @@ const props = withDefaults(
     @apply relative flex flex-col px-3 py-4 min-h-full;
 
     &__buttons {
-      @apply flex justify-between mt-auto pt-5 text-center empty:hidden;
-
-      button:first-child:not(:last-child) {
-        @apply mr-2;
-      }
+      @apply flex flex-col-reverse md:flex-row justify-between gap-2 mt-auto pt-5 text-center empty:hidden;
     }
 
     &__mask {
