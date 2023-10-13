@@ -30,51 +30,53 @@ const props = withDefaults(
 </script>
 
 <template>
-  <TransitionBasic :name="'model-fade'">
-    <BlurMask v-if="show" class="justify-center items-start">
-      <div class="model">
-        <div class="min-w-0 h-full pt-9 border-2 border-gray-400 rounded-lg">
-          <div class="model__title">
-            <slot name="title">
-              {{ props.title }}
-            </slot>
-          </div>
-
-          <div class="model__body">
-            <slot name="body" />
-
-            <div class="model__body__buttons">
-              <ButtonBasic
-                v-if="leftButtonText && leftButtonHandler"
-                class="w-full uppercase"
-                :size="'lg'"
-                :theme="'primary-outline'"
-                :text="leftButtonText"
-                :disabled="leftButtonDisabled"
-                @click="leftButtonHandler"
-              />
-              <ButtonBasic
-                v-if="rightButtonText && rightButtonHandler"
-                class="w-full uppercase"
-                :size="'lg'"
-                :text="rightButtonText"
-                :disabled="rightButtonDisabled"
-                @click="rightButtonHandler"
-              />
+  <Teleport to="body">
+    <TransitionBasic :name="'model-fade'">
+      <BlurMask v-if="show" class="justify-center items-start">
+        <div class="model">
+          <div class="min-w-0 h-full pt-9 border-2 border-gray-400 rounded-lg">
+            <div class="model__title">
+              <slot name="title">
+                {{ props.title }}
+              </slot>
             </div>
 
-            <TransitionBasic :name="'fade'">
-              <div v-if="showBodyMask" class="model__body__mask"></div>
-            </TransitionBasic>
+            <div class="model__body">
+              <slot name="body" />
+
+              <div class="model__body__buttons">
+                <ButtonBasic
+                  v-if="leftButtonText && leftButtonHandler"
+                  class="w-full uppercase"
+                  :size="'lg'"
+                  :theme="'primary-outline'"
+                  :text="leftButtonText"
+                  :disabled="leftButtonDisabled"
+                  @click="leftButtonHandler"
+                />
+                <ButtonBasic
+                  v-if="rightButtonText && rightButtonHandler"
+                  class="w-full uppercase"
+                  :size="'lg'"
+                  :text="rightButtonText"
+                  :disabled="rightButtonDisabled"
+                  @click="rightButtonHandler"
+                />
+              </div>
+
+              <TransitionBasic :name="'fade'">
+                <div v-if="showBodyMask" class="model__body__mask"></div>
+              </TransitionBasic>
+            </div>
+          </div>
+
+          <div class="model__close-btn" @click="emit('close')">
+            <div class="icon-cancel" />
           </div>
         </div>
-
-        <div class="model__close-btn" @click="emit('close')">
-          <div class="icon-cancel" />
-        </div>
-      </div>
-    </BlurMask>
-  </TransitionBasic>
+      </BlurMask>
+    </TransitionBasic>
+  </Teleport>
 </template>
 
 <style scoped lang="scss">

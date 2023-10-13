@@ -5,6 +5,7 @@ import App from "./App.vue";
 import router from "./router";
 
 import "@/css/tailwind.css";
+import "@/css/tailwind_base.css";
 import "@/css/icons.css";
 
 import ButtonBasic from "@/components/basic/ButtonBasic.vue";

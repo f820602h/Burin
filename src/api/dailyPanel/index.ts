@@ -9,7 +9,7 @@ export const axiosDailyPanelGetList: () => Promise<
   {
     id: LogPanelCompleteInfo["id"];
     title: LogPanelCompleteInfo["title"];
-    next: LogPanelCompleteInfo["id"];
+    visibility: LogPanelCompleteInfo["visibility"];
     filters: LogPanelInfo["filters"][number]["config"][];
     sorters: LogPanelInfo["sorters"][number]["config"][];
     createTimestamp: LogPanelCompleteInfo["createTimestamp"];
@@ -24,7 +24,7 @@ export const axiosDailyPanelGetList: () => Promise<
 
 export const axiosDailyPanelCreate: (payload: {
   title: LogPanelInfo["title"];
-  next: LogPanelInfo["id"];
+  visibility: LogPanelInfo["visibility"];
   filters: LogPanelInfo["filters"][number]["config"][];
   sorters: LogPanelInfo["sorters"][number]["config"][];
 }) => Promise<PanelId> = (payload) => {
@@ -37,7 +37,7 @@ export const axiosDailyPanelCreate: (payload: {
 export const axiosDailyPanelUpdate: (payload: {
   id: LogPanelCompleteInfo["id"];
   title: LogPanelInfo["title"];
-  next: LogPanelInfo["id"];
+  visibility: LogPanelInfo["visibility"];
   filters: LogPanelInfo["filters"][number]["config"][];
   sorters: LogPanelInfo["sorters"][number]["config"][];
 }) => Promise<boolean> = (payload) => {

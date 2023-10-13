@@ -17,7 +17,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="fixed top-0 left-0 z-global-3 full min-w-[375px] flex bg-black/50"
+    class="fixed top-0 left-0 z-global-3 full min-w-[375px] flex bg-black/50 overflow-auto"
     @click.self="$emit('mask-close')"
   >
     <slot></slot>
