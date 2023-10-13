@@ -1,9 +1,10 @@
 import { defineStore } from "pinia";
+import { useCookies } from "@vueuse/integrations/useCookies";
 import { FieldTypes } from "@/types/fieldType";
 import { type LogPanelFields } from "@/validation/logPanelField";
 import { FilterOperator } from "@/class/Filter";
 import { SorterDirection } from "@/class/Sorter";
-import { LogPanel } from "@/class/Panel";
+import { type LogPanelInfo, LogPanel } from "@/class/Panel";
 import { LogStatus } from "@/class/Log";
 import { Filter } from "@/class/Filter";
 import { Sorter } from "@/class/Sorter";
@@ -14,10 +15,30 @@ import {
   axiosDailyPanelDelete,
 } from "@/api/dailyPanel/index";
 
+const DEFAULT_PANEL_NAME = {
+  IN_PROGRESS: "IN PROGRESS",
+  HISTORY: "HISTORY",
+};
+const DEFAULT_PANEL_COOKIES_NAME = {
+  [DEFAULT_PANEL_NAME.IN_PROGRESS]: "inProgressPanelVisibility",
+  [DEFAULT_PANEL_NAME.HISTORY]: "historyPanelVisibility",
+};
+
+const cookies = useCookies();
+const inProgressPanelVisibility = cookies.get(
+  DEFAULT_PANEL_COOKIES_NAME[DEFAULT_PANEL_NAME.IN_PROGRESS],
+);
+const historyPanelVisibility = cookies.get(
+  DEFAULT_PANEL_COOKIES_NAME[DEFAULT_PANEL_NAME.HISTORY],
+);
+
 const inProgressPanel: LogPanel = new LogPanel({
   id: -2,
-  next: -2,
-  title: "IN PROGRESS",
+  title: DEFAULT_PANEL_NAME.IN_PROGRESS,
+  visibility:
+    inProgressPanelVisibility === undefined
+      ? true
+      : !!Number(inProgressPanelVisibility),
   filters: [
     new Filter({
       field: "status",
@@ -32,8 +53,11 @@ const inProgressPanel: LogPanel = new LogPanel({
 });
 const historyPanel: LogPanel = new LogPanel({
   id: -1,
-  next: -1,
-  title: "HISTORY",
+  title: DEFAULT_PANEL_NAME.HISTORY,
+  visibility:
+    historyPanelVisibility === undefined
+      ? true
+      : !!Number(historyPanelVisibility),
   filters: [
     new Filter({
       field: "status",
@@ -71,17 +95,13 @@ export const useLogPanelStore = defineStore({
   getters: {
     _getDailyPanels(): LogPanel[] {
       return [...this.daily.defaultPanels, ...this.daily.userPanels];
-
-      // this.daily.userPanels.length
-      //   ? this.daily.userPanels
-      //   : this.daily.defaultPanels;
     },
   },
   actions: {
     async _actCreateDailyPanel(payload: LogPanelFields): Promise<void> {
       const { id } = await axiosDailyPanelCreate({
         title: payload.title,
-        next: 0,
+        visibility: true,
         filters: payload.filters.map((filter) => filter.config),
         sorters: payload.sorters.map((sorter) => sorter.config),
       });
@@ -89,7 +109,7 @@ export const useLogPanelStore = defineStore({
         new LogPanel({
           ...payload,
           id,
-          next: 0,
+          visibility: true,
           updateTimestamp: Date.now(),
           createTimestamp: Date.now(),
         }),
@@ -97,26 +117,23 @@ export const useLogPanelStore = defineStore({
     },
     async _actUpdateDailyPanel(
       id: LogPanel["id"],
-      payload: LogPanelFields,
+      payload: Partial<LogPanelInfo>,
     ): Promise<void> {
       const panel = this.daily.userPanels.find((panel) => panel.id === id);
       if (!panel) return;
 
       const isSuccess = await axiosDailyPanelUpdate({
-        id: id,
-        title: payload.title,
-        next: panel.next,
-        filters: payload.filters.map((filter) => filter.config),
-        sorters: payload.sorters.map((sorter) => sorter.config),
+        id,
+        title: payload.title || panel.title,
+        visibility: payload.visibility || panel.visibility,
+        filters: (payload.filters || panel.filters).map((f) => f.config),
+        sorters: (payload.sorters || panel.sorters).map((s) => s.config),
       });
 
       if (isSuccess) await this._actFetchDailyPanels();
     },
     async _actDeleteDailyPanel(id: LogPanel["id"]): Promise<void> {
-      const isSuccess = await axiosDailyPanelDelete({
-        id: id,
-      });
-
+      const isSuccess = await axiosDailyPanelDelete({ id: id });
       if (isSuccess) await this._actFetchDailyPanels();
     },
     async _actFetchDailyPanels(): Promise<void> {
@@ -129,6 +146,12 @@ export const useLogPanelStore = defineStore({
             sorters: panel.sorters.map((sorter) => new Sorter(sorter)),
           }),
       );
+    },
+    _actUpdateDefaultPanelVisibilityCookies(
+      panelTitle: string,
+      visibility: boolean,
+    ): void {
+      cookies.set(DEFAULT_PANEL_COOKIES_NAME[panelTitle], visibility ? 1 : 0);
     },
   },
 });

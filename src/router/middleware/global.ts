@@ -6,9 +6,9 @@ import { useCategoryStore } from "@/stores/category";
 import { useStampStore } from "@/stores/stamp";
 
 export const checkUserStatusMiddleware: Middleware = async (
-  to,
+  _to,
   from,
-  next,
+  _next,
   done,
 ) => {
   if (from.name) return done();
@@ -19,10 +19,12 @@ export const checkUserStatusMiddleware: Middleware = async (
   const stampStore = useStampStore();
 
   if (await axiosUserGetStatus()) {
-    await userStore._actFetchUserInfo();
-    await categoryStore._actFetchCategories();
-    await logStore._actFetchCurrentLog();
-    await stampStore._actFetchStamps();
+    await Promise.all([
+      userStore._actFetchUserInfo(),
+      categoryStore._actFetchCategories(),
+      logStore._actFetchCurrentLog(),
+      stampStore._actFetchStamps(),
+    ]);
   }
 
   done();

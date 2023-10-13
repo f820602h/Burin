@@ -47,7 +47,7 @@ const formattedValue = computed<string>(() => {
   return `${hourText}:${minuteText}`;
 });
 
-function onUpdate(value: number | null, formattedValue: string | null): void {
+function onUpdate(_value: number | null, formattedValue: string | null): void {
   hourHandleChange(Number(formattedValue?.split(":")[0]));
   minuteHandleChange(Number(formattedValue?.split(":")[1]));
 }
@@ -63,7 +63,7 @@ function onUpdate(value: number | null, formattedValue: string | null): void {
       :input-readonly="true"
       :format="'HH:mm'"
       :value-format="'HH:mm'"
-      :time-zone="Intl.DateTimeFormat().resolvedOptions().timeZone"
+      :actions="['confirm']"
       :on-update:value="onUpdate"
     />
     <slot

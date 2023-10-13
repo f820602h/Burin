@@ -9,7 +9,7 @@ export interface PanelId {
 
 export interface PanelInfo<T, TypeMap extends FieldTypeMap<T>> extends PanelId {
   title: string;
-  next: PanelId["id"];
+  visibility: boolean;
   filters: Filter<T, TypeMap>[];
   sorters: Sorter<T, TypeMap>[];
 }
@@ -23,7 +23,7 @@ export interface PanelCompleteInfo<T, TypeMap extends FieldTypeMap<T>>
 export class Panel<T, TypeMap extends FieldTypeMap<T>> {
   id: number;
   title: string;
-  next: PanelId["id"];
+  visibility: boolean;
   filters: Filter<T, TypeMap>[];
   sorters: Sorter<T, TypeMap>[];
   createTimestamp: number;
@@ -32,7 +32,7 @@ export class Panel<T, TypeMap extends FieldTypeMap<T>> {
   constructor(panel: PanelCompleteInfo<T, TypeMap>) {
     this.id = panel.id;
     this.title = panel.title;
-    this.next = panel.next;
+    this.visibility = panel.visibility;
     this.filters = panel.filters;
     this.sorters = panel.sorters;
     this.createTimestamp = panel.createTimestamp;
